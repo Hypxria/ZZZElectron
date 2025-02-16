@@ -12,6 +12,8 @@
     "lint": "echo \"No linting configured\""
   },
   "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
     "@electron-forge/cli": "^7.6.1",
     "@electron-forge/maker-deb": "^7.6.1",
     "@electron-forge/maker-rpm": "^7.6.1",
@@ -22,6 +24,7 @@
     "@electron-forge/plugin-webpack": "^7.6.1",
     "@electron/fuses": "^1.8.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
+    "babel-loader": "^9.2.1",
     "css-loader": "^6.0.0",
     "electron": "34.2.0",
     "node-loader": "^2.0.0",
@@ -35,6 +38,8 @@
   "license": "MIT",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "zzzapp": "file:"
   }
 }
