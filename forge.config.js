@@ -1,10 +1,5 @@
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
-
 module.exports = {
-  packagerConfig: {
-    asar: true,
-  },
+  packagerConfig: {},
   rebuildConfig: {},
   makers: [
     {
@@ -26,38 +21,73 @@ module.exports = {
   ],
   plugins: [
     {
-      name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
-    },
-    {
       name: '@electron-forge/plugin-webpack',
       config: {
-        mainConfig: './webpack.main.config.js',
+        mainConfig: {
+          entry: './src/main.ts',
+          module: {
+            rules: [
+              {
+                test: /\.tsx?$/,
+                exclude: /(node_modules|\.webpack)/,
+                use: {
+                  loader: 'ts-loader',
+                  options: {
+                    transpileOnly: true,
+                  },
+                },
+              },
+            ],
+          },
+          resolve: {
+            extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
+          },
+        },
         renderer: {
-          config: './webpack.renderer.config.js',
+          config: {
+            module: {
+              rules: [
+                {
+                  test: /\.tsx?$/,
+                  exclude: /(node_modules|\.webpack)/,
+                  use: {
+                    loader: 'ts-loader',
+                    options: {
+                      transpileOnly: true,
+                    },
+                  },
+                },
+                {
+                  test: /\.css$/,
+                  use: ['style-loader', 'css-loader'],
+                },
+                {
+                  test: /\.(jpg|png|svg|gif)$/,
+                  use: {
+                    loader: 'file-loader',
+                    options: {
+                      name: '[name].[ext]',
+                    },
+                  },
+                },
+              ],
+            },
+            resolve: {
+              extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+            },
+          },
           entryPoints: [
             {
-              html: './src/renderer/index.html',
-              js: './src/renderer/components/renderer.js',
+              html: './src/index.html',
+              js: './src/renderer/index.tsx',
               name: 'main_window',
               preload: {
-                js: './src/renderer/components/preload.js',
+                js: './src/preload.ts'
               },
             },
           ],
         },
       },
     },
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
   ],
 };
