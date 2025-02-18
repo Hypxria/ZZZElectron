@@ -1,0 +1,25 @@
+.spotify{
+  width: 50vw;
+  height: 100vh; /* Add this to ensure full height */
+  left: 0;
+  top: 0; /* Add this to properly position from top */
+  position: fixed; /* Add this to make it a positioning context */
+  display: flex; /* Add this to enable flexbox centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  transform: translateY();
+}
+
+.undercover{
+  position: fixed;
+  height: 100vh;
+  width: inherit;
+  background-color: #555;
+  left: 0%;
+  top: 0%;
+  z-index: -10;
+}
+
+.song-info{
+  transform: translateY(-7.5vh);
+}

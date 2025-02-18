@@ -1,0 +1,93 @@
+/* Song Controls Container */
+.song-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Time Display */
+.time-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  color: white;
+  font-size: 0.8rem;
+}
+
+/* Slider Styling */
+.duration-slider {
+  width: 40vw;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  background: #4d4d4d;
+  border-radius: 2px;
+  outline: none;
+  position: relative;
+}
+
+.duration-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+  position: relative;
+}
+
+.duration-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.duration-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.2) translateY(-50%);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Button Container */
+.song-button-container {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  transform: translateY(50%);
+}
+
+/* Control Buttons */
+.song-button-container button {
+  padding: 6vmin;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add or update these CSS rules */
+.song-button {
+  width: 40px;  /* or whatever size your circle is */
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;  /* Remove any padding */
+  opacity: 1;
+  background-color: rgba(0,0,0,0);
+}
+
+.control-icon {
+  font-size: 30px !important;  /* Adjust this value to fit your circle */
+  width: 30px !important;      /* Force icon width */
+  height: 30px !important;     /* Force icon height */
+}
