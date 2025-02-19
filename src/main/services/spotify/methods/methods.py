@@ -1,90 +1,12 @@
 from rich import print
 from spotipy import Spotify
-from PIL import Image
-import requests
-from io import BytesIO
 import json
-import numpy as np
 from pathlib import Path
 from lrcup import LRCLib
 from typing import Optional, Dict, List, Union
 import platform
-import asyncio
-import websockets
 import json
-import time
 
-class SpotifyPlaybackMonitor:
-    def __init__(self, spotify_client):
-        print("[bold blue]Initializing SpotifyPlaybackMonitor[/bold blue]")
-        self.spotify = spotify_client
-        self.is_monitoring = False
-        self.current_state = None
-        self._monitor_task = None
-
-    async def start_monitoring(self):
-        """Start monitoring playback"""
-        print("[yellow]Starting playback monitoring...[/yellow]")
-        self.is_monitoring = True
-        self._monitor_task = asyncio.create_task(self._monitor_loop())
-
-    async def stop_monitoring(self):
-        """Stop monitoring playback"""
-        print("[yellow]Stopping playback monitoring...[/yellow]")
-        self.is_monitoring = False
-        if self._monitor_task:
-            self._monitor_task.cancel()
-            try:
-                await self._monitor_task
-            except asyncio.CancelledError:
-                pass
-        print("[green]Monitoring stopped[/green]")
-
-    async def _monitor_loop(self):
-        """Monitor playback state in a loop"""
-        print("[blue]Starting monitor loop...[/blue]")
-        while self.is_monitoring:
-            try:
-                current_playback = self.spotify.current_playback()
-                
-                if current_playback and current_playback.get('item'):
-                    position_ms = current_playback['progress_ms']
-                    duration_ms = current_playback['item']['duration_ms']
-                    progress = (position_ms / duration_ms * 100) if duration_ms > 0 else 0
-                    
-                    playback_info = {
-                        'position_ms': position_ms,
-                        'duration_ms': duration_ms,
-                        'progress_percent': progress,
-                        'is_playing': current_playback['is_playing'],
-                        'track_name': current_playback['item']['name'],
-                        'artist_name': current_playback['item']['artists'][0]['name'],
-                        'album_name': current_playback['item']['album']['name']
-                    }
-                    
-                    self.current_state = playback_info
-                    
-                    print("[green]========================[/green]")
-                    print("[bold green]Playback Update:[/bold green]")
-                    print(f"[cyan]Track:[/cyan] {playback_info['track_name']}")
-                    print(f"[cyan]Artist:[/cyan] {playback_info['artist_name']}")
-                    print(f"[cyan]Album:[/cyan] {playback_info['album_name']}")
-                    print(f"[cyan]Progress:[/cyan] {playback_info['progress_percent']:.2f}%")
-                    print(f"[cyan]Position:[/cyan] {playback_info['position_ms']/1000:.2f}s")
-                    print(f"[cyan]Duration:[/cyan] {playback_info['duration_ms']/1000:.2f}s")
-                    print(f"[cyan]Playing:[/cyan] {playback_info['is_playing']}")
-                    print("[green]========================[/green]")
-                else:
-                    print("[yellow]No active playback found[/yellow]")
-                    
-            except Exception as e:
-                print(f"[bold red]Error monitoring playback: {str(e)}[/bold red]")
-                
-            await asyncio.sleep(1)  # Update every second
-
-    def get_current_state(self):
-        """Get the current playback state"""
-        return self.current_state
 
 # catching errors
 class InvalidSearchError(Exception):
@@ -104,7 +26,6 @@ class SpotifyController:
     # This class provides methods for various Spotify operations such as
     # playing tracks, managing playlists, and controlling playback.
     
-    
     def __init__(self, spotify: Spotify):
         # 
         # Notes:
@@ -119,18 +40,6 @@ class SpotifyController:
         self.lyrics_cache = {}
         self.lrclib = LRCLib()
         self.default_device_id = None
-        self.playback_monitor = SpotifyPlaybackMonitor(spotify)    
-    
-    async def start_playback_monitoring(self):
-        """Start monitoring playback"""
-        await self.playback_monitor.start_monitoring()
-        
-    async def stop_playback_monitoring(self):
-        """Stop monitoring playback"""
-        await self.playback_monitor.stop_monitoring()
-        
-    def get_current_playback_state(self):
-        return self.playback_monitor.get_current_state()
 
     def getLyrics(self) -> Optional[Dict[str, Union[List[Dict], str, None]]]:
         try:
@@ -274,35 +183,6 @@ class SpotifyController:
         except Exception as e:
             print(f"Error saving lyrics: {e}")
             return False
-
-
-
-    def get_average_hex_color(self, image_url):
-            try:
-                # Download image from URL
-                response = requests.get(image_url)
-                img = Image.open(BytesIO(response.content))
-                
-                # Convert image to RGB if it isn't
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
-                
-                # Convert to numpy array for faster processing
-                img_array = np.array(img)
-                
-                # Calculate average color
-                average_color = np.mean(img_array, axis=(0,1))
-                
-                # Convert to integers
-                r, g, b = [int(x) for x in average_color]
-                
-                # Convert to hex
-                hex_color = f"#{r:02x}{g:02x}{b:02x}"
-                return hex_color.upper()  # Return uppercase hex
-                
-            except Exception as e:
-                print(f"Error processing image: {str(e)}")
-                
             
     def getPlaybackProgressPercentage(self) -> float:
         """
@@ -729,6 +609,30 @@ class SpotifyController:
         
         return tracks
 
+    def uncomingSong(self) -> dict:
+        #
+        # Retrieves information about the next song in the queue.
+
+        # Returns:
+        #     dict: A dictionary containing details of the next song, including its name,
+        #         artist, album, and duration. If there's no upcoming song, returns an empty dictionary.
+
+        # Note:
+        #     This method assumes that the first item in the queue is the upcoming song.
+        #
+        queue = self.spotify.queue()
+        if not queue['queue']:
+            return {}
+        
+        print(queue['queue'][0])
+
+        next_song = queue['queue'][0]
+        return {
+            'cover': next_song['album']['images'][0]['url'],
+            'name': next_song['name'],
+            'artist': next_song['artists'][0]['name'],
+        }
+    
     def init_default_device(self) -> str:
         # Initializes the default device for playback.
 

@@ -1,5 +1,8 @@
 from flask import request, Flask, jsonify
-
+import asyncio
+import threading
+from functools import partial
+monitor_thread = None
 
 import sys
 import os
@@ -15,25 +18,45 @@ from services.spotify.service import *
 app = Flask(__name__)
 spotify_service = SpotifyService()
 
-@app.route('/spotify/start-monitoring', methods=['POST'])
-async def start_monitoring():
-    result = await spotify_service.start_monitoring()
-    return jsonify(result)
+def run_async_loop(loop):
+    asyncio.set_event_loop(loop)
+    loop.run_forever()
 
-@app.route('/spotify/stop-monitoring', methods=['POST'])
-async def stop_monitoring():
-    result = await spotify_service.stop_monitoring()
-    return jsonify(result)
+async def track_monitoring_loop():
+    while True:
+        try:
+            result = spotify_service.get_current_track()
+            print(result)
+            await asyncio.sleep(1)
+        except Exception as e:
+            print(f"Error in track monitoring loop: {e}")
+            await asyncio.sleep(1)
+            
+@app.route('/spotify/current-track-loop', methods=['GET'])
+def get_current_track():
+    global monitor_thread
+    
+    if monitor_thread is None or not monitor_thread.is_alive():
+        # Create a new event loop
+        loop = asyncio.new_event_loop()
+        
+        # Create and start the monitoring thread
+        monitor_thread = threading.Thread(target=run_async_loop, args=(loop,), daemon=True)
+        monitor_thread.start()
+        
+        # Schedule the task on the new loop
+        asyncio.run_coroutine_threadsafe(track_monitoring_loop(), loop)
+        
+        return jsonify({"message": "Track monitoring started"})
+    else:
+        return jsonify({"message": "Track monitoring is already running"})
 
-@app.route('/spotify/playback-state', methods=['GET'])
-def get_playback_state():
-    result = spotify_service.get_playback_state()
-    return jsonify(result)
 
 @app.route('/spotify/current-track', methods=['GET'])
-def get_current_track():
+def current_track():
     result = spotify_service.get_current_track()
     return jsonify(result)
+
 
 @app.route('/spotify/next-track', methods=['POST'])
 def next_track():
@@ -65,6 +88,10 @@ def get_spotify_token():
     result = spotify_service.get_spotify_token()
     return jsonify(result)
 
+@app.route('/spotify/get-next-song', methods=['GET'])
+def get_next_song():
+    result = spotify_service.get_next_song()
+    return jsonify(result)
 
 @app.route('/spotify/volume', methods=['POST'])
 def set_volume():

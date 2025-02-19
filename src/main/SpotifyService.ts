@@ -19,27 +19,29 @@ export interface LyricsResponse {
 
 export const spotifyService = {
   // Current playback endpoints
+
+
   async getCurrentTrack(): Promise<SpotifyTrack> {
-    const response = await fetch(`${API_BASE_URL}/current-track`);
+    const response = await fetch(`${API_BASE_URL}/spotify/current-track`);
     if (!response.ok) throw new Error('Failed to fetch current track');
     return response.json();
   },
 
   async getLyrics(): Promise<LyricsResponse> {
-    const response = await fetch(`${API_BASE_URL}/lyrics`);
+    const response = await fetch(`${API_BASE_URL}/spotify/lyrics`);
     if (!response.ok) throw new Error('Failed to fetch lyrics');
     return response.json();
   },
 
   async getUpcomingSongs(): Promise<SpotifyTrack[]> {
-    const response = await fetch(`${API_BASE_URL}/upcoming-songs`);
+    const response = await fetch(`${API_BASE_URL}/spotify/upcoming-songs`);
     if (!response.ok) throw new Error('Failed to fetch upcoming songs');
     return response.json();
   },
 
   // Playback control endpoints
   async playNextSong(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/next-track`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/next-track`, {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to play next song');
@@ -47,7 +49,7 @@ export const spotifyService = {
   },
 
   async playPreviousSong(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/previous-track`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/previous-track`, {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to play previous song');
@@ -55,7 +57,7 @@ export const spotifyService = {
   },
 
   async pausePlayback(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/pause`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/pause`, {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to pause playback');
@@ -63,7 +65,7 @@ export const spotifyService = {
   },
 
   async resumePlayback(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/resume`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/resume`, {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to resume playback');
@@ -89,7 +91,7 @@ export const spotifyService = {
 
   // Volume control
   async setVolume(volume: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/volume`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/volume`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
