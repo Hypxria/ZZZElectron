@@ -5,6 +5,7 @@
   align-items: center;
   gap: 20px;
   width: 100%;
+  transform: translateY(0vh);
 }
 
 /* Time Display */
@@ -59,22 +60,14 @@
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  transform: translateY(50%);
+  transform: translateY(60%);
 }
 
 /* Control Buttons */
 .song-button-container button {
   padding: 6vmin;
   border: none;
-  border-radius: 50%;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Add or update these CSS rules */
-.song-button {
   width: 40px;  /* or whatever size your circle is */
   height: 40px;
   border-radius: 50%;
@@ -86,8 +79,23 @@
   background-color: rgba(0,0,0,0);
 }
 
+/* Add or update these CSS rules */
+
 .control-icon {
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
+
+.skip-icon {
+  font-size: 30px !important;  /* Adjust this value to fit your circle */
+  width: 30px !important;      /* Force icon width */
+  height: 30px !important;     /* Force icon height */
+}
+
+.back-icon{
+  font-size: 30px !important;  /* Adjust this value to fit your circle */
+  width: 30px !important;      /* Force icon width */
+  height: 30px !important;     /* Force icon height */
+}
+

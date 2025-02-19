@@ -11,8 +11,8 @@ interface SpotifyMainProps {
 
 const nextSong = {
   id: '1',
-  title: 'Weathergirl, Tests',
-  artist: 'Flavor Foley',
+  title: 'Breeze Blows',
+  artist: 'Jamie Paige',
   albumCover: 'path/to/album/cover.jpg'
 };
 

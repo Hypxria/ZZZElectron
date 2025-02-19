@@ -6,8 +6,8 @@
     min-width: 50px;
     max-width: 300px;
     position: fixed;
-    top: 4vmin;
-    left: 4vmin;
+    top: 2vmin;
+    left: 2vmin;
     z-index: 1000;
     transition: all 0.3s ease;
 }
@@ -54,7 +54,7 @@
     padding: 8px;
     background-color: rgba(255, 255, 255, 0.1);
     min-width: 0; /* Remove min-width constraint */
-    width: 6vw;
+    width: fit-content;
 }
 
 .upcoming-song-container.collapsed .upcoming-content {

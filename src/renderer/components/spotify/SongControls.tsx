@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Styles/SongControls.css';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
+import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 
 
 interface SongControlsProps {
@@ -15,13 +17,9 @@ interface SongControlsProps {
   duration: number;
 }
 
-
-
-
-
 const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, duration}) => {
+  
   const handlePlayPause = () => {
-    
     if (!isPlaying) {
         // Start playing logic
         try {
@@ -38,12 +36,24 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
         }
     }
   };
+
+  const handleSkip = () => {
+
+    try {
+      // audioRef.current?.pause();
+    } catch (error) {
+      console.error('Error skipping song:', error);
+    }
+    
+  };
   
   const [sliderValue, setSliderValue] = useState<number>(0);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSliderValue(Number(e.target.value));
   };
+
+
 
   const songButton = (
     <button 
@@ -58,6 +68,29 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
         )}
     </button>
   );
+
+
+  const skipButton = (
+    <button 
+        className="skip-button" 
+        id="skip"
+        onClick={handleSkip}
+    >
+      <SkipNextRoundedIcon className="skip-icon" />
+    </button>
+  );
+
+
+  const backButton = (
+    <button 
+        className="back-button" 
+        id="back"
+        onClick={handleSkip}
+    >
+      <SkipPreviousRoundedIcon className="back-icon" />
+    </button>
+  );
+
 
   return (
     <div className="song-controls">
@@ -76,9 +109,9 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
         </div>
       </div>
       <div className="song-button-container">
-        <button className="song-button" id="back"></button>
+        {backButton}
         {songButton}
-        <button className="song-button" id="forward"></button>
+        {skipButton}
       </div>
     </div>
   );

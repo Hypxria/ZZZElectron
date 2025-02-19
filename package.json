@@ -47,6 +47,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-alpha.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.4",

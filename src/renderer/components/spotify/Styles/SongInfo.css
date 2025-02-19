@@ -1,4 +1,3 @@
-
 .song-info {
   display: flex;
   flex-direction: column;
@@ -9,8 +8,8 @@
 
 .song-image{
   background-color: #212122;
-  height: 60vmin;
-  width: 60vmin;
+  height: 56vmin;
+  width: 56vmin;
   max-width: 40vw;
   max-height: 40vw;
   border-radius: 10px;
@@ -32,6 +31,7 @@
   font-size: 0.8rem;
   font-family: 'Urbanist', sans-serif;
   font-weight: 400;
+  margin-bottom: -10px;
 }
 
 .artist-text{
