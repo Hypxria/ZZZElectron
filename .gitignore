@@ -93,5 +93,3 @@ out/
 
 .__pycache__/
 .vscode/
-
-*.pyc

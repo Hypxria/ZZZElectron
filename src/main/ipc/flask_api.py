@@ -1,16 +1,5 @@
-from flask import request, Flask, jsonify
-
-
-import sys
-import os
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-MAIN_DIR = os.path.dirname(SCRIPT_DIR)
-PROJECT_ROOT = os.path.dirname(os.path.dirname(MAIN_DIR))
-
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from services.spotify.service import *
+from flask import Flask, jsonify
+from ..services.spotify.service import SpotifyService
 
 app = Flask(__name__)
 spotify_service = SpotifyService()
@@ -65,29 +54,5 @@ def get_spotify_token():
     result = spotify_service.get_spotify_token()
     return jsonify(result)
 
-
-@app.route('/spotify/volume', methods=['POST'])
-def set_volume():
-    try:
-        # Get volume from request body
-        data = request.get_json()
-        
-        if not data or 'volume' not in data:
-            return jsonify({'error': 'Volume parameter is required'}), 400
-            
-        volume = data['volume']
-        
-        # Validate volume value
-        if not isinstance(volume, (int, float)) or volume < 0 or volume > 100:
-            return jsonify({'error': 'Volume must be a number between 0 and 100'}), 400
-            
-        # Call the service method
-        result = spotify_service.set_volume(int(volume))
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
 if __name__ == '__main__':
-    app.run(debug=True, port=20000)
+    app.run(debug=True)

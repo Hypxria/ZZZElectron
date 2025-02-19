@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional
 import asyncio
-from .methods.methods import SpotifyController
+from methods.methods import SpotifyController
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
@@ -113,12 +113,5 @@ class SpotifyService:
                 if token_info:
                     token_info = self.sp.auth_manager.refresh_access_token(token_info['refresh_token'])
                 return {'token': token_info['access_token']}
-        except Exception as e:
-            raise Exception(str(e))
-    
-    def set_volume(self, volume: int):
-        try:
-            self.sp_controller.change_volume(volume)
-            return {'success': True}
         except Exception as e:
             raise Exception(str(e))
