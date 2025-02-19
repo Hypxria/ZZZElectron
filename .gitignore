@@ -91,8 +91,5 @@ typings/
 # Electron-Forge
 out/
 
-<<<<<<< HEAD
 .__pycache__/
-=======
 .vscode/
->>>>>>> 4d64647c6873c2a4c06991d9663bb75fc977e86b
