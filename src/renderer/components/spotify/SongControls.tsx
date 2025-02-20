@@ -1,9 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import './Styles/SongControls.css';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
+
+export const useAnimatedValue = (targetValue: number, duration: number): [number, (value: number) => void] => {
+  const [value, setValue] = useState(targetValue);
+  const animationFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const startTime = Date.now();
+    const startValue = value;
+    
+    const animate = () => {
+      const currentTime = Date.now();
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(1, elapsed / 200); // 200ms animation duration
+
+      const currentValue = startValue + (targetValue - startValue) * progress;
+      setValue(currentValue);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [targetValue]);
+
+  return [value, setValue];
+};
 
 const formatTime = (ms: number): string => {
   const totalSeconds = Math.floor(ms / 1000);
@@ -29,7 +62,6 @@ interface SongControlsProps {
 }
 
 const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, duration}) => {
-  
   useEffect(() => {
     setSliderValue((currentTime / duration) * 100);
   }, [currentTime, duration]);
@@ -63,7 +95,9 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
     
   };
   
-  const [sliderValue, setSliderValue] = useState<number>(0);
+  const targetValue = (currentTime / duration) * 100;
+  const [sliderValue, setSliderValue] = useAnimatedValue(targetValue, duration);
+  const prevTimeRef = useRef<number>(currentTime);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSliderValue(Number(e.target.value));
@@ -114,7 +148,8 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
           className="duration-slider" 
           min="0" 
           max="100" 
-          value={((currentTime/duration)*100)} 
+          value={sliderValue}
+          style={{ willChange: 'transform' }} 
           onChange={handleSliderChange}
         />
         <div className="time-labels">
