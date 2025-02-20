@@ -11,34 +11,34 @@ interface SpotifyMainProps {
   // Add any props if needed in the future
 }
 
-const nextSong = {
-  id: '1',
-  title: 'Breeze Blows',
-  artist: 'Jamie Paige',
-  albumCover: 'path/to/album/cover.jpg'
-};
-
 const SpotifyMain: React.FC<SpotifyMainProps> = () => {
   const [currentTrackData, setCurrentTrackData] = useState<Song | null>({
     name: '',
     artist: '',
     album_cover: '',
     year:'',
+    is_playing: false,
+    progress_ms: 0,
+    duration_ms: 0,
   });
+
+  const [nextTrackData, setNextTrackData] = useState<Song | null>({
+    name: '',
+    artist: '',
+    album_cover: '',
+  });
+
 
   const [nextTrack] = useState<Song | null>(null);
   const [lyrics] = useState<string[]>([]);
 
-  spotifyService.getCurrentTrack().then((track) => {
-    console.log(track);
-  }).catch((error) => {
-    console.error('Error fetching current track:', error);
-  });
-
+  
   useEffect(() => {
     const fetchCurrentTrack = async () => {
       try {
         let track = await spotifyService.getCurrentTrack();
+        
+
         setCurrentTrackData({
           name: track.name,
           artist: track.artist,
@@ -48,6 +48,9 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
           progress_ms: track.progress_ms,
           duration_ms: track.duration_ms,
         });
+
+        
+
       } catch (error) {
 
         console.error('Error fetching track:', error);
@@ -62,6 +65,23 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const fetchNextTrack = async () => {
+      try {
+        let nextTrack = await spotifyService.getNextSong();
+        setNextTrackData({
+          name: nextTrack.name,
+          artist: nextTrack.artist,
+          album_cover: nextTrack.album_cover,
+        });
+      } catch (error) {
+        console.error('Error fetching next track:', error);
+      }
+    };
+
+    fetchNextTrack();
+  }, [currentTrackData?.name]); // Only re-run when the current track name changes
 
   
   return (
@@ -82,7 +102,12 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         />
       </div>
       <SongUpcoming 
-        nextSong={nextSong}
+        nextSong={{
+          id: '1',
+          title: nextTrackData?.name || 'Failed',
+          artist: nextTrackData?.artist || '',
+          albumCover: nextTrackData?.album_cover || ''
+        }}
       />
     </div>
   );

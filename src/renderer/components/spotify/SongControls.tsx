@@ -106,8 +106,6 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
       <SkipPreviousRoundedIcon className="back-icon" />
     </button>
   );
-
-
   return (
     <div className="song-controls">
       <div className="slider-container">
@@ -116,7 +114,7 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
           className="duration-slider" 
           min="0" 
           max="100" 
-          value={(currentTime/duration)} 
+          value={((currentTime/duration)*100)} 
           onChange={handleSliderChange}
         />
         <div className="time-labels">

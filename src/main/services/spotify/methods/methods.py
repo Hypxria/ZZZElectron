@@ -628,7 +628,7 @@ class SpotifyController:
 
         next_song = queue['queue'][0]
         return {
-            'cover': next_song['album']['images'][0]['url'],
+            'album_cover': next_song['album']['images'][0]['url'],
             'name': next_song['name'],
             'artist': next_song['artists'][0]['name'],
         }

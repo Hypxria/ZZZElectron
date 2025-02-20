@@ -50,9 +50,9 @@ export const spotifyService = {
     return response.json();
   },
 
-  async getUpcomingSongs(): Promise<Song[]> {
-    const response = await fetch(`${API_BASE_URL}/spotify/upcoming-songs`);
-    if (!response.ok) throw new Error('Failed to fetch upcoming songs');
+  async getNextSong(): Promise<Song> {
+    const response = await fetch(`${API_BASE_URL}/spotify/get-next-song`);
+    if (!response.ok) throw new Error('Failed to fetch next song');
     return response.json();
   },
 
