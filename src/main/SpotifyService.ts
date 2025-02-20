@@ -2,11 +2,14 @@
 
 const API_BASE_URL = 'http://localhost:20000'; // Make sure this matches your Flask server port
 
-export interface SpotifyTrack {
+export interface Song {
   name: string;
   artist: string;
-  duration: number;
-  // Add other track properties as needed
+  album_cover: string;
+  year?: string;
+  duration_ms?: number;
+  is_playing?: boolean;
+  progress_ms?: number;
 }
 
 export interface LyricsResponse {
@@ -21,10 +24,24 @@ export const spotifyService = {
   // Current playback endpoints
 
 
-  async getCurrentTrack(): Promise<SpotifyTrack> {
+  async getCurrentTrack(): Promise<Song> {
     const response = await fetch(`${API_BASE_URL}/spotify/current-track`);
     if (!response.ok) throw new Error('Failed to fetch current track');
     return response.json();
+    /*
+    album_cover
+    {
+      "album_cover": "https://i.scdn.co/image/ab67616d0000b27322805a1b17e41ae357bd98bc",
+      "artist": "Fujii Kaze",
+      "duration_ms": 185573,
+      "is_playing": true,
+      "name": "Shinunoga E-Wa",
+      "repeat_state": "context",
+      "shuffle_state": false,
+      "volume_percent": 64,
+      "year": "2020"
+    }
+    */
   },
 
   async getLyrics(): Promise<LyricsResponse> {
@@ -33,7 +50,7 @@ export const spotifyService = {
     return response.json();
   },
 
-  async getUpcomingSongs(): Promise<SpotifyTrack[]> {
+  async getUpcomingSongs(): Promise<Song[]> {
     const response = await fetch(`${API_BASE_URL}/spotify/upcoming-songs`);
     if (!response.ok) throw new Error('Failed to fetch upcoming songs');
     return response.json();

@@ -1,29 +1,27 @@
 // src/renderer/components/spotify/SongInfo.tsx
 import React from 'react';
 import './Styles/SongInfo.css';
-
-interface SongInfoProps {
-  songTitle?: string;
-  artistName?: string;
-  year?: string;
-  albumCover?: string;
+interface Song {
+  name: string;
+  artist: string;
+  album_cover: string;
+  year: string;
 }
 
-const SongInfo: React.FC<SongInfoProps> = ({
-  songTitle = "Weathergirl",
-  artistName = "FLAVOR FOLEY",
-  year = "2024",
-  albumCover
-}) => {
+interface SongInfoProps {
+  currentSong: Song;
+}
+
+const SongInfo: React.FC<SongInfoProps> = ({ currentSong }) =>{
   return (
     <div className="song-details">
       <img 
         className="song-image" 
-        src={albumCover} 
+        src={currentSong?.album_cover} 
         alt="Album Cover" 
       />
-      <div className="song-text">{songTitle}</div>
-      <div className="artist-text">{artistName} • {year}</div>
+      <div className="song-text">{currentSong?.name}</div>
+      <div className="artist-text">{currentSong?.artist} • {currentSong.year}</div>
     </div>
   );
 };

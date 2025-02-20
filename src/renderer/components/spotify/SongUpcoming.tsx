@@ -10,10 +10,9 @@ interface Song {
 
 interface SongUpcomingProps {
   nextSong: Song;
-  onSongSelect?: (song: Song) => void;
 }
 
-const SongUpcoming: React.FC<SongUpcomingProps> = ({ nextSong, onSongSelect }) => {
+const SongUpcoming: React.FC<SongUpcomingProps> = ({ nextSong }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
  
 
@@ -29,7 +28,7 @@ const SongUpcoming: React.FC<SongUpcomingProps> = ({ nextSong, onSongSelect }) =
       </div>
       {!isCollapsed && (
       <div className="upcoming-content">
-        <div className="next-song-card" onClick={() => onSongSelect?.(nextSong)}>
+        <div className="next-song-card">
           <img 
             src={nextSong?.albumCover} 
             alt="Album Cover" 

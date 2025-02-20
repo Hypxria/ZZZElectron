@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Styles/SongControls.css';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 
+const formatTime = (ms: number): string => {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
 
 interface SongControlsProps {
   onPlay?: () => void/*run playhtingyfr*/;
@@ -19,6 +30,11 @@ interface SongControlsProps {
 
 const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, duration}) => {
   
+  useEffect(() => {
+    setSliderValue((currentTime / duration) * 100);
+  }, [currentTime, duration]);
+
+
   const handlePlayPause = () => {
     if (!isPlaying) {
         // Start playing logic
@@ -100,12 +116,12 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
           className="duration-slider" 
           min="0" 
           max="100" 
-          value={sliderValue} 
+          value={(currentTime/duration)} 
           onChange={handleSliderChange}
         />
         <div className="time-labels">
-          <span>{currentTime}</span>
-          <span>{duration}</span>
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
       </div>
       <div className="song-button-container">

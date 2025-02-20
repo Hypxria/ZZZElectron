@@ -1,5 +1,4 @@
-from typing import Dict, Any, Optional
-import asyncio
+from typing import Dict, Any
 from .methods.methods import SpotifyController
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -71,6 +70,7 @@ class SpotifyService:
                 'shuffle_state': current_track['shuffle_state'],
                 'repeat_state': current_track['repeat_state'],
                 'volume_percent': current_track['device']['volume_percent'],
+                'progress_ms': current_track['progress_ms'],
             }
         except Exception as e:
             raise Exception(str(e))

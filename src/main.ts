@@ -1,5 +1,5 @@
 // src/main.ts
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, session } from 'electron';
 import * as path from 'path';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -16,13 +16,29 @@ const createWindow = (): void => {
     height: 600,
     width: 800,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       webSecurity: true,
     },
   });
 
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'self';",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Added 'unsafe-eval'
+          "style-src 'self' 'unsafe-inline';",
+          "connect-src 'self' http://localhost:20000;",
+          "img-src 'self' data: http://localhost:20000 https:;"
+        ].join(' ')
+      }
+    });
+  });
+
+  
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 

@@ -1,7 +1,7 @@
 from flask import request, Flask, jsonify
+from flask_cors import CORS
 import asyncio
 import threading
-from functools import partial
 monitor_thread = None
 
 import sys
@@ -15,8 +15,10 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from services.spotify.service import *
 
-app = Flask(__name__)
 spotify_service = SpotifyService()
+
+app = Flask(__name__)
+CORS(app)
 
 def run_async_loop(loop):
     asyncio.set_event_loop(loop)
@@ -117,4 +119,4 @@ def set_volume():
         return jsonify({'error': str(e)}), 500
     
 if __name__ == '__main__':
-    app.run(debug=True, port=20000)
+    app.run(debug=False, port=20000)
