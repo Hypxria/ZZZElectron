@@ -4,6 +4,9 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
+import ElasticSlider from '../../ElasticSlider/ElasticSlider'
+import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 
 interface SongControlsProps {
   isPlaying: boolean;
@@ -86,8 +89,6 @@ const SongControls: React.FC<SongControlsProps> = ({
     lastUpdateTimeRef.current = Date.now();
   };
 
-
-  
   const updateProgressBar = (e: React.MouseEvent) => {
     if (progressBarRef.current) {
       const rect = progressBarRef.current.getBoundingClientRect();
@@ -137,6 +138,7 @@ const SongControls: React.FC<SongControlsProps> = ({
     </button>
   );
 
+  
 
   const backButton = (
     <button 
