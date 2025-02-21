@@ -1,109 +1,117 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Styles/SongControls.css';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 
-export const useAnimatedValue = (targetValue: number, duration: number): [number, (value: number) => void] => {
-  const [value, setValue] = useState(targetValue);
-  const animationFrameRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const startTime = Date.now();
-    const startValue = value;
-    
-    const animate = () => {
-      const currentTime = Date.now();
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(1, elapsed / 200); // 200ms animation duration
-
-      const currentValue = startValue + (targetValue - startValue) * progress;
-      setValue(currentValue);
-
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrameRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [targetValue]);
-
-  return [value, setValue];
-};
-
-const formatTime = (ms: number): string => {
-  const totalSeconds = Math.floor(ms / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  }
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-};
-
 interface SongControlsProps {
-  onPlay?: () => void/*run playhtingyfr*/;
-  onPause?: () => void;
-  onNext?: () => void;
-  onPrevious?: () => void;
-  onSeek?: (position: number) => void;
   isPlaying: boolean;
   currentTime: number;
   duration: number;
+  onSeek: (time: number) => void;
+  onPlayPause: () => void;
 }
 
-const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, duration}) => {
+const SongControls: React.FC<SongControlsProps> = ({
+  isPlaying,
+  currentTime,
+  duration,
+  onSeek,
+  onPlayPause
+}) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [sliderValue, setSliderValue] = useState(0);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastUpdateTimeRef = useRef<number>(Date.now());
+
+  // Update progress smoothly
   useEffect(() => {
-    setSliderValue((currentTime / duration) * 100);
-  }, [currentTime, duration]);
+    const updateProgress = () => {
+      if (!isDragging && isPlaying) {
+        const now = Date.now();
+        const delta = now - lastUpdateTimeRef.current;
+        lastUpdateTimeRef.current = now;
+
+        setSliderValue(prev => {
+          const newValue = (currentTime / duration) * 100;
+          return Number.isFinite(newValue) ? newValue : prev;
+        });
+      }
+    };
+
+    // Clear any existing interval
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+
+    // Set up new interval if playing
+    if (isPlaying && !isDragging) {
+      progressIntervalRef.current = setInterval(updateProgress, 50); // Update every 50ms
+      lastUpdateTimeRef.current = Date.now();
+    }
+
+    // Cleanup function
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, [isPlaying, isDragging, currentTime, duration]);
+
+  useEffect(() => {
+    if (!isDragging && duration > 0) {
+      setSliderValue((currentTime / duration) * 100);
+    }
+  }, [currentTime, duration, isDragging]);
 
 
-  const handlePlayPause = () => {
-    if (!isPlaying) {
-        // Start playing logic
-        try {
-            // audioRef.current?.play();
-        } catch (error) {
-            console.error('Error playing audio:', error);
-        }
-    } else {
-        // Pause logic
-        try {
-            // audioRef.current?.pause();
-        } catch (error) {
-            console.error('Error pausing audio:', error);
-        }
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+    updateProgressBar(e);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging) {
+      updateProgressBar(e);
     }
   };
 
-  const handleSkip = () => {
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    lastUpdateTimeRef.current = Date.now();
+  };
 
-    try {
-      // audioRef.current?.pause();
-    } catch (error) {
-      console.error('Error skipping song:', error);
+
+  
+  const updateProgressBar = (e: React.MouseEvent) => {
+    if (progressBarRef.current) {
+      const rect = progressBarRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const width = rect.width;
+      const percentage = Math.max(0, Math.min(100, (x / width) * 100));
+      
+      setSliderValue(percentage);
+      onSeek((percentage / 100) * duration);
     }
-    
+  };
+
+  // Buttons
+  const handlePlayPause = () => {
+    onPlayPause();
   };
   
-  const targetValue = (currentTime / duration) * 100;
-  const [sliderValue, setSliderValue] = useAnimatedValue(targetValue, duration);
-  const prevTimeRef = useRef<number>(currentTime);
+  const handleSkip = () => {
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setSliderValue(Number(e.target.value));
-  };
+  }
 
+  const handleBack = () => {
 
+  }
 
   const songButton = (
     <button 
@@ -118,7 +126,6 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
         )}
     </button>
   );
-
 
   const skipButton = (
     <button 
@@ -140,21 +147,37 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
       <SkipPreviousRoundedIcon className="back-icon" />
     </button>
   );
+
+  const formatTime = (ms: number) => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="song-controls">
-      <div className="slider-container">
-        <input 
-          type="range" 
-          className="duration-slider" 
-          min="0" 
-          max="100" 
-          value={sliderValue}
-          style={{ willChange: 'transform' }} 
-          onChange={handleSliderChange}
-        />
-        <div className="time-labels">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+      <div className="progress-bar-wrapper">
+        <div 
+          className="progress-bar-container"
+          ref={progressBarRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <span className="time-label time-label-left">{formatTime(currentTime)}</span>
+          <div className="progress-bar-background">
+            <div 
+              className="progress-bar-fill"
+              style={{ width: `${sliderValue}%` }}
+            />
+            <div 
+              className="progress-bar-handle"
+              style={{ left: `${sliderValue}%` }}
+            />
+          </div>
+          <span className="time-label time-label-right">{formatTime(duration)}</span>
         </div>
       </div>
       <div className="song-button-container">
@@ -164,6 +187,6 @@ const SongControls: React.FC<SongControlsProps> = ({isPlaying, currentTime, dura
       </div>
     </div>
   );
-};
+};  
 
 export default SongControls;
