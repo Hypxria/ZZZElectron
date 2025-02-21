@@ -4,7 +4,6 @@ import SongInfo from './SongInfo';
 import SongControls from './SongControls';
 import SongUpcoming from './SongUpcoming';
 import './Styles/Main.css';
-import '../../../main/SpotifyService'
 import { spotifyService, Song } from '../../../main/SpotifyService';
 
 interface SpotifyMainProps {
