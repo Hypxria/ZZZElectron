@@ -13,7 +13,12 @@ interface SongControlsProps {
   currentTime: number;
   duration: number;
   onSeek: (time: number) => void;
-  onPlayPause: () => void;
+  onPlay: () => void;
+  onPause: () => void;
+  onNext: () => void;
+  onBack: () => void;
+  volume: number;
+  onVolumeChange: (volume: number) => void;
 }
 
 const SongControls: React.FC<SongControlsProps> = ({
@@ -21,15 +26,20 @@ const SongControls: React.FC<SongControlsProps> = ({
   currentTime,
   duration,
   onSeek,
-  onPlayPause
+  onPlay,
+  onPause,
+  onNext,
+  onBack,
+  volume,
+  onVolumeChange,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const lastUpdateTimeRef = useRef<number>(Date.now());
 
-  // Update progress smoothly
+  // Progress Bar
   useEffect(() => {
     const updateProgress = () => {
       if (!isDragging && isPlaying) {
@@ -42,52 +52,53 @@ const SongControls: React.FC<SongControlsProps> = ({
           return Number.isFinite(newValue) ? newValue : prev;
         });
       }
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
     };
 
-    // Clear any existing interval
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-
-    // Set up new interval if playing
+    // Start animation frame if playing
     if (isPlaying && !isDragging) {
-      progressIntervalRef.current = setInterval(updateProgress, 50); // Update every 50ms
       lastUpdateTimeRef.current = Date.now();
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
     }
 
     // Cleanup function
     return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [isPlaying, isDragging, currentTime, duration]);
 
+  // Make updateProgress accessible outside useEffect
+  const updateProgress = () => {
+    if (!isDragging && isPlaying) {
+      const now = Date.now();
+      const delta = now - lastUpdateTimeRef.current;
+      lastUpdateTimeRef.current = now;
+
+      setSliderValue(prev => {
+        const newValue = (currentTime / duration) * 100;
+        return Number.isFinite(newValue) ? newValue : prev;
+      });
+    }
+    animationFrameRef.current = requestAnimationFrame(updateProgress);
+  };
+
+  // Modify your useEffect to use the same updateProgress function
   useEffect(() => {
-    if (!isDragging && duration > 0) {
-      setSliderValue((currentTime / duration) * 100);
+    // Start animation frame if playing
+    if (isPlaying && !isDragging) {
+      lastUpdateTimeRef.current = Date.now();
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
     }
-  }, [currentTime, duration, isDragging]);
 
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    updateProgressBar(e);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      updateProgressBar(e);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    lastUpdateTimeRef.current = Date.now();
-  };
+    // Cleanup function
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isPlaying, isDragging, currentTime, duration]);
 
   const updateProgressBar = (e: React.MouseEvent) => {
     if (progressBarRef.current) {
@@ -95,25 +106,58 @@ const SongControls: React.FC<SongControlsProps> = ({
       const x = e.clientX - rect.left;
       const width = rect.width;
       const percentage = Math.max(0, Math.min(100, (x / width) * 100));
-      
       setSliderValue(percentage);
-      onSeek((percentage / 100) * duration);
     }
   };
 
-  // Buttons
+  // Action Handler
   const handlePlayPause = () => {
-    onPlayPause();
+    if (isPlaying) {
+      onPause();
+    } else {
+      onPlay();
+    }
   };
   
   const handleSkip = () => {
-
+    onNext();
   }
 
   const handleBack = () => {
-
+    onBack();
   }
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    updateProgressBar(e);
+  };
+
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging) {
+      updateProgressBar(e);
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (isDragging) {
+      updateProgressBar(e);
+      const seekTime = Math.floor((sliderValue / 100) * duration);
+      onSeek(seekTime);
+    }
+    setIsDragging(false);
+    lastUpdateTimeRef.current = Date.now();
+  };
+
+
+  const handleSeek = (value: number) => {
+    
+  }
+
+  // Buttons
   const songButton = (
     <button 
         className="song-button" 
@@ -138,18 +182,17 @@ const SongControls: React.FC<SongControlsProps> = ({
     </button>
   );
 
-  
-
   const backButton = (
     <button 
         className="back-button" 
         id="back"
-        onClick={handleSkip}
+        onClick={handleBack}
     >
       <SkipPreviousRoundedIcon className="back-icon" />
     </button>
   );
 
+  // Misc
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -170,10 +213,10 @@ const SongControls: React.FC<SongControlsProps> = ({
         >
           <span className="time-label time-label-left">{formatTime(currentTime)}</span>
           <div className="progress-bar-background">
-            <div 
-              className="progress-bar-fill"
-              style={{ width: `${sliderValue}%` }}
-            />
+          <div 
+            className="progress-bar-fill"
+            style={{ transform: `scaleX(${sliderValue / 100})` }}
+          />
             <div 
               className="progress-bar-handle"
               style={{ left: `${sliderValue}%` }}

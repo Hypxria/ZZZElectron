@@ -82,7 +82,7 @@ export const spotifyService = {
   },
 
   async resumePlayback(): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/spotify/resume`, {
+    const response = await fetch(`${API_BASE_URL}/spotify/play`, {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to resume playback');
@@ -116,6 +116,19 @@ export const spotifyService = {
       body: JSON.stringify({ volume }),
     });
     if (!response.ok) throw new Error('Failed to set volume');
+    return response.json();
+  },
+
+  // Seek Song Position
+  async seek(position: number): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/spotify/seek`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ position_ms: position }),
+    });
+    if (!response.ok) throw new Error('Failed to seek');
     return response.json();
   },
 

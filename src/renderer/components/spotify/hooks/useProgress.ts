@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 
 export const useProgress = (currentTime: number, duration: number) => {
   const [value, setValue] = useState(0);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | null>(null);
   const lastUpdateRef = useRef(performance.now());
 
   useEffect(() => {

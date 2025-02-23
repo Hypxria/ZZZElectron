@@ -118,5 +118,25 @@ def set_volume():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
+@app.route('/spotify/seek', methods=['POST'])
+def seek():
+    try:
+        # Get volume from request body
+        data = request.get_json()
+        
+        if not data or 'position_ms' not in data:
+            return jsonify({'error': 'Position parameter is required'}), 400
+            
+        position_ms = data['position_ms']
+        
+        # Call the service method
+        result = spotify_service.seek_song(int(position_ms))
+        print(f"result: {result}")
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 if __name__ == '__main__':
-    app.run(debug=False, port=20000)
+    app.run(debug=True, port=20000)

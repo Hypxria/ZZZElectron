@@ -205,6 +205,19 @@ class SpotifyController:
         
         return percentage
     
+    def seekSong(self, target_ms) -> None:
+        """
+        Seeks to the current position in the song based on the playback progress.
+        """
+        current_track = self.spotify.current_user_playing_track()
+
+        if current_track is None or not current_track['is_playing']:
+            print("No track is currently playing.")
+            return
+
+
+        # Seek to the calculated position
+        self.spotify.seek_track(target_ms)
     
 
     def saveLyrics(self, lyrics: str, track_name: str = None, artist_name: str = None) -> bool:

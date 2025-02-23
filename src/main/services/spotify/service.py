@@ -22,6 +22,13 @@ class SpotifyService:
         self.sp_controller = SpotifyController(self.sp)
         self.device_name = self.sp_controller.init_default_device()
     
+    def seek_song(self, position_ms: int) -> Dict[str, str]:
+        try:
+            self.sp_controller.seekSong(position_ms)
+            return {'status': 'success'}
+        except Exception as e:
+            raise Exception(str(e))
+    
     async def start_monitoring(self) -> Dict[str, str]:
         try:
             await self.sp_controller.start_playback_monitoring()

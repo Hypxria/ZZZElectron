@@ -61,10 +61,14 @@
   top: 0;
   left: 0;
   height: 100%;
+  width: 100%;
   background-color: #1db954;
   border-radius: 2px;
-  transition: width 0.1s ease-out;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.1s ease-out;
 }
+
 
 .progress-bar-handle {
   position: absolute;

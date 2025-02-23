@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 
 export const useAnimatedValue = (target: number, duration: number) => {
   const [value, setValue] = useState(target);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | null>(null);
   const lastUpdateRef = useRef(performance.now());
   const lastValueRef = useRef(target);
 
