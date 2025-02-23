@@ -143,12 +143,12 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
+    setIsDragging(false);
     if (isDragging) {
       updateProgressBar(e);
       const seekTime = Math.floor((sliderValue / 100) * duration);
       onSeek(seekTime);
     }
-    setIsDragging(false);
     lastUpdateTimeRef.current = Date.now();
   };
 

@@ -34,6 +34,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
   const manualStateUpdateRef = useRef<number>(0);
 
+  let escapedManual = false
+  
   // CurrentTrack Tracking
   useEffect(() => {
     let isComponentMounted = true;
@@ -42,19 +44,23 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
     const fetchCurrentTrack = async () => {
       try {
+        
         if (Date.now() - manualStateUpdateRef.current < 1000) {
+          escapedManual = true
+          console.log('Skipping fetch due to manual state update')
           return;
         }
-
+        console.log('Fetching track')
         const track = await spotifyService.getCurrentTrack();
         if (!isComponentMounted) return;
 
-        if (track.name !== lastTrackName || track.is_playing !== lastPlayingState) {
+        if (track.name !== lastTrackName || track.is_playing !== lastPlayingState || escapedManual) {
           setCurrentTrackData(track);
           progressRef.current = track.progress_ms || 0;
           lastTrackName = track.name;
           lastPlayingState = track.is_playing;
         }
+        escapedManual = false
       } catch (error) {
         console.error('Error fetching track:', error);
       }
