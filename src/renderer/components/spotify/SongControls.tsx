@@ -4,7 +4,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
-import ElasticSlider from '../../ElasticSlider/ElasticSlider'
 import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 
@@ -39,41 +38,10 @@ const SongControls: React.FC<SongControlsProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lastUpdateTimeRef = useRef<number>(Date.now());
 
-  // Progress Bar
-  useEffect(() => {
-    const updateProgress = () => {
-      if (!isDragging && isPlaying) {
-        const now = Date.now();
-        const delta = now - lastUpdateTimeRef.current;
-        lastUpdateTimeRef.current = now;
-
-        setSliderValue(prev => {
-          const newValue = (currentTime / duration) * 100;
-          return Number.isFinite(newValue) ? newValue : prev;
-        });
-      }
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
-    };
-
-    // Start animation frame if playing
-    if (isPlaying && !isDragging) {
-      lastUpdateTimeRef.current = Date.now();
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
-    }
-
-    // Cleanup function
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isPlaying, isDragging, currentTime, duration]);
-
-  // Make updateProgress accessible outside useEffect
+  // Single updateProgress function for animation and seeking
   const updateProgress = () => {
     if (!isDragging && isPlaying) {
       const now = Date.now();
-      const delta = now - lastUpdateTimeRef.current;
       lastUpdateTimeRef.current = now;
 
       setSliderValue(prev => {
@@ -84,7 +52,7 @@ const SongControls: React.FC<SongControlsProps> = ({
     animationFrameRef.current = requestAnimationFrame(updateProgress);
   };
 
-  // Modify your useEffect to use the same updateProgress function
+  // Use the updateProgress function in useEffect for animation
   useEffect(() => {
     // Start animation frame if playing
     if (isPlaying && !isDragging) {
@@ -98,9 +66,17 @@ const SongControls: React.FC<SongControlsProps> = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isPlaying, isDragging, currentTime, duration]);
+  }, [isPlaying, isDragging]);
 
-  const updateProgressBar = (e: React.MouseEvent) => {
+  // Update slider when currentTime or duration changes if not dragging
+  useEffect(() => {
+    if (!isDragging) {
+      const newValue = (currentTime / duration) * 100;
+      setSliderValue(Number.isFinite(newValue) ? newValue : 0);
+    }
+  }, [currentTime, duration, isDragging]);
+
+  const updateProgressBar = (e: React.MouseEvent | MouseEvent) => {
     if (progressBarRef.current) {
       const rect = progressBarRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -108,6 +84,12 @@ const SongControls: React.FC<SongControlsProps> = ({
       const percentage = Math.max(0, Math.min(100, (x / width) * 100));
       setSliderValue(percentage);
     }
+  };
+
+  // Handle seeking when slider is released
+  const handleSeek = () => {
+    const seekTime = Math.floor((sliderValue / 100) * duration);
+    onSeek(seekTime);
   };
 
   // Action Handler
@@ -135,7 +117,6 @@ const SongControls: React.FC<SongControlsProps> = ({
     updateProgressBar(e);
   };
 
-
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging) {
       updateProgressBar(e);
@@ -143,19 +124,40 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
-    setIsDragging(false);
     if (isDragging) {
       updateProgressBar(e);
-      const seekTime = Math.floor((sliderValue / 100) * duration);
-      onSeek(seekTime);
+      handleSeek();
     }
+    setIsDragging(false);
     lastUpdateTimeRef.current = Date.now();
   };
 
-
-  const handleSeek = (value: number) => {
+  // Handle window-level mouse events when dragging
+  useEffect(() => {
+    const handleWindowMouseUp = () => {
+      if (isDragging) {
+        handleSeek();
+        setIsDragging(false);
+        lastUpdateTimeRef.current = Date.now();
+      }
+    };
     
-  }
+    const handleWindowMouseMove = (e: MouseEvent) => {
+      if (isDragging && progressBarRef.current) {
+        updateProgressBar(e);
+      }
+    };
+
+    if (isDragging) {
+      window.addEventListener('mouseup', handleWindowMouseUp);
+      window.addEventListener('mousemove', handleWindowMouseMove);
+    }
+    
+    return () => {
+      window.removeEventListener('mouseup', handleWindowMouseUp);
+      window.removeEventListener('mousemove', handleWindowMouseMove);
+    };
+  }, [isDragging, sliderValue, duration]);
 
   // Buttons
   const songButton = (
@@ -209,7 +211,6 @@ const SongControls: React.FC<SongControlsProps> = ({
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
         >
           <span className="time-label time-label-left">{formatTime(currentTime)}</span>
           <div className="progress-bar-background">
