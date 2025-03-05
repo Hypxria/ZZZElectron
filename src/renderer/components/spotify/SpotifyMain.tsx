@@ -5,6 +5,7 @@ import SongUpcoming from './SongUpcoming';
 import './Styles/Main.css';
 import { spotifyService, Song } from '../../../main/SpotifyService';
 
+
 interface SpotifyMainProps {
   // Add any props if needed in the future
 }
@@ -91,6 +92,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
     // Set up polling interval for track updates
     const pollInterval = setInterval(fetchCurrentTrack, 500);
+
+    const repeat = setInterval
 
     // Cleanup function
     return () => {
