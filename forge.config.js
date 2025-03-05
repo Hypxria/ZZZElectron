@@ -24,6 +24,14 @@ module.exports = {
       name: '@electron-forge/plugin-webpack',
       config: {
         mainConfig: {
+          externals: {
+            electron: 'commonjs electron',
+            path: 'commonjs path',
+            fs: 'commonjs fs',
+            crypto: 'commonjs crypto',
+            'electron-store': 'commonjs electron-store',
+            'node-machine-id': 'commonjs node-machine-id'
+          },        
           entry: './src/main.ts',
           module: {
             rules: [

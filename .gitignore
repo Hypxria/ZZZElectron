@@ -95,3 +95,6 @@ out/
 .vscode/
 
 *.pyc
+
+*.local
+.env.local

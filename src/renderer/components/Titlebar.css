@@ -85,7 +85,7 @@
 
 /* Add this class for when it's visible */
 .sub-buttons-left.visible {
-    transform: translateX(-100%);
+    transform: translateX(-99%);
     opacity: 1;
 }
 
