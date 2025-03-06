@@ -1,4 +1,5 @@
 module.exports = {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   packagerConfig: {},
   rebuildConfig: {},
   makers: [
@@ -45,6 +46,10 @@ module.exports = {
         },
         renderer: {
           config: {
+            target: 'web',
+            resolve: {
+              extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+            },
             module: {
               rules: [
                 {
