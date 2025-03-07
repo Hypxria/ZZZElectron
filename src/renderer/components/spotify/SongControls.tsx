@@ -4,7 +4,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
-import ElasticSlider from '../../ElasticSlider/ElasticSlider'
 import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 
@@ -36,70 +35,18 @@ const SongControls: React.FC<SongControlsProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const lastUpdateTimeRef = useRef<number>(Date.now());
 
   // Progress Bar
   useEffect(() => {
-    const updateProgress = () => {
-      if (!isDragging && isPlaying) {
-        const now = Date.now();
-        const delta = now - lastUpdateTimeRef.current;
-        lastUpdateTimeRef.current = now;
-
-        setSliderValue(prev => {
-          const newValue = (currentTime / duration) * 100;
-          return Number.isFinite(newValue) ? newValue : prev;
-        });
-      }
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
-    };
-
-    // Start animation frame if playing
-    if (isPlaying && !isDragging) {
-      lastUpdateTimeRef.current = Date.now();
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    if (!isDragging) {
+      setSliderValue((currentTime / duration) * 100);
     }
+  }, [currentTime, duration, isDragging]);
 
-    // Cleanup function
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isPlaying, isDragging, currentTime, duration]);
+  
+  
 
   // Make updateProgress accessible outside useEffect
-  const updateProgress = () => {
-    if (!isDragging && isPlaying) {
-      const now = Date.now();
-      const delta = now - lastUpdateTimeRef.current;
-      lastUpdateTimeRef.current = now;
-
-      setSliderValue(prev => {
-        const newValue = (currentTime / duration) * 100;
-        return Number.isFinite(newValue) ? newValue : prev;
-      });
-    }
-    animationFrameRef.current = requestAnimationFrame(updateProgress);
-  };
-
-  // Modify your useEffect to use the same updateProgress function
-  useEffect(() => {
-    // Start animation frame if playing
-    if (isPlaying && !isDragging) {
-      lastUpdateTimeRef.current = Date.now();
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
-    }
-
-    // Cleanup function
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isPlaying, isDragging, currentTime, duration]);
-
   const updateProgressBar = (e: React.MouseEvent) => {
     if (progressBarRef.current) {
       const rect = progressBarRef.current.getBoundingClientRect();
@@ -109,6 +56,10 @@ const SongControls: React.FC<SongControlsProps> = ({
       setSliderValue(percentage);
     }
   };
+
+
+  // Modify your useEffect to use the same updateProgress function
+  
 
   // Action Handler
   const handlePlayPause = () => {
@@ -129,9 +80,6 @@ const SongControls: React.FC<SongControlsProps> = ({
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
     updateProgressBar(e);
   };
 
@@ -149,7 +97,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       const seekTime = Math.floor((sliderValue / 100) * duration);
       onSeek(seekTime);
     }
-    lastUpdateTimeRef.current = Date.now();
+    setIsDragging(false);
   };
 
 

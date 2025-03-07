@@ -9,7 +9,16 @@ interface SpotifyMainProps {
   // Add any props if needed in the future
 }
 
+spotifyService.authorize()
+
 const SpotifyMain: React.FC<SpotifyMainProps> = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const authInitiated = useRef(false);
+
+
+
+  console.log('SpotifyMain component rendered')
   const [currentTrackData, setCurrentTrackData] = useState<Song>({
     name: '',
     artist: '',
@@ -52,6 +61,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         }
         console.log('Fetching track')
         const track = await spotifyService.getCurrentTrack();
+        console.log('Track fetched:', track.name);
         if (!isComponentMounted) return;
 
         if (track.name !== lastTrackName || track.is_playing !== lastPlayingState || escapedManual) {
@@ -160,9 +170,9 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         <SongInfo
           currentSong={{
             name: currentTrackData.name || 'No track playing',
-            artist: currentTrackData.artist || '',
-            album_cover: currentTrackData.album_cover || '',
-            year: currentTrackData.year || ''
+            artist: currentTrackData.artist || 'No artist',
+            album_cover: currentTrackData.album_cover || 'sex',
+            year: currentTrackData.year || 'N/A'
           }}
         />
         <SongControls
@@ -197,8 +207,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         nextSong={{
           id: '1',
           title: nextTrackData.name || 'No upcoming track',
-          artist: nextTrackData.artist || '',
-          albumCover: nextTrackData.album_cover || ''
+          artist: nextTrackData.artist || 'None',
+          albumCover: nextTrackData.album_cover || 'sex'
         }}
       />
     </div>

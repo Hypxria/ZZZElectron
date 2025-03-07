@@ -4,12 +4,13 @@ import * as path from 'path';
 import * as http from 'http';
 import { URL } from 'url';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-
+import { spotifyService } from './services/SpotifyService';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let callbackServer: http.Server | null = null;
 let dev = true
+let isServerRunning = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -56,8 +57,17 @@ const createWindow = async (): Promise<void> => {
   }
 };
 
-function createCallbackServer(): Promise<string> {
+async function createCallbackServer(): Promise<string> {
   return new Promise((resolve, reject) => {
+      // If server is already running, reject
+      if (isServerRunning) {
+          console.log('Server already running, skipping creation');
+          return;
+      }
+
+      console.log('Creating new callback server');
+      isServerRunning = true;
+
       // Close any existing server
       if (callbackServer) {
           callbackServer.close();
@@ -75,6 +85,7 @@ function createCallbackServer(): Promise<string> {
               // Close and clear the server reference
               callbackServer?.close();
               callbackServer = null;
+              isServerRunning = false;
           } else {
               res.writeHead(400, { 'Content-Type': 'text/html' });
               res.end('Authentication failed! Please try again.');
@@ -82,12 +93,14 @@ function createCallbackServer(): Promise<string> {
               
               callbackServer?.close();
               callbackServer = null;
+              isServerRunning = false;
           }
       });
 
       const timeout = setTimeout(() => {
           callbackServer?.close();
           callbackServer = null;
+          isServerRunning = false;
           reject(new Error('Authorization timeout after 5 minutes'));
       }, 5 * 60 * 1000);
 
@@ -95,6 +108,7 @@ function createCallbackServer(): Promise<string> {
           clearTimeout(timeout);
           callbackServer?.close();
           callbackServer = null;
+          isServerRunning = false;
           reject(error);
       });
 
@@ -103,6 +117,8 @@ function createCallbackServer(): Promise<string> {
       });
   });
 }
+
+
 
 
 // In your main process
@@ -115,6 +131,8 @@ ipcMain.handle('LISTEN_FOR_SPOTIFY_CALLBACK', async () => {
       throw error;
   }
 });
+
+
 
 const installExtensions = async () => {
   try {

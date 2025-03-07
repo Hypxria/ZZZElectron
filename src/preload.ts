@@ -12,5 +12,7 @@ contextBridge.exposeInMainWorld('versions', {
 
 contextBridge.exposeInMainWorld('electron', {
   openExternal: (url: string) => shell.openExternal(url),
-  listenForSpotifyCallback: () => ipcRenderer.invoke('LISTEN_FOR_SPOTIFY_CALLBACK')
+  listenForSpotifyCallback: () => ipcRenderer.invoke('LISTEN_FOR_SPOTIFY_CALLBACK'),
+  spotifyCallback: () => ipcRenderer.invoke('SPOTIFY_CALLBACK')
 });
+

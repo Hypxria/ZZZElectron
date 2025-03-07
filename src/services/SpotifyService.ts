@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { c } from 'node_modules/framer-motion/dist/types.d-6pKw1mTI';
 import qs from 'qs';
 
 export enum RepeatState {
@@ -10,7 +11,7 @@ export enum RepeatState {
 export interface Song {
     name: string;
     artist: string;
-    album_cover: string;
+    album_cover: string | null;
     year?: string;
     is_playing?: boolean;
     progress_ms?: number;
@@ -26,96 +27,89 @@ export interface LyricsResponse {
 class SpotifyService {
     private baseUrl = 'https://api.spotify.com/v1';
     private authUrl = 'https://accounts.spotify.com/authorize';
-    private tokenUrl = 'https://accounts.spotify.com/api/token';
-    private token: string = '';
+    private tokenUrl = 'https://accounts.spotify.com/api/token'
+    private accessToken: string = '';
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
-    private clientId: string = '';
-    private clientSecret: string = '';
+    private clientId: string = '35cec741da2c445aacb9dc5aba8963c6';
+    private clientSecret: string = 'e78f0ed3394343a4849aaa8ff294ab3d';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
     private authorizationInProgress: boolean = false;
 
+    private isAuthInProgress: boolean = false;
+    private authPromise: Promise<string> | null = null;
 
-    async authorize() {
-        // If authorization is already in progress, wait for it to complete
-        if (this.authorizationInProgress) {
-            console.log('Authorization already in progress, waiting...');
-            // Wait for a short period and check if we got a token
-            for (let i = 0; i < 30; i++) { // Wait up to 30 seconds
-                if (this.token) {
-                    return this.token;
-                }
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            throw new Error('Authorization timeout');
-        }
 
-        try {
-            this.authorizationInProgress = true;
+    constructor() {
+        console.log('SpotifyService constructed');
+    }
 
-            const scope = [
+    async initiateLogin(): Promise<void> {
+        console.log('initiateLogin method called');
+        const state = crypto.getRandomValues(new Uint8Array(16)).join('');
+        
+        const params = new URLSearchParams({
+            response_type: 'code',
+            client_id: this.clientId,
+            redirect_uri: this.redirectUri,
+            state: state,
+            scope: [
                 'user-read-playback-state',
                 'user-modify-playback-state',
-                'user-read-currently-playing'
-            ].join(' ');
-
-            const params = new URLSearchParams({
-                client_id: this.clientId,
-                response_type: 'code',
-                redirect_uri: this.redirectUri,
-                scope: scope,
-                show_dialog: 'false' // Changed to false to prevent showing dialog if already authorized
-            });
-
-            // Open the authorization URL in the default browser
-            const authUrl = `${this.authUrl}?${params.toString()}`;
-            await window.electron.openExternal(authUrl);
-
-            // Listen for the callback on your local server
-            const code = await window.electron.listenForSpotifyCallback();
-            
-            // Exchange the code for tokens
-            await this.getTokenFromCode(code);
-            return this.token;
-        } catch (error) {
-            console.error('Error during authorization:', error);
-            throw error;
-        } finally {
-            this.authorizationInProgress = false;
-        }
+                'user-read-currently-playing',
+                'user-read-private',
+                'user-read-email',
+                'streaming',
+                'app-remote-control'
+            ].join(' ')
+        });
+    
+        const authUrl = `${this.authUrl}?${params}`;
+        await window.electron.openExternal(authUrl);
     }
 
+    async authorize() {
+        if (this.isAuthInProgress && this.authPromise) {
+            return this.authPromise;
+        }
 
-    private async getTokenFromCode(code: string) {
-        try {
-            const data = {
-                grant_type: 'authorization_code',
-                code: code,
-                redirect_uri: this.redirectUri,
-                client_id: this.clientId,
-                client_secret: this.clientSecret
-            };
-
-            const response = await axios.post(
-                this.tokenUrl,
-                qs.stringify(data),
-                {
+        this.isAuthInProgress = true;
+        
+        this.authPromise = new Promise(async (resolve, reject) => {
+            try {
+                const codePromise = window.electron.listenForSpotifyCallback();
+                await this.initiateLogin();
+                const authCode = await codePromise;
+                console.log('Got auth code:', authCode); // Debug log
+                const response = await fetch('https://accounts.spotify.com/api/token', {
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                }
-            );
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa(this.clientId + ':' + this.clientSecret)
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        code: authCode,
+                        redirect_uri: this.redirectUri,
+                    })
+                });             
+                const data = await response.json();
+                console.log('Token response:', data);
+                this.accessToken = data.access_token;
+                this.refreshToken = data.refresh_token;
+                console.log('Stored token:', this.accessToken); // Debug log
+                this.isAuthInProgress = false;
+                resolve(this.accessToken);
 
-            this.token = response.data.access_token;
-            this.refreshToken = response.data.refresh_token;
-            this.tokenExpirationTime = Date.now() + (response.data.expires_in * 1000);
-            
-            return this.token;
-        } catch (error) {
-            console.error('Error exchanging code for token:', error);
-            throw error;
-        }
-    }
+            } catch (error) {
+                this.isAuthInProgress = false;
+                this.authPromise = null;
+                reject(error);
+            }
+        });
+
+        return this.authPromise;
+    }    
 
     private async refreshAccessToken() {
         try {
@@ -136,14 +130,14 @@ class SpotifyService {
                 }
             );
 
-            this.token = response.data.access_token;
+            this.accessToken = response.data.access_token;
             this.tokenExpirationTime = Date.now() + (response.data.expires_in * 1000);
             
             if (response.data.refresh_token) {
                 this.refreshToken = response.data.refresh_token;
             }
 
-            return this.token;
+            return this.accessToken;
         } catch (error) {
             console.error('Error refreshing token:', error);
             throw error;
@@ -153,16 +147,19 @@ class SpotifyService {
 
 
     private async getHeaders() {
-        const token = await this.getSpotifyToken();
+        console.log('Using token in headers:', this.accessToken); // Debug log
         return {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${this.accessToken}`,
             'Content-Type': 'application/json',
         };
     }
 
     async getCurrentTrack(): Promise<Song> {
         try {
+
             const headers = await this.getHeaders();
+            console.log('Making request with headers:', headers); // Debug log
+
             const response = await axios.get(`${this.baseUrl}/me/player/currently-playing`, { headers });
 
             if (!response.data) {
@@ -295,26 +292,31 @@ class SpotifyService {
     }
 
     async getSpotifyToken(): Promise<string> {
-        // If we have a valid token, return it
-        if (this.token && Date.now() < this.tokenExpirationTime) {
-            return this.token;
+        // If auth is in progress, wait for it
+        if (this.isAuthInProgress && this.authPromise) {
+            return this.authPromise;
         }
 
-        // If we have a refresh token, use it to get a new access token
+        // If we have a valid token, return it
+        if (this.accessToken && Date.now() < this.tokenExpirationTime) {
+            return this.accessToken;
+        }
+
+        // If we have a refresh token, use it
         if (this.refreshToken) {
             try {
-                return await this.refreshAccessToken();
+                await this.refreshAccessToken();
+                return this.accessToken;
             } catch (error) {
-                console.error('Error refreshing token, falling back to full auth:', error);
-                // Clear tokens if refresh failed
-                this.token = '';
-                this.refreshToken = '';
+                console.error('Error refreshing token:', error);
             }
         }
 
-        // If we have neither, start the authorization process
-        return await this.authorize();
+        // If we get here, we need a new auth flow
+        return this.authorize();
     }
+
+
 
     async toggleRepeatMode(): Promise<void> {
         try {
@@ -389,7 +391,7 @@ class SpotifyService {
         } catch (error: any) {
             if (error.response?.status === 401) {
                 // Token expired, clear it and retry once
-                this.token = '';
+                this.accessToken = '';
                 return await promise;
             }
             throw error;
