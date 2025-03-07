@@ -12,12 +12,6 @@ interface SpotifyMainProps {
 spotifyService.authorize()
 
 const SpotifyMain: React.FC<SpotifyMainProps> = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const authInitiated = useRef(false);
-
-
-
   console.log('SpotifyMain component rendered')
   const [currentTrackData, setCurrentTrackData] = useState<Song>({
     name: '',
@@ -43,7 +37,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
   const manualStateUpdateRef = useRef<number>(0);
 
-  let escapedManual = false
+  let manual = false
   
   // CurrentTrack Tracking
   useEffect(() => {
@@ -55,7 +49,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
       try {
         
         if (Date.now() - manualStateUpdateRef.current < 1000) {
-          escapedManual = true
+          manual = true
           console.log('Skipping fetch due to manual state update')
           return;
         }
@@ -64,13 +58,15 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         console.log('Track fetched:', track.name);
         if (!isComponentMounted) return;
 
-        if (track.name !== lastTrackName || track.is_playing !== lastPlayingState || escapedManual) {
+        if (!manual) {
           setCurrentTrackData(track);
           progressRef.current = track.progress_ms || 0;
           lastTrackName = track.name;
           lastPlayingState = track.is_playing;
+        } else {
+          return;
         }
-        escapedManual = false
+        manual = false
       } catch (error) {
         console.error('Error fetching track:', error);
       }
