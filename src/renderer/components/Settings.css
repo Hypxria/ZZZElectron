@@ -1,0 +1,23 @@
+.settings {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: black;
+    color: black;
+}
+
+.settings-header {
+    margin-bottom: 24px;
+}
+
+.settings-group {
+    margin-bottom: 32px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: var(--settings-group-bg, #f5f5f5);
+}
+
+.settings-group h2 {
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+}
