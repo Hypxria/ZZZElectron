@@ -34,7 +34,6 @@ class SpotifyService {
     private clientId: string = '35cec741da2c445aacb9dc5aba8963c6';
     private clientSecret: string = 'token';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
-    private authorizationInProgress: boolean = false;
 
     private isAuthInProgress: boolean = false;
     private authPromise: Promise<string> | null = null;
@@ -79,9 +78,6 @@ class SpotifyService {
             this.tokenExpirationTime = parseInt(storedExpiration);
     
             // If token is not expired, use it
-            if (Date.now() < this.tokenExpirationTime) {
-                return this.accessToken;
-            }
     
             // If token is expired but we have refresh token, try to refresh
             try {

@@ -14,6 +14,11 @@ export const rendererConfig: Configuration = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'async',
+    },
+  },
 };
 
 export default rendererConfig;

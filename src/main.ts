@@ -3,13 +3,10 @@ import { app, BrowserWindow, session, ipcMain } from 'electron';
 import * as path from 'path';
 import * as http from 'http';
 import { URL } from 'url';
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { spotifyService } from './services/SpotifyService';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let callbackServer: http.Server | null = null;
-let dev = true
 let isServerRunning = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -24,10 +21,10 @@ const createWindow = async (): Promise<void> => {
     height: 600,
     width: 800,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      webSecurity: true,
+      sandbox: true,
     },
   });
 
@@ -134,21 +131,11 @@ ipcMain.handle('LISTEN_FOR_SPOTIFY_CALLBACK', async () => {
 
 
 
-const installExtensions = async () => {
-  try {
-    const name = await installExtension(REACT_DEVELOPER_TOOLS);
-    console.log(`Added Extension: ${name.name}`); // Access the name property
-    } catch (err) {
-    console.log('An error occurred: ', err);
-  }
-};
 
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
   createWindow();
 
   app.on('activate', function () {
-    installExtensions()
-    
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });

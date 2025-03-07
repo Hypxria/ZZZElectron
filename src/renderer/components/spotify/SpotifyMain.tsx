@@ -12,7 +12,7 @@ interface SpotifyMainProps {
 spotifyService.authorize()
 
 const SpotifyMain: React.FC<SpotifyMainProps> = () => {
-  console.log('SpotifyMain component rendered')
+  // console.log('SpotifyMain component rendered')
   const [currentTrackData, setCurrentTrackData] = useState<Song>({
     name: '',
     artist: '',
