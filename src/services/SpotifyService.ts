@@ -32,7 +32,7 @@ class SpotifyService {
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
     private clientId: string = '35cec741da2c445aacb9dc5aba8963c6';
-    private clientSecret: string = '82ece7e6cf6a440b88542cbeaff78bb0';
+    private clientSecret: string = 'token';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
     private authorizationInProgress: boolean = false;
 
@@ -69,6 +69,30 @@ class SpotifyService {
     }
 
     async authorize() {
+        const storedToken = localStorage.getItem('spotify_access_token');
+        const storedRefreshToken = localStorage.getItem('spotify_refresh_token');
+        const storedExpiration = localStorage.getItem('spotify_token_expiration');
+
+        if (storedToken && storedRefreshToken && storedExpiration) {
+            this.accessToken = storedToken;
+            this.refreshToken = storedRefreshToken;
+            this.tokenExpirationTime = parseInt(storedExpiration);
+    
+            // If token is not expired, use it
+            if (Date.now() < this.tokenExpirationTime) {
+                return this.accessToken;
+            }
+    
+            // If token is expired but we have refresh token, try to refresh
+            try {
+                await this.refreshAccessToken();
+                return this.accessToken;
+            } catch (error) {
+                console.error('Error refreshing token:', error);
+            }
+        }
+    
+
         if (this.isAuthInProgress && this.authPromise) {
             return this.authPromise;
         }
@@ -97,6 +121,12 @@ class SpotifyService {
                 console.log('Token response:', data);
                 this.accessToken = data.access_token;
                 this.refreshToken = data.refresh_token;
+                this.tokenExpirationTime = Date.now() + (data.expires_in * 1000);
+
+                localStorage.setItem('spotify_access_token', this.accessToken);
+                localStorage.setItem('spotify_refresh_token', this.refreshToken);
+                localStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
+                
                 console.log('Stored token:', this.accessToken); // Debug log
                 this.isAuthInProgress = false;
                 resolve(this.accessToken);
@@ -136,6 +166,10 @@ class SpotifyService {
             if (response.data.refresh_token) {
                 this.refreshToken = response.data.refresh_token;
             }
+            localStorage.setItem('spotify_access_token', this.accessToken);
+            localStorage.setItem('spotify_refresh_token', this.refreshToken);
+            localStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
+
 
             return this.accessToken;
         } catch (error) {
