@@ -45,7 +45,7 @@
     "node-polyfill-webpack-plugin": "^4.1.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
-    "react-devtools": "^6.1.1",
+    "react-devtools": "^1.0.5",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.2",
@@ -54,7 +54,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "Vianney Carbel-Zekpa",
+    "name": "Hyperiya",
     "email": "hyperiya.vcz@outlook.com"
   },
   "license": "MIT",

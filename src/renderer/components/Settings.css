@@ -13,7 +13,15 @@
 }
 
 .settings-header {
+    height: auto;
     margin-bottom: 24px;
+    word-wrap: none;
+    display: flex;
+    align-items: center;
+}
+
+.settings-arrow {
+    transform: translateY(10%);
 }
 
 .settings-group {
@@ -27,3 +35,5 @@
     margin-bottom: 16px;
     font-size: 1.2rem;
 }
+
+

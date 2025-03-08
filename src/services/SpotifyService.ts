@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { c } from 'node_modules/framer-motion/dist/types.d-6pKw1mTI';
 import qs from 'qs';
 
 export enum RepeatState {
