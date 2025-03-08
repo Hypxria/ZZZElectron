@@ -32,7 +32,7 @@ class SpotifyService {
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
     private clientId: string = '35cec741da2c445aacb9dc5aba8963c6';
-    private clientSecret: string = 'token';
+    private clientSecret: string = 'TOKEN';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
 
     private isAuthInProgress: boolean = false;

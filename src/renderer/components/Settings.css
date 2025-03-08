@@ -1,9 +1,15 @@
 .settings {
+    position: fixed;
+    width: 50vw;
+    left: 50%;
+    top: 50%;
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
-    background-color: black;
+    background-color: white;
     color: black;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
 }
 
 .settings-header {

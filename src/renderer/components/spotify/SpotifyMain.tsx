@@ -98,7 +98,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
     // Set up polling interval for track updates
     const pollInterval = setInterval(fetchCurrentTrack, 500);
 
-    const repeat = setInterval
+   
 
     // Cleanup function
     return () => {
