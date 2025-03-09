@@ -4,12 +4,15 @@ import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MinimizeRoundedIcon from '@mui/icons-material/MinimizeRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { isSet } from 'util/types';
 
-interface TitleBarProps {
-    
-} 
+interface TitlebarProps {
+  isSettings: boolean;
+  setIsSettings: (value: boolean) => void;
+}
 
-const Titlebar: React.FC<TitleBarProps> = () => {
+
+const Titlebar: React.FC<TitlebarProps> = ({isSettings, setIsSettings: onSettingsChange}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isBoxVisible, setIsBoxVisible] = useState(false);
   const [areButtonsVisible, setAreButtonsVisible] = useState(false);
@@ -30,6 +33,7 @@ const Titlebar: React.FC<TitleBarProps> = () => {
     }
   }, [isHovered]);
 
+
   return (
     <div
     id="titlebar"
@@ -37,9 +41,7 @@ const Titlebar: React.FC<TitleBarProps> = () => {
     onMouseLeave={() => setIsHovered(false)}
     >
         <div className="button-container">
-            <div 
-                className="button-wrapper"
-            >
+            <div className="button-wrapper">
                 <div className="main-buttons">
                     <button className="titlebar-button"></button>
                     <button className="titlebar-button"></button>
@@ -50,7 +52,7 @@ const Titlebar: React.FC<TitleBarProps> = () => {
                         <MinimizeRoundedIcon className="minimize-icon"/>
                     </button>
 
-                    <button className={`sub-button ${areButtonsVisible ? 'visible' : ''}`}>
+                    <button className={`sub-button ${areButtonsVisible ? 'visible' : ''}`} onClick={() => onSettingsChange(!isSettings)}>
                         <SettingsRoundedIcon className="settings-icon"/>
                     </button>
 

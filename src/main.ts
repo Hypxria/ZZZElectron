@@ -1,5 +1,5 @@
 // src/main.ts
-import { app, BrowserWindow, session, ipcMain } from 'electron';
+import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
 import * as path from 'path';
 import * as http from 'http';
 import { URL } from 'url';
@@ -117,6 +117,14 @@ async function createCallbackServer(): Promise<string> {
 
 
 
+ipcMain.handle('open-external', async (_, url: string) => {
+  try {
+    await shell.openExternal(url);
+  } catch (error) {
+    console.error('Failed to open external URL:', error);
+    throw error;
+  }
+});
 
 // In your main process
 ipcMain.handle('LISTEN_FOR_SPOTIFY_CALLBACK', async () => {

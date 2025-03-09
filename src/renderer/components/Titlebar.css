@@ -1,3 +1,9 @@
+:root {
+  --button-size: 60px;
+  --button-gap: 20px;
+  --side-padding: 10px;
+}
+
 #titlebar {
     opacity: 1;
     position: fixed;
@@ -85,7 +91,7 @@
 
 /* Add this class for when it's visible */
 .sub-buttons-left.visible {
-    transform: translateX(-100%);
+    transform: translateX(-99%);
     opacity: 1;
 }
 

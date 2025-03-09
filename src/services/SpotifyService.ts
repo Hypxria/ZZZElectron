@@ -30,14 +30,21 @@ class SpotifyService {
     private accessToken: string = '';
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
-    private clientId: string = '35cec741da2c445aacb9dc5aba8963c6';
-    private clientSecret: string = 'TOKEN';
+    private clientId: string = localStorage.getItem("spotify_client_id") || '';
+    private clientSecret: string = localStorage.getItem("spotify_client_secret") || '';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
 
     private isAuthInProgress: boolean = false;
     private authPromise: Promise<string> | null = null;
 
-
+    public updateCredentials(newClientId: string, newClientSecret: string) {
+        this.clientId = newClientId;
+        this.clientSecret = newClientSecret;
+        
+        // Optionally re-authorize with new credentials
+        this.authorize();
+    }
+    
     constructor() {
         console.log('SpotifyService constructed');
     }
@@ -63,7 +70,13 @@ class SpotifyService {
         });
     
         const authUrl = `${this.authUrl}?${params}`;
-        await window.electron.openExternal(authUrl);
+        if (!window.electron) {
+            console.error('Electron API is not available');
+            return;
+        }
+        if (window.electron) {
+            await window.electron.openExternal(authUrl);
+        }
     }
 
     async authorize() {

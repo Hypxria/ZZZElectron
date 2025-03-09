@@ -1,10 +1,5 @@
 /* TODO-
 urbanist font and you know the rest */
-:root {
-  --button-size: 60px;
-  --button-gap: 20px;
-  --side-padding: 10px;
-}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
@@ -19,4 +14,6 @@ body {
   margin: 0;
   padding: 0;
 }
+
+
 
