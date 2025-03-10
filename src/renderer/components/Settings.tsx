@@ -1,6 +1,7 @@
 // Settings.tsx
 import React, { useState } from 'react';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import secureLocalStorage from "react-secure-storage";
 import './Settings.css';
 
 interface SettingsProps {
@@ -11,6 +12,8 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSettings}) => {
     const [navigationPath, setNavigationPath] = useState<string[]>(['Settings']);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
+    
 
     const generalOptions = [
         'Spotify Settings',
@@ -51,8 +54,8 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         const id = idInput.value;
         const secret = secretInput.value;
 
-        localStorage.setItem('spotify_client_id', id);
-        localStorage.setItem('spotify_client_secret', secret);
+        secureLocalStorage.setItem('spotify_client_id', id);
+        secureLocalStorage.setItem('spotify_client_secret', secret);
 
         const { spotifyService } = require('../../services/SpotifyService');
     
