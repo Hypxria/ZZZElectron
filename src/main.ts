@@ -1,6 +1,5 @@
 // src/main.ts
 import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
-import * as path from 'path';
 import * as http from 'http';
 import { URL } from 'url';
 

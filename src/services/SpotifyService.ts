@@ -15,7 +15,8 @@ export interface Song {
     is_playing?: boolean;
     progress_ms?: number;
     duration_ms?: number;
-    repeat_state?: RepeatState;
+    repeat_state?: string;
+    volume?: number;
 }
 
 export interface LyricsResponse {
@@ -26,7 +27,7 @@ export interface LyricsResponse {
 class SpotifyService {
     private baseUrl = 'https://api.spotify.com/v1';
     private authUrl = 'https://accounts.spotify.com/authorize';
-    private tokenUrl = 'https://accounts.spotify.com/api/token'
+    private tokenUrl = 'https://accounts.spotify.com/api/token';
     private accessToken: string = '';
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
@@ -40,6 +41,8 @@ class SpotifyService {
     public updateCredentials(newClientId: string, newClientSecret: string) {
         this.clientId = newClientId;
         this.clientSecret = newClientSecret;
+        this.accessToken = '';
+        this.refreshToken = '';
         
         // Optionally re-authorize with new credentials
         this.authorize();
@@ -202,7 +205,7 @@ class SpotifyService {
             const headers = await this.getHeaders();
             console.log('Making request with headers:', headers); // Debug log
 
-            const response = await axios.get(`${this.baseUrl}/me/player/currently-playing`, { headers });
+            const response = await axios.get(`${this.baseUrl}/me/player/`, { headers });
 
             if (!response.data) {
                 return {
@@ -216,6 +219,7 @@ class SpotifyService {
             }
 
             const track = response.data.item;
+            console.log('Current track response:', response.data);
             return {
                 name: track.name,
                 artist: track.artists.map((artist: any) => artist.name).join(', '),
@@ -224,6 +228,8 @@ class SpotifyService {
                 is_playing: response.data.is_playing,
                 progress_ms: response.data.progress_ms,
                 duration_ms: track.duration_ms,
+                repeat_state: response.data.repeat_state,
+                volume: response.data.device?.volume_percent,
             };
         } catch (error) {
             console.error('Error fetching current track:', error);
@@ -290,7 +296,7 @@ class SpotifyService {
     async pausePlayback(): Promise<void> {
         try {
             const headers = await this.getHeaders();
-            await axios.put(`${this.baseUrl}/me/player/pause`, {}, { headers });
+            const response = await axios.put(`${this.baseUrl}/me/player/pause`, {}, { headers });
         } catch (error) {
             console.error('Error pausing playback:', error);
             throw error;
@@ -300,7 +306,7 @@ class SpotifyService {
     async resumePlayback(): Promise<void> {
         try {
             const headers = await this.getHeaders();
-            await axios.put(`${this.baseUrl}/me/player/play`, {}, { headers });
+            const response = await axios.put(`${this.baseUrl}/me/player/play`, {}, { headers });
         } catch (error) {
             console.error('Error resuming playback:', error);
             throw error;

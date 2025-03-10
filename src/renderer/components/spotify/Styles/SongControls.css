@@ -33,7 +33,7 @@
 
 .progress-bar-wrapper {
   position: relative;
-  width: 100%;
+  width: 110%;
   padding: 0 50px; /* Make room for the timestamps */
 }
 
@@ -113,6 +113,72 @@
   opacity: 1;
   background-color: rgba(0,0,0,0);
 }
+
+.volume-control-wrapper {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+
+.volume-icon {
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px !important;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  transform: rotate(-90deg);
+}
+
+.volume-icon:hover {
+  opacity: 1;
+}
+
+.volume-slider-container {
+  width: 100px;
+  height: 4px;
+  position: relative;
+  cursor: pointer;
+}
+
+.volume-slider-background {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.volume-slider-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transform-origin: left;
+  transition: transform 0.1s ease;
+}
+
+.volume-slider-handle {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.volume-slider-container:hover .volume-slider-handle {
+  opacity: 1;
+}
+
 
 /* Add or update these CSS rules */
 

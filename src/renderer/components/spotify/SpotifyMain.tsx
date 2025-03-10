@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import SongInfo from './SongInfo';
 import SongControls from './SongControls';
 import SongUpcoming from './SongUpcoming';
+import SongBackground from './SongBackground';
 import './Styles/Main.css';
 import { spotifyService, Song } from '../../../services/SpotifyService';
 
@@ -21,6 +22,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
     is_playing: false,
     progress_ms: 0,
     duration_ms: 0,
+    volume: 10,
+    repeat_state: 'off',
   });
 
   const [nextTrackData, setNextTrackData] = useState<Song>({
@@ -37,36 +40,40 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
   const manualStateUpdateRef = useRef<number>(0);
 
-  let manual = false
-  
   // CurrentTrack Tracking
   useEffect(() => {
     let isComponentMounted = true;
-    let lastTrackName = currentTrackData.name;
-    let lastPlayingState = currentTrackData.is_playing;
 
     const fetchCurrentTrack = async () => {
       try {
         
-        if (Date.now() - manualStateUpdateRef.current < 1000) {
-          manual = true
-          console.log('Skipping fetch due to manual state update')
+        if (Date.now() - manualStateUpdateRef.current < 2000) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Skipping fetch due to manual state update');
+          }
           return;
         }
+
         console.log('Fetching track')
         const track = await spotifyService.getCurrentTrack();
         console.log('Track fetched:', track.name);
         if (!isComponentMounted) return;
 
-        if (!manual) {
+        
+        if (Date.now() - manualStateUpdateRef.current > 2000) {
           setCurrentTrackData(track);
+          console.log(track.volume)
           progressRef.current = track.progress_ms || 0;
-          lastTrackName = track.name;
-          lastPlayingState = track.is_playing;
         } else {
-          return;
+          // Update everything except the progress during debounce period
+          setCurrentTrackData(prev => ({
+            ...track,
+            progress_ms: progressRef.current // Keep our local progress
+          }));
         }
-        manual = false
+        
+
+        
       } catch (error) {
         console.error('Error fetching track:', error);
       }
@@ -78,15 +85,18 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         return;
       }
       
+      
       const now = performance.now();
       const elapsed = now - lastTimeRef.current;
       lastTimeRef.current = now;
-
-      progressRef.current = Math.min(
-        progressRef.current + elapsed,
-        currentTrackData.duration_ms || 0
-      );
-      setLocalProgress(Math.round(progressRef.current));
+      
+      if (elapsed > 0) {
+        progressRef.current = Math.min(
+          progressRef.current + elapsed,
+          currentTrackData.duration_ms || 0
+        );
+        setLocalProgress(Math.round(progressRef.current));
+      }
       
       animationFrameRef.current = requestAnimationFrame(updateProgress);
     };
@@ -148,12 +158,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
       // Update local state immediately for smooth UI
       setLocalProgress(seekTime);
       progressRef.current = seekTime;
+      lastTimeRef.current = performance.now(); // Add this line to reset the time reference
       
+      manualStateUpdateRef.current = Date.now();
+
       // Call Spotify API to seek
       await spotifyService.seek(seekTime);
       
-      // Mark as manual update to prevent immediate fetch override
-      manualStateUpdateRef.current = Date.now();
     } catch (error) {
       console.error('Failed to seek:', error);
     }
@@ -161,7 +172,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
   return (
     <div className="spotify">
-      <div className="undercover"></div>
+      <SongBackground coverUrl={currentTrackData.album_cover || ''} />
       <div className="song-info">
         <SongInfo
           currentSong={{
@@ -186,17 +197,21 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
             spotifyService.pausePlayback();
           }}
           onBack={async () => {
-            manualStateUpdateRef.current = Date.now();
             setCurrentTrackData(prev => ({ ...prev, is_playing: true }));
             await spotifyService.playPreviousSong();
             
           }} 
           onNext={async () => {
-            manualStateUpdateRef.current = Date.now();
             setCurrentTrackData(prev => ({ ...prev, is_playing: true }));
             await spotifyService.playNextSong();
           }}
           onSeek={handleSeek}
+          volume={currentTrackData.volume || 0}
+          onVolumeChange={async (volume: number) => {
+            manualStateUpdateRef.current = Date.now();
+            setCurrentTrackData(prev => ({ ...prev, volume }));
+            await spotifyService.setVolume(volume);
+          }}
         />
       </div>
       <SongUpcoming

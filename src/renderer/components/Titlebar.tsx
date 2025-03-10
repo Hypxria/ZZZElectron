@@ -4,7 +4,6 @@ import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MinimizeRoundedIcon from '@mui/icons-material/MinimizeRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { isSet } from 'util/types';
 
 interface TitlebarProps {
   isSettings: boolean;

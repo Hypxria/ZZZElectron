@@ -18,7 +18,8 @@ const SongInfo: React.FC<SongInfoProps> = ({ currentSong }) =>{
       <img 
         className="song-image" 
         src={currentSong?.album_cover} 
-        alt="Album Cover" 
+        alt="Album Cover"
+        id="song-image"  
       />
       <div className="song-text">{currentSong?.name}</div>
       <div className="artist-text">{currentSong?.artist} • {currentSong.year}</div>

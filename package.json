@@ -70,6 +70,7 @@
     "cryptojs": "^2.5.3",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
+    "fast-average-color": "^9.4.0",
     "framer-motion": "^12.4.7",
     "pnpm": "^10.6.1",
     "react": "^19.0.0",

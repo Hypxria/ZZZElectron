@@ -150,13 +150,16 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Client ID"
                                     className="spotify-input"
+                                    value={localStorage.getItem('spotify_client_id') || ''}
                                 />
                             </div>
                             <div className="input-group">
                                 <input 
-                                    type="password"
+                                    type="text"
                                     placeholder="Client Secret"
                                     className="spotify-input-secret"
+                                    value={localStorage.getItem('spotify_client_secret') || ''}
+
                                 />
                             </div>
                             <div className="save-input">

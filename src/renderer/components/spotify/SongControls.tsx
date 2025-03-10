@@ -58,8 +58,35 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
 
 
-  // Modify your useEffect to use the same updateProgress function
+  // weird volume slider things
+  useEffect(() => {
+    const positionVolumeControl = () => {
+      const songImage = document.getElementById('song-image');
+      const volumeControl = document.querySelector('.volume-control-wrapper') as HTMLElement;
+      const controls = document.querySelector('.song-controls') as HTMLElement;
+      const volumeBar = document.querySelector('.volume-slider-container') as HTMLElement;
+
+      if (songImage && volumeControl) {
+        const imageRect = songImage.getBoundingClientRect();
+        const controlsRect = controls.getBoundingClientRect();
+        volumeControl.style.position = 'absolute'; // Change to absolute
+        volumeControl.style.left = `${imageRect.width+15}px`;
+        volumeControl.style.top = `${-imageRect.height * 0.5 - controlsRect.height}px`; 
+        volumeControl.style.transformOrigin = `left`
+
+        volumeBar.style.width = `${imageRect.height-28*2}px`
+
+        volumeControl.style.transform = 'rotate(90deg) translate(-55%, -0%)'        
+      }
+    };
   
+    positionVolumeControl();
+    window.addEventListener('resize', positionVolumeControl);
+    
+    return () => {
+      window.removeEventListener('resize', positionVolumeControl);
+    };
+  }, []);
 
   // Action Handler
   const handlePlayPause = () => {
@@ -101,10 +128,55 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
 
 
-  const handleSeek = (value: number) => {
-    
-  }
+  const volumeBarRef = useRef<HTMLDivElement>(null);
+  const [isDraggingVolume, setIsDraggingVolume] = useState(false);
 
+
+  const updateVolumeFromMouseEvent = (e: MouseEvent | React.MouseEvent) => {
+    if (!volumeBarRef.current) return;
+    const rect = volumeBarRef.current.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentage = Math.max(0, Math.min(100, (y / rect.height) * 100));
+    
+    if (!isDraggingVolume){
+      onVolumeChange(percentage);
+    }
+  };
+  
+  useEffect(() => {
+    const handleVolumeDrag = (e: MouseEvent) => {
+      if (isDraggingVolume) {
+        updateVolumeFromMouseEvent(e);
+      }
+    };
+  
+    const handleMouseUp = () => {
+      setIsDraggingVolume(false);
+      document.removeEventListener('mousemove', handleVolumeDrag);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  
+    if (isDraggingVolume) {
+      document.addEventListener('mousemove', handleVolumeDrag);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+  
+    return () => {
+      document.removeEventListener('mousemove', handleVolumeDrag);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingVolume, onVolumeChange]);
+  
+  const handleVolumeMouseDown = (e: React.MouseEvent) => {
+    setIsDraggingVolume(true);
+    updateVolumeFromMouseEvent(e);
+  };
+  
+
+  
+
+  
+  
   // Buttons
   const songButton = (
     <button 
@@ -148,6 +220,9 @@ const SongControls: React.FC<SongControlsProps> = ({
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+
+  
+
   return (
     <div className="song-controls">
       <div className="progress-bar-wrapper">
@@ -178,6 +253,28 @@ const SongControls: React.FC<SongControlsProps> = ({
         {songButton}
         {skipButton}
       </div>
+      
+      <div className="volume-control-wrapper">
+        <VolumeDownRoundedIcon className="volume-icon" />
+        <div className="volume-slider-container">
+          <div 
+            className="volume-slider-background"
+            onClick={handleVolumeMouseDown}
+            ref={volumeBarRef}
+          >
+            <div 
+              className="volume-slider-fill"
+              style={{ transform: `scaleX(${volume / 100})` }}
+            />
+            <div 
+              className="volume-slider-handle"
+              style={{ left: `${volume}%` }}
+            />
+          </div>
+        </div>
+        <VolumeUpRoundedIcon className="volume-icon" />
+      </div>
+      
     </div>
   );
 };  
