@@ -1,5 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
+import secureLocalStorage from "react-secure-storage";
+
 
 export enum RepeatState {
     OFF = 'off',
@@ -31,8 +33,8 @@ class SpotifyService {
     private accessToken: string = '';
     private refreshToken: string = '';
     private tokenExpirationTime: number = 0;
-    private clientId: string = localStorage.getItem("spotify_client_id") || '';
-    private clientSecret: string = localStorage.getItem("spotify_client_secret") || '';
+    private clientId: string = secureLocalStorage.getItem("spotify_client_id")?.toString() || '';
+    private clientSecret: string = secureLocalStorage.getItem("spotify_client_secret")?.toString() || '';
     private redirectUri = 'http://127.0.0.1:8080/callback'; // Make sure this matches your Spotify App settings
 
     private isAuthInProgress: boolean = false;
@@ -83,14 +85,14 @@ class SpotifyService {
     }
 
     async authorize() {
-        const storedToken = localStorage.getItem('spotify_access_token');
-        const storedRefreshToken = localStorage.getItem('spotify_refresh_token');
-        const storedExpiration = localStorage.getItem('spotify_token_expiration');
+        const storedToken = secureLocalStorage.getItem('spotify_access_token');
+        const storedRefreshToken = secureLocalStorage.getItem('spotify_refresh_token');
+        const storedExpiration = secureLocalStorage.getItem('spotify_token_expiration');
 
         if (storedToken && storedRefreshToken && storedExpiration) {
-            this.accessToken = storedToken;
-            this.refreshToken = storedRefreshToken;
-            this.tokenExpirationTime = parseInt(storedExpiration);
+            this.accessToken = storedToken.toString();
+            this.refreshToken = storedRefreshToken.toString();
+            this.tokenExpirationTime = parseInt(storedExpiration.toString());
     
             // If token is not expired, use it
     
@@ -134,9 +136,9 @@ class SpotifyService {
                 this.refreshToken = data.refresh_token;
                 this.tokenExpirationTime = Date.now() + (data.expires_in * 1000);
 
-                localStorage.setItem('spotify_access_token', this.accessToken);
-                localStorage.setItem('spotify_refresh_token', this.refreshToken);
-                localStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
+                secureLocalStorage.setItem('spotify_access_token', this.accessToken);
+                secureLocalStorage.setItem('spotify_refresh_token', this.refreshToken);
+                secureLocalStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
                 
                 console.log('Stored token:', this.accessToken); // Debug log
                 this.isAuthInProgress = false;
@@ -177,9 +179,9 @@ class SpotifyService {
             if (response.data.refresh_token) {
                 this.refreshToken = response.data.refresh_token;
             }
-            localStorage.setItem('spotify_access_token', this.accessToken);
-            localStorage.setItem('spotify_refresh_token', this.refreshToken);
-            localStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
+            secureLocalStorage.setItem('spotify_access_token', this.accessToken);
+            secureLocalStorage.setItem('spotify_refresh_token', this.refreshToken);
+            secureLocalStorage.setItem('spotify_token_expiration', this.tokenExpirationTime.toString());
 
 
             return this.accessToken;
