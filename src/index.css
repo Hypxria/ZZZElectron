@@ -70,50 +70,50 @@ body {
 }
 
 /* Neutral state */
-.content-wrapper.neutral .spotify-section {
+.content-wrapper.NEUTRAL .spotify-section {
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
               z-index 0s linear 0.5s; /* Delay z-index change until width transition completes */
   width: 50%;
   z-index: 1; /* Explicitly reset z-index */
 }
 
-.content-wrapper.neutral .right-section {
+.content-wrapper.NEUTRAL .right-section {
   width: 50%;
   z-index: 2; /* Explicitly reset z-index */
 }
 
 /* Spotify full state */
-.content-wrapper.spotify_full .spotify-section {
+.content-wrapper.SPOTIFY_FULL .spotify-section {
   width: 100%;
   z-index: 3; /* Bring to front when expanding */
 }
 
-.content-wrapper.spotify_full .right-section {
+.content-wrapper.SPOTIFY_FULL .right-section {
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
               z-index 0s linear 0.5s; /* Delay z-index change until width transition completes */
   z-index: 1; /* Reset to lower z-index */
 }
 
 /* Right full state */
-.content-wrapper.right_full .spotify-section {
+.content-wrapper.RIGHT_FULL .spotify-section {
   z-index: 1; /* Reset to lower z-index */
 }
 
-.content-wrapper.right_full .right-section {
+.content-wrapper.RIGHT_FULL .right-section {
   width: 100%;
   z-index: 3; /* Bring to front when expanding */
 }
 
 /* Background accomidations States */
-.content-wrapper.neutral .song-background-wrapper {
+.content-wrapper.NEUTRAL .song-background-wrapper {
   width: 50%;
 }
 
-.content-wrapper.spotify_full .song-background-wrapper {
+.content-wrapper.SPOTIFY_FULL .song-background-wrapper {
   width: 100%;
 }
 
-.content-wrapper.right_full .song-background-wrapper {
+.content-wrapper.RIGHT_FULL .song-background-wrapper {
   width: 0.000001%; /* Initial width */
 }
 

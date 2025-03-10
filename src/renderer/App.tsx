@@ -48,10 +48,10 @@ const App: React.FC<AppProps> = () => {
 
       
       <div className={`content-wrapper ${viewState}`}>
-        <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+        <div className={`spotify-section`}>
           <SpotifyMain />
         </div>
-        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : ''}`}>
+        <div className={`right-section`}>
           {/* Right side content will go here */}
           <div style={{ color: 'white' }}>Right Side Content (Coming Soon)</div>
         </div>
