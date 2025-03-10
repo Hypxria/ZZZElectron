@@ -136,7 +136,9 @@ ipcMain.handle('LISTEN_FOR_SPOTIFY_CALLBACK', async () => {
   }
 });
 
-
+ipcMain.on('console-log', (_, message) => {
+  console.log(message); // This will print to terminal
+});
 
 
 app.whenReady().then(async() => {

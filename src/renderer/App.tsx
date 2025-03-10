@@ -3,12 +3,17 @@ import SpotifyMain from './components/spotify/SpotifyMain';
 import Titlebar from './components/Titlebar'
 import Settings from './components/Settings';
 import '../index.css';
+import {ViewState} from '../types/viewState';
+
+
 
 interface AppProps {
 }
 
 const App: React.FC<AppProps> = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
+  const [viewState, setViewState] = useState<ViewState>(ViewState.NEUTRAL);
+
 
   const handleOutsideClick = (e: React.MouseEvent) => {
     // Only close if clicking the container itself, not its children
@@ -17,6 +22,9 @@ const App: React.FC<AppProps> = () => {
     }
   };
 
+  window.electron.log(`ViewState: ${viewState}`)
+
+
   return (
     <div 
     className='App' 
@@ -24,7 +32,11 @@ const App: React.FC<AppProps> = () => {
     >
       <Titlebar
         isSettings={isSettings} 
-        setIsSettings={setIsSettings}/>
+        setIsSettings={setIsSettings}
+        viewState={viewState}
+        setViewState={setViewState}  
+      />
+      
       {isSettings && (
         <div 
           className="settings-backdrop"
@@ -33,8 +45,16 @@ const App: React.FC<AppProps> = () => {
           <Settings isSettings={isSettings} setIsSettings={setIsSettings}/>
         </div>
       )}
-      <div>
-        <SpotifyMain />
+
+      
+      <div className={`content-wrapper ${viewState}`}>
+        <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+          <SpotifyMain />
+        </div>
+        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : ''}`}>
+          {/* Right side content will go here */}
+          <div style={{ color: 'white' }}>Right Side Content (Coming Soon)</div>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,13 @@
 /* TODO-
 urbanist font and you know the rest */
+.App {
+  top:0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
@@ -19,4 +27,118 @@ body {
   user-select: none;
 }
 
+/* side */
+
+
+.song-background-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  height: 100%;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.spotify-section,
+.right-section {
+  position: absolute;
+  top: 0;
+  width: 0.000001%; /* Initial width */
+  height: 100%;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.spotify-section {
+  left: 0;
+  z-index: 1; /* Base z-index */
+  background: black;
+}
+
+.right-section {
+  right: 0;
+  z-index: 2; /* Slightly higher than spotify section */
+  background: #1a1a1a;
+}
+
+/* Neutral state */
+.content-wrapper.neutral .spotify-section {
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              z-index 0s linear 0.5s; /* Delay z-index change until width transition completes */
+  width: 50%;
+  z-index: 1; /* Explicitly reset z-index */
+}
+
+.content-wrapper.neutral .right-section {
+  width: 50%;
+  z-index: 2; /* Explicitly reset z-index */
+}
+
+/* Spotify full state */
+.content-wrapper.spotify_full .spotify-section {
+  width: 100%;
+  z-index: 3; /* Bring to front when expanding */
+}
+
+.content-wrapper.spotify_full .right-section {
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              z-index 0s linear 0.5s; /* Delay z-index change until width transition completes */
+  z-index: 1; /* Reset to lower z-index */
+}
+
+/* Right full state */
+.content-wrapper.right_full .spotify-section {
+  z-index: 1; /* Reset to lower z-index */
+}
+
+.content-wrapper.right_full .right-section {
+  width: 100%;
+  z-index: 3; /* Bring to front when expanding */
+}
+
+/* Background accomidations States */
+.content-wrapper.neutral .song-background-wrapper {
+  width: 50%;
+}
+
+.content-wrapper.spotify_full .song-background-wrapper {
+  width: 100%;
+}
+
+.content-wrapper.right_full .song-background-wrapper {
+  width: 0.000001%; /* Initial width */
+}
+
+
+
+/* Titlebar.css */
+.expand-icon {
+  transition: color 0.3s ease;
+}
+
+.expand-icon.active {
+  color: #1db954; /* Spotify green or any color you prefer */
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.sub-button {
+  /* ... existing button styles ... */
+  transition: opacity 0.3s ease;
+}
+
+.sub-button.visible {
+  opacity: 1;
+}
 
