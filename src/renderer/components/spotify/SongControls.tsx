@@ -18,6 +18,7 @@ interface SongControlsProps {
   onBack: () => void;
   volume: number;
   onVolumeChange: (volume: number) => void;
+  albumCover: string;
 }
 
 const SongControls: React.FC<SongControlsProps> = ({

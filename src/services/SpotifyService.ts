@@ -19,6 +19,7 @@ export interface Song {
     duration_ms?: number;
     repeat_state?: string;
     volume?: number;
+    album?: string;
 }
 
 export interface LyricsResponse {
@@ -232,6 +233,7 @@ class SpotifyService {
                 duration_ms: track.duration_ms,
                 repeat_state: response.data.repeat_state,
                 volume: response.data.device?.volume_percent,
+                album: track.album?.name || '',
             };
         } catch (error) {
             console.error('Error fetching current track:', error);

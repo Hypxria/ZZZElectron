@@ -3,6 +3,7 @@ import SongInfo from './SongInfo';
 import SongControls from './SongControls';
 import SongUpcoming from './SongUpcoming';
 import SongBackground from './SongBackground';
+import SongLyrics from './SongLyrics';
 import './Styles/Main.css';
 import { spotifyService, Song } from '../../../services/SpotifyService';
 
@@ -33,6 +34,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
   });
 
   const [localProgress, setLocalProgress] = useState<number>(0);
+  const [hasInitialData, setHasInitialData] = useState(false);
+
   const progressRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(performance.now());
   const animationFrameRef = useRef<number | null>(null);
@@ -56,6 +59,11 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
         console.log('Fetching track')
         const track = await spotifyService.getCurrentTrack();
+        if (track) {
+          setCurrentTrackData(track);
+          setHasInitialData(true); // Set this flag after first successful API response
+        }
+
         console.log('Track fetched:', track.name);
         if (!isComponentMounted) return;
 
@@ -170,6 +178,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
     }
   };
 
+  console.log(`Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`)
+
   return (
     <div className="spotify">
       <SongBackground coverUrl={currentTrackData.album_cover || ''} />
@@ -212,6 +222,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
             setCurrentTrackData(prev => ({ ...prev, volume }));
             await spotifyService.setVolume(volume);
           }}
+          albumCover={currentTrackData.album_cover || 'sex'}
         />
       </div>
       <SongUpcoming
@@ -222,6 +233,18 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
           albumCover: nextTrackData.album_cover || 'sex'
         }}
       />
+      {hasInitialData && (
+          <div className="song-lyrics">
+            <SongLyrics
+              currentSong={{
+                name: currentTrackData.name || 'No track playing',
+                artist: currentTrackData.artist || 'No artist',
+                album: currentTrackData.album || '',
+              }}
+              currentTime={localProgress || 0}
+            />
+          </div>
+        )}
     </div>
   );
 };

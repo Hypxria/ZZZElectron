@@ -37,7 +37,7 @@ const createWindow = async (): Promise<void> => {
           "default-src 'self';",
           "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
-          "connect-src 'self' http://localhost:8080 https://accounts.spotify.com http://127.0.0.1:8080 https://api.spotify.com;",
+          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com http://127.0.0.1:8080 https://api.spotify.com;",
           "img-src 'self' data: http://localhost:8080 http://127.0.0.1:8080 https:;"
         ].join(' ')
       }
