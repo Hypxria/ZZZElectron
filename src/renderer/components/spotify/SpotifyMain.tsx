@@ -7,6 +7,7 @@ import SongLyrics from "./SongLyrics";
 import "./Styles/Main.css";
 import { spotifyService, Song } from "../../../services/SpotifyService";
 import { ViewState } from "../../../types/viewState";
+import { generateColorsFromImage } from '../../../utils/ColorUtils'
 
 interface SpotifyMainProps {
   ViewState: ViewState
@@ -191,6 +192,29 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   console.log(
     `Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`
   );
+  
+  // Getting Avg Colors
+  const [backgroundColors, setBackgroundColor] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getColors = async () => {
+      if (currentTrackData.album_cover) {
+        const colorResult = await generateColorsFromImage(currentTrackData.album_cover);
+        if (colorResult) {
+          // Convert the color object to array
+          setBackgroundColor([
+            colorResult.avgColor,
+            colorResult.brighterColor,
+            colorResult.dimmerColor
+          ]);
+        }
+      }
+    };
+  
+    getColors();
+  }, [currentTrackData.album_cover]);
+  
+  
 
   return (
     <div className="spotify">
@@ -255,6 +279,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             }}
             currentTime = {localProgress || 0}
             viewState = {viewState.ViewState}
+            colors={backgroundColors}  
           />
         </div>
       )}

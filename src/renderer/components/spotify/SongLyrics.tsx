@@ -10,14 +10,26 @@ interface SongLyricsProps {
     album: string;
   };
   currentTime: number;
-  viewState: ViewState
+  viewState: ViewState;
+  colors?: string[];  // Add this line
 }
 
-const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime, viewState }) => {
+const SongLyrics: React.FC<SongLyricsProps> = ({
+  currentSong,
+  currentTime,
+  viewState,
+  colors
+}) => {
   const [lyrics, setLyrics] = useState<Array<{time: number, text: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
+
+  const lyricsStyle = {
+    '--average-color': colors?.[0] || '#ffffff',
+    '--brighter-color': colors?.[1] || '#cccccc',
+    '--dimmer-color': colors?.[2] || '#999999',
+  } as React.CSSProperties;
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -111,7 +123,8 @@ const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime, viewS
   
 
   return (
-    <div className={`lyrics-container ${viewState !== ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
+    <div className={`lyrics-container ${viewState !== ViewState.SPOTIFY_FULL ? 'hidden' : ''}`} 
+         style={lyricsStyle}>
       <div className="lyrics-menu">
         {currentLyricIndex > 0 && (
           <div className="prev-lyric">
