@@ -18,8 +18,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
     const generalOptions = [
         'Spotify Settings',
         'Hoyolab Settings',
-        'Privacy',
-        'Language'
+        'Credits',
     ];
 
     const appearanceOptions = [

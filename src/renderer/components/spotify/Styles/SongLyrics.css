@@ -12,13 +12,18 @@
   top: 50%;
   transform: translateY(-50%) translateX(-50%);
   z-index: 1;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.lyrics-menu {
+.lyrics-container.hidden {
+  opacity: 0;
+}
+  
 
+.lyrics-menu {
   padding: 1rem;
   border-radius: 8px;
-  width: 50vw;
+  width: 70vw;
   max-width: 600px;
   margin: 0 auto;
 }

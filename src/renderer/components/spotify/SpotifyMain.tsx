@@ -1,37 +1,40 @@
-import React, { useEffect, useState, useRef } from 'react';
-import SongInfo from './SongInfo';
-import SongControls from './SongControls';
-import SongUpcoming from './SongUpcoming';
-import SongBackground from './SongBackground';
-import SongLyrics from './SongLyrics';
-import './Styles/Main.css';
-import { spotifyService, Song } from '../../../services/SpotifyService';
+import React, { useEffect, useState, useRef } from "react";
+import SongInfo from "./SongInfo";
+import SongControls from "./SongControls";
+import SongUpcoming from "./SongUpcoming";
+import SongBackground from "./SongBackground";
+import SongLyrics from "./SongLyrics";
+import "./Styles/Main.css";
+import { spotifyService, Song } from "../../../services/SpotifyService";
+import { ViewState } from "../../../types/viewState";
 
 interface SpotifyMainProps {
-  // Add any props if needed in the future
+  ViewState: ViewState
 }
 
-spotifyService.authorize()
+spotifyService.authorize();
 
-const SpotifyMain: React.FC<SpotifyMainProps> = () => {
-  // console.log('SpotifyMain component rendered')
+const SpotifyMain: React.FC<SpotifyMainProps> = (
+  viewState
+) => {
   const [currentTrackData, setCurrentTrackData] = useState<Song>({
-    name: '',
-    artist: '',
-    album_cover: '',
-    year: '',
+    name: "",
+    artist: "",
+    album_cover: "",
+    year: "",
     is_playing: false,
     progress_ms: 0,
     duration_ms: 0,
-    volume: 10,
-    repeat_state: 'off',
+    volume: 0,
+    repeat_state: "off",
   });
 
   const [nextTrackData, setNextTrackData] = useState<Song>({
-    name: '',
-    artist: '',
-    album_cover: '',
+    name: "",
+    artist: "",
+    album_cover: "",
   });
+  
 
   const [localProgress, setLocalProgress] = useState<number>(0);
   const [hasInitialData, setHasInitialData] = useState(false);
@@ -43,47 +46,46 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
   const manualStateUpdateRef = useRef<number>(0);
 
+  let lastCallName = '';
+
   // CurrentTrack Tracking
   useEffect(() => {
     let isComponentMounted = true;
 
     const fetchCurrentTrack = async () => {
       try {
-        
         if (Date.now() - manualStateUpdateRef.current < 2000) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Skipping fetch due to manual state update');
+          if (process.env.NODE_ENV === "development") {
+            console.log("Skipping fetch due to manual state update");
           }
           return;
         }
 
-        console.log('Fetching track')
+        console.log("Fetching track");
+
         const track = await spotifyService.getCurrentTrack();
         if (track) {
           setCurrentTrackData(track);
           setHasInitialData(true); // Set this flag after first successful API response
         }
 
-        console.log('Track fetched:', track.name);
+        console.log("Track fetched:", track.name);
         if (!isComponentMounted) return;
 
-        
         if (Date.now() - manualStateUpdateRef.current > 2000) {
           setCurrentTrackData(track);
-          console.log(track.volume)
+          console.log(track.volume);
           progressRef.current = track.progress_ms || 0;
+          lastCallName = track.name || "";
         } else {
           // Update everything except the progress during debounce period
-          setCurrentTrackData(prev => ({
+          setCurrentTrackData((prev) => ({
             ...track,
-            progress_ms: progressRef.current // Keep our local progress
+            progress_ms: progressRef.current, // Keep our local progress
           }));
         }
-        
-
-        
       } catch (error) {
-        console.error('Error fetching track:', error);
+        console.error("Error fetching track:", error);
       }
     };
 
@@ -92,12 +94,11 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         animationFrameRef.current = requestAnimationFrame(updateProgress);
         return;
       }
-      
-      
+
       const now = performance.now();
       const elapsed = now - lastTimeRef.current;
       lastTimeRef.current = now;
-      
+
       if (elapsed > 0) {
         progressRef.current = Math.min(
           progressRef.current + elapsed,
@@ -105,7 +106,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
         );
         setLocalProgress(Math.round(progressRef.current));
       }
-      
+
       animationFrameRef.current = requestAnimationFrame(updateProgress);
     };
 
@@ -115,8 +116,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
 
     // Set up polling interval for track updates
     const pollInterval = setInterval(fetchCurrentTrack, 500);
-
-   
 
     // Cleanup function
     return () => {
@@ -131,25 +130,37 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
     };
   }, [currentTrackData.is_playing]);
 
-
   // NextTrack tracking
+
+  const initialNextTrack = async () => {
+    try {
+      const nextTrack = await spotifyService.getNextSong();
+      setNextTrackData(nextTrack);
+    } catch (error) {
+      console.error("Error fetching next track:", error);
+    }
+  };
+
   useEffect(() => {
     let isComponentMounted = true;
     let debounceTimeout: NodeJS.Timeout;
 
     const fetchNextTrack = async () => {
       try {
-        const nextTrack = await spotifyService.getNextSong();
         if (!isComponentMounted) return;
 
-        if (nextTrack.name !== nextTrackData.name) {
+        if (currentTrackData.name !== lastCallName || "") {
+          const nextTrack = await spotifyService.getNextSong();
           setNextTrackData(nextTrack);
         }
       } catch (error) {
-        console.error('Error fetching next track:', error);
+        console.error("Error fetching next track:", error);
       }
     };
 
+    // It is also used in non initial contexts XD
+
+    initialNextTrack();
     // Debounce the next track fetch to avoid unnecessary API calls
     debounceTimeout = setTimeout(fetchNextTrack, 300);
 
@@ -160,36 +171,37 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
   }, [currentTrackData.name, nextTrackData.name]);
 
   // Handles
-  
+
   const handleSeek = async (seekTime: number) => {
     try {
       // Update local state immediately for smooth UI
       setLocalProgress(seekTime);
       progressRef.current = seekTime;
       lastTimeRef.current = performance.now(); // Add this line to reset the time reference
-      
+
       manualStateUpdateRef.current = Date.now();
 
       // Call Spotify API to seek
       await spotifyService.seek(seekTime);
-      
     } catch (error) {
-      console.error('Failed to seek:', error);
+      console.error("Failed to seek:", error);
     }
   };
 
-  console.log(`Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`)
+  console.log(
+    `Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`
+  );
 
   return (
     <div className="spotify">
-      <SongBackground coverUrl={currentTrackData.album_cover || ''} />
+      <SongBackground coverUrl={currentTrackData.album_cover || ""} />
       <div className="song-info">
         <SongInfo
           currentSong={{
-            name: currentTrackData.name || 'No track playing',
-            artist: currentTrackData.artist || 'No artist',
-            album_cover: currentTrackData.album_cover || 'sex',
-            year: currentTrackData.year || 'N/A'
+            name: currentTrackData.name || "No track playing",
+            artist: currentTrackData.artist || "No artist",
+            album_cover: currentTrackData.album_cover || "sex",
+            year: currentTrackData.year || "N/A",
           }}
         />
         <SongControls
@@ -198,53 +210,54 @@ const SpotifyMain: React.FC<SpotifyMainProps> = () => {
           duration={currentTrackData.duration_ms || 0}
           onPlay={() => {
             manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData(prev => ({ ...prev, is_playing: true }));
+            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
             spotifyService.resumePlayback();
           }}
           onPause={() => {
             manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData(prev => ({ ...prev, is_playing: false }));
+            setCurrentTrackData((prev) => ({ ...prev, is_playing: false }));
             spotifyService.pausePlayback();
           }}
           onBack={async () => {
-            setCurrentTrackData(prev => ({ ...prev, is_playing: true }));
+            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
             await spotifyService.playPreviousSong();
-            
-          }} 
+          }}
           onNext={async () => {
-            setCurrentTrackData(prev => ({ ...prev, is_playing: true }));
+            initialNextTrack();
             await spotifyService.playNextSong();
+            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
           }}
           onSeek={handleSeek}
           volume={currentTrackData.volume || 0}
           onVolumeChange={async (volume: number) => {
             manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData(prev => ({ ...prev, volume }));
+            setCurrentTrackData((prev) => ({ ...prev, volume }));
             await spotifyService.setVolume(volume);
           }}
-          albumCover={currentTrackData.album_cover || 'sex'}
+          albumCover={currentTrackData.album_cover || "sex"}
         />
       </div>
       <SongUpcoming
         nextSong={{
-          id: '1',
-          title: nextTrackData.name || 'No upcoming track',
-          artist: nextTrackData.artist || 'None',
-          albumCover: nextTrackData.album_cover || 'sex'
+          id: "1",
+          title: nextTrackData.name || "No upcoming track",
+          artist: nextTrackData.artist || "None",
+          albumCover: nextTrackData.album_cover || "sex",
         }}
       />
       {hasInitialData && (
-          <div className="song-lyrics">
-            <SongLyrics
-              currentSong={{
-                name: currentTrackData.name || 'No track playing',
-                artist: currentTrackData.artist || 'No artist',
-                album: currentTrackData.album || '',
-              }}
-              currentTime={localProgress || 0}
-            />
-          </div>
-        )}
+        <div className="song-lyrics">
+          <SongLyrics
+            currentSong = {{
+              name: currentTrackData.name || "",
+              artist: currentTrackData.artist || "",
+              album: currentTrackData.album || "",
+            }}
+            currentTime = {localProgress || 0}
+            viewState = {viewState.ViewState}
+          />
+        </div>
+      )}
     </div>
   );
 };

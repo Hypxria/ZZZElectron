@@ -1,11 +1,7 @@
 import './Styles/SongLyrics.css';
 import { LrcLibApi } from '../../../services/LrcLibService';
 import React, { useState, useEffect } from 'react';
-
-interface Lyric {
-  time: number;
-  text: string;
-}
+import { ViewState } from '../../../types/viewState'
 
 interface SongLyricsProps {
   currentSong: {
@@ -14,9 +10,10 @@ interface SongLyricsProps {
     album: string;
   };
   currentTime: number;
+  viewState: ViewState
 }
 
-const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime }) => {
+const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime, viewState }) => {
   const [lyrics, setLyrics] = useState<Array<{time: number, text: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +58,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime }) => 
         }
       } catch (err) {
         console.error('Error fetching lyrics:', err);
-        setError('Error fetching lyrics');
+        setError('No lyrics content found');
       } finally {
         setLoading(false);
       }
@@ -88,15 +85,33 @@ const SongLyrics: React.FC<SongLyricsProps> = ({ currentSong, currentTime }) => 
   }, [currentTime, lyrics]);
 
   if (loading) {
-    return <div className="lyrics-container"><div className="loading">Loading lyrics...</div></div>;
+    return (
+      <div className="lyrics-container">
+        <div className="lyrics-menu">
+          <div className="current-lyric">
+            Loading lyrics...
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="lyrics-container"><div className="error">{error}</div></div>;
+    return (
+      <div className="lyrics-container">
+        <div className="lyrics-menu">
+          <div className="current-lyric">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
   }
+  
+  
 
   return (
-    <div className="lyrics-container">
+    <div className={`lyrics-container ${viewState !== ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
       <div className="lyrics-menu">
         {currentLyricIndex > 0 && (
           <div className="prev-lyric">
