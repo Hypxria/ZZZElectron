@@ -7,7 +7,7 @@ import SongLyrics from "./SongLyrics";
 import "./Styles/Main.css";
 import { spotifyService, Song } from "../../../services/SpotifyService";
 import { ViewState } from "../../../types/viewState";
-import { generateColorsFromImage } from '../../../utils/ColorUtils'
+import { ColorExtractor } from '../../../utils/ColorExtractor'
 
 interface SpotifyMainProps {
   ViewState: ViewState
@@ -194,23 +194,29 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   );
   
   // Getting Avg Colors
-  const [backgroundColors, setBackgroundColor] = useState<string[]>([]);
+  const [colors, setColors] = useState<string[]>([]);
 
   useEffect(() => {
     const getColors = async () => {
-      if (currentTrackData.album_cover) {
-        const colorResult = await generateColorsFromImage(currentTrackData.album_cover);
-        if (colorResult) {
-          // Convert the color object to array
-          setBackgroundColor([
-            colorResult.avgColor,
-            colorResult.brighterColor,
-            colorResult.dimmerColor
-          ]);
-        }
+      if (!currentTrackData.album_cover) return; // Early return if no album cover
+
+      try {
+        const palette = await ColorExtractor.from(currentTrackData.album_cover);
+        const extractedColors = [
+          palette.Vibrant?.hex, // [0]
+          palette.LightVibrant?.hex, // [1]
+          palette.DarkVibrant?.hex, // [2]
+          palette.Muted?.hex, // [3]
+          palette.LightMuted?.hex, // [4]
+          palette.DarkMuted?.hex, // [5]
+        ].filter((color): color is string => !!color);
+
+        setColors(extractedColors); // Set the state with extracted colors
+      } catch (error) {
+        console.error('Error extracting colors:', error);
       }
     };
-  
+
     getColors();
   }, [currentTrackData.album_cover]);
   
@@ -279,7 +285,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             }}
             currentTime = {localProgress || 0}
             viewState = {viewState.ViewState}
-            colors={backgroundColors}  
+            colors={colors}  
           />
         </div>
       )}
