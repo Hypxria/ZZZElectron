@@ -19,6 +19,7 @@ interface SongControlsProps {
   volume: number;
   onVolumeChange: (volume: number) => void;
   albumCover: string;
+  colors: string[];
 }
 
 const SongControls: React.FC<SongControlsProps> = ({
@@ -32,20 +33,24 @@ const SongControls: React.FC<SongControlsProps> = ({
   onBack,
   volume,
   onVolumeChange,
+  colors,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
 
-  // Progress Bar
+  const lyricsStyle = {
+    '--average-color': colors?.[0] || '#ffffff',
+    '--brighter-color': colors?.[1] || '#cccccc',
+    '--dimmer-color': colors?.[5] || '#999999',
+  } as React.CSSProperties;
+
+// Progress Bar
   useEffect(() => {
     if (!isDragging) {
       setSliderValue((currentTime / duration) * 100);
     }
   }, [currentTime, duration, isDragging]);
-
-  
-  
 
   // Make updateProgress accessible outside useEffect
   const updateProgressBar = (e: React.MouseEvent) => {
@@ -225,7 +230,7 @@ const SongControls: React.FC<SongControlsProps> = ({
   
 
   return (
-    <div className="song-controls">
+    <div className="song-controls" style={lyricsStyle}>
       <div className="progress-bar-wrapper">
         <div 
           className="progress-bar-container"

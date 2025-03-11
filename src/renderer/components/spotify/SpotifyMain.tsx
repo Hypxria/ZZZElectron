@@ -265,6 +265,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             await spotifyService.setVolume(volume);
           }}
           albumCover={currentTrackData.album_cover || "sex"}
+          colors={colors}  
         />
       </div>
       <SongUpcoming
