@@ -98,7 +98,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
 
   if (loading) {
     return (
-      <div className="lyrics-container">
+      <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`}> 
         <div className="lyrics-menu">
           <div className="current-lyric">
             Loading lyrics...
@@ -110,7 +110,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
 
   if (error) {
     return (
-      <div className="lyrics-container">
+      <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`}> 
         <div className="lyrics-menu">
           <div className="current-lyric">
             {error}
@@ -123,7 +123,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
   
 
   return (
-    <div className={`lyrics-container ${viewState !== ViewState.SPOTIFY_FULL ? 'hidden' : ''}`} 
+    <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`} 
          style={lyricsStyle}>
       <div className="lyrics-menu">
         {currentLyricIndex > 0 && (

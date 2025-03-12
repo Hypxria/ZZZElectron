@@ -38,6 +38,7 @@ const SongControls: React.FC<SongControlsProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const [displayTime, setDisplayTime] = useState(currentTime);
 
   const lyricsStyle = {
     '--average-color': colors?.[0] || '#ffffff',
@@ -58,8 +59,10 @@ const SongControls: React.FC<SongControlsProps> = ({
       const rect = progressBarRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const width = rect.width;
-      const percentage = Math.max(0, Math.min(100, (x / width) * 100));
+      const percentage = Math.min(Math.max((x / width) * 100, 0), 100);
       setSliderValue(percentage);
+      // Update display time while dragging
+      setDisplayTime(Math.floor((percentage / 100) * duration));
     }
   };
 
@@ -108,7 +111,12 @@ const SongControls: React.FC<SongControlsProps> = ({
   }
 
   const handleBack = () => {
-    onBack();
+    window.electron.log(`${currentTime/1000}`)
+    if (currentTime/1000 < 3) {
+      onBack();
+      return;
+    } 
+    onSeek(0)
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -124,13 +132,13 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
-    setIsDragging(false);
     if (isDragging) {
       updateProgressBar(e);
       const seekTime = Math.floor((sliderValue / 100) * duration);
       onSeek(seekTime);
     }
     setIsDragging(false);
+    setDisplayTime(currentTime);
   };
 
 
@@ -179,9 +187,49 @@ const SongControls: React.FC<SongControlsProps> = ({
   };
   
 
-  
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    updateProgressBarTouch(e);
+  };
   
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging) {
+      updateProgressBarTouch(e);
+    }
+  };
+  
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isDragging) {
+      updateProgressBarTouch(e);
+      const seekTime = Math.floor((sliderValue / 100) * duration);
+      onSeek(seekTime);
+    }
+    setIsDragging(false);
+    setDisplayTime(currentTime);
+  };
+  
+  // Add this new function to handle touch coordinates
+  const updateProgressBarTouch = (e: React.TouchEvent) => {
+    if (progressBarRef.current) {
+      const rect = progressBarRef.current.getBoundingClientRect();
+      // For touchend, use changedTouches instead of touches
+      const touch = e.type === 'touchend' ? e.changedTouches[0] : e.touches[0];
+      if (!touch) return;
+  
+      const x = touch.clientX - rect.left;
+      const width = rect.width;
+      const percentage = Math.min(Math.max((x / width) * 100, 0), 100);
+      setSliderValue(percentage);
+      setDisplayTime(Math.floor((percentage / 100) * duration));
+    }
+  };
+
+  useEffect(() => {
+    if (!isDragging) {
+      setDisplayTime(currentTime);
+    }
+  }, [currentTime, isDragging]);
   
   // Buttons
   const songButton = (
@@ -242,8 +290,11 @@ const SongControls: React.FC<SongControlsProps> = ({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <span className="time-label time-label-left">{formatTime(currentTime)}</span>
+          <span className="time-label time-label-left">{formatTime(displayTime)}</span>
           <div className="progress-bar-background">
           <div 
             className="progress-bar-fill"

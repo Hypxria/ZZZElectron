@@ -43,7 +43,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   const progressRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(performance.now());
   const animationFrameRef = useRef<number | null>(null);
-  const updateTimeoutRef = useRef<number | null>(null);
 
   const manualStateUpdateRef = useRef<number>(0);
 
@@ -180,7 +179,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       setCurrentTrackData(prev => ({
         ...prev,
         progress_ms: boundedSeekTime,
-        is_playing: true
       }));
       
       // Update local progress tracking
@@ -258,14 +256,39 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             spotifyService.pausePlayback();
           }}
           onBack={async () => {
-            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-            await spotifyService.playPreviousSong();
+            try {
+              setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+              await spotifyService.playPreviousSong();
+              // Add delay and fetch
+              const track = await spotifyService.getCurrentTrack();
+              if (track) {
+                setCurrentTrackData(track);
+                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                progressRef.current = track.progress_ms || 0;
+                lastCallName = track.name || "";
+              }
+            } catch (error) {
+              console.error("Error during back operation:", error);
+            }
           }}
+          
           onNext={async () => {
-            initialNextTrack();
-            await spotifyService.playNextSong();
-            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+            try {
+              setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+              await spotifyService.playNextSong();
+              // Add delay and fetch
+              const track = await spotifyService.getCurrentTrack();
+              if (track) {
+                setCurrentTrackData(track);
+                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                progressRef.current = track.progress_ms || 0;
+                lastCallName = track.name || "";
+              }
+            } catch (error) {
+              console.error("Error during back operation:", error);
+            }
           }}
+          
           onSeek={handleSeek}
           volume={currentTrackData.volume || 0}
           onVolumeChange={async (volume: number) => {

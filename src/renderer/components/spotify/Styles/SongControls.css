@@ -30,22 +30,22 @@
 .time-label-left {
   font-family: Urbanist;
   top: 25%;
-  left: -30px; /* Adjust based on your needs */
-  font-size: 1.15vw;
+  left: -35px; /* Adjust based on your needs */
+  font-size: 3.8vh;
 }
 
 .time-label-right {
   font-family: Urbanist;
   top: 25%;
-  right: -30px; /* Adjust based on your needs */
+  right: -35px; /* Adjust based on your needs */
   text-align: right;
-  font-size: 1.15vw;
+  font-size: 3.8vh;
 }
 
 .progress-bar-wrapper {
   position: relative;
   width: 110%;
-  padding: 0 50px; /* Make room for the timestamps */
+  padding: 0 50px;
 }
 
 .progress-bar-container {
@@ -62,10 +62,14 @@
   position: relative;
   width: 100%;
   height: 4px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+  /* Change the background color to be more transparent */
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  
   overflow: hidden;
+  transition: height 0.2s ease;
 }
+
 
 .progress-bar-fill {
   position: absolute;
@@ -73,13 +77,18 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: #1db954;
+  background-color: var(--average-color);
   border-radius: 2px;
   transform-origin: left;
-  transform: scaleX(0);
   transition: transform 0.1s ease-out;
+  opacity: 1;
 }
 
+.progress-bar-container:hover .progress-bar-background,
+.progress-bar-container:hover .progress-bar-fill {
+  transform: translateY(-10%);
+  height: 6px;
+}
 
 .progress-bar-handle {
   position: absolute;
@@ -89,6 +98,7 @@
   height: 12px;
   background-color: white;
   border-radius: 50%;
+  opacity: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease-out;
 }
@@ -182,8 +192,9 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: grab;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.2s ease;
+  
 }
 
 .volume-slider-container:hover .volume-slider-handle {
@@ -194,23 +205,73 @@
 /* Add or update these CSS rules */
 
 .control-icon {
-  color: var(--brighter-color);
+  color: var(--average-color);
+  border-radius: 50%;
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
 
 .skip-icon {
-  color: var(--brighter-color);
+  color: var(--average-color);
+  border-radius: 50%;
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
 
 .back-icon {
-  color: var(--brighter-color);
+  color: var(--average-color);
+  border-radius: 50%;
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
 
+.song-button-container button {
+  position: relative;  /* Add this to position the pseudo-element */
+}
+
+.song-button-container button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 40px;  /* Adjust size as needed */
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--dimmer-color);
+  opacity: 0.3;
+  transition: transform 0.2s ease;
+  z-index: -1;
+}
+
+.song-button-container button:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (hover: hover) {
+  .song-button-container button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .progress-bar-container:hover .progress-bar-background,
+  .progress-bar-container:hover .progress-bar-fill {
+    transform: translateY(-10%);
+    height: 6px;
+  }
+
+  .progress-bar-handle:hover,
+  .progress-bar-container:active .progress-bar-handle {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+
+  .volume-icon:hover {
+    opacity: 1;
+  }
+
+  .volume-slider-container:hover .volume-slider-handle {
+    opacity: 1;
+  }
+}

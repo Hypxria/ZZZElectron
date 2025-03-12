@@ -8,7 +8,7 @@
   transition: --color-1 0.8s ease-in-out, --color-2 0.8s ease-in-out,
     --color-3 0.8s ease-in-out, --color-4 0.8s ease-in-out,
     --color-5 0.8s ease-in-out, --color-6 0.8s ease-in-out;
-  filter: brightness(90%);
+  filter: brightness(75%);
 }
 
 .animated-gradient {
@@ -19,7 +19,7 @@
       var(--color-3)
     ),
     linear-gradient(135deg, var(--color-4), var(--color-5), var(--color-6));
-  background-size: 200% 200%, 200% 200%;
+  background-size: 400% 400%, 400% 400%;
   background-blend-mode: overlay;
   animation: gradient 40s ease infinite;
 }
