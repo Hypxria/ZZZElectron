@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import './Styles/SongUpcoming.css';
 
 interface Song {
@@ -23,10 +24,10 @@ const SongUpcoming: React.FC<SongUpcomingProps> = ({ nextSong }) => {
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <h3>Up Next
-          <span className={`collapse-arrow ${isCollapsed ? 'rotated' : ''}`}>▼</span>
+          <span className={`collapse-arrow ${isCollapsed ? 'rotated' : ''}`}> <ArrowForwardIosRoundedIcon/> </span>
         </h3>
       </div>
-      {!isCollapsed && (
+      
       <div className="upcoming-content">
         <div className="next-song-card">
           <img 
@@ -40,7 +41,7 @@ const SongUpcoming: React.FC<SongUpcomingProps> = ({ nextSong }) => {
           </div>
         </div>
       </div>
-      )}
+      
     </div>
   );
 };

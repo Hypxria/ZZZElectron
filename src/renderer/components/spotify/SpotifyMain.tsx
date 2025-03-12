@@ -240,6 +240,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             album_cover: currentTrackData.album_cover || "sex",
             year: currentTrackData.year || "N/A",
           }}
+          colors={colors}
         />
         <SongControls
           isPlaying={currentTrackData.is_playing || false}
@@ -318,7 +319,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             }}
             currentTime = {localProgress || 0}
             viewState = {viewState.ViewState}
-            colors={colors}  
+            colors={colors}
+            onSeek={handleSeek}
           />
         </div>
       )}

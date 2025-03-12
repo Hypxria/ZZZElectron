@@ -11,9 +11,10 @@ interface Song {
 
 interface SongInfoProps {
   currentSong: Song;
+  colors: string[]
 }
 
-const SongInfo: React.FC<SongInfoProps> = ({ currentSong }) =>{
+const SongInfo: React.FC<SongInfoProps> = ({ currentSong, colors }) =>{
   return (
     <div className="song-details">
       <img 
@@ -23,7 +24,7 @@ const SongInfo: React.FC<SongInfoProps> = ({ currentSong }) =>{
         id="song-image"  
       />
       <div className="song-text">{currentSong?.name}</div>
-      <div className="artist-text">{currentSong?.artist} • {currentSong.year}</div>
+      <div className="artist-text">{currentSong?.artist} • <span className='year-text'>{currentSong.year}</span></div>
     </div>
   );
 };

@@ -12,13 +12,15 @@ interface SongLyricsProps {
   currentTime: number;
   viewState: ViewState;
   colors?: string[];  // Add this line
+  onSeek: (time: number) => void;  // Add this new prop
 }
 
 const SongLyrics: React.FC<SongLyricsProps> = ({
   currentSong,
   currentTime,
   viewState,
-  colors
+  colors,
+  onSeek
 }) => {
   const [lyrics, setLyrics] = useState<Array<{time: number, text: string}>>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,10 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
     '--brighter-color': colors?.[1] || '#cccccc',
     '--dimmer-color': colors?.[4] || '#999999',
   } as React.CSSProperties;
+
+  const handleLyricClick = (time: number) => {
+    onSeek(time);
+  };
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -127,17 +133,26 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
          style={lyricsStyle}>
       <div className="lyrics-menu">
         {currentLyricIndex > 0 && (
-          <div className="prev-lyric">
+          <div 
+            className="prev-lyric clickable" 
+            onClick={() => handleLyricClick(lyrics[currentLyricIndex - 1].time)}
+          >
             {lyrics[currentLyricIndex - 1].text}
           </div>
         )}
         
-        <div className="current-lyric">
+        <div 
+          className="current-lyric clickable"
+          onClick={() => currentLyricIndex >= 0 && handleLyricClick(lyrics[currentLyricIndex].time)}
+        >
           {currentLyricIndex >= 0 ? lyrics[currentLyricIndex].text : '♪'}
         </div>
         
         {currentLyricIndex < lyrics.length - 1 && (
-          <div className="next-lyric">
+          <div 
+            className="next-lyric clickable"
+            onClick={() => handleLyricClick(lyrics[currentLyricIndex + 1].time)}
+          >
             {lyrics[currentLyricIndex + 1].text}
           </div>
         )}

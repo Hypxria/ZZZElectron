@@ -47,3 +47,6 @@
   text-overflow: ellipsis;
 }
 
+.artist-text .year-text {
+  filter: brightness(85%);
+}

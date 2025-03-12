@@ -30,6 +30,11 @@
 }
 
 .lyrics-menu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
   padding: 1rem;
   border-radius: 8px;
   width: 70vw;
@@ -44,10 +49,21 @@
   transform: translateY(0);
 }
 
+.prev-lyric, .current-lyric, .next-lyric {
+  /* Add these to prevent layout shifts */
+  position: relative;
+  width: fit-content;
+  transform-origin: center center;
+  /* Keep your existing styles but modify transitions */
+  transition: all 0.3s ease, transform 0.1s ease;
+}
+
 .prev-lyric {
   color: var(--dimmer-color);
   font-size: 1.4rem;
-  transform: translateY(-100%);
+  transform: scale(1);
+  translate: 0% -100%;
+  mask-image: linear-gradient(0deg, var(--dimmer-color), transparent 150% );
 }
 
 .current-lyric {
@@ -60,7 +76,9 @@
 .next-lyric {
   color: var(--dimmer-color);
   font-size: 1.4rem;
-  transform: translateY(100%);
+  transform: scale(1);
+  translate: 0% 100%;
+  mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150% )
 }
 
 .loading {
@@ -71,4 +89,18 @@
 .error {
   color: #ff4444;
   font-style: italic;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  transform-origin: center;
+}
+
+.clickable:hover {
+  transform: scale(1.02);
+}
+
+.clickable:active {
+  transform: scale(0.98);
 }

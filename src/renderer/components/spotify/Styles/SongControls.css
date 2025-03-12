@@ -31,7 +31,7 @@
   font-family: Urbanist;
   top: 25%;
   left: -35px; /* Adjust based on your needs */
-  font-size: 3.8vh;
+  font-size: 1rem;
 }
 
 .time-label-right {
@@ -39,7 +39,7 @@
   top: 25%;
   right: -35px; /* Adjust based on your needs */
   text-align: right;
-  font-size: 3.8vh;
+  font-size: 1rem;
 }
 
 .progress-bar-wrapper {
@@ -65,9 +65,9 @@
   /* Change the background color to be more transparent */
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
-  
+
   overflow: hidden;
-  transition: height 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 
@@ -80,13 +80,13 @@
   background-color: var(--average-color);
   border-radius: 2px;
   transform-origin: left;
-  transition: transform 0.1s ease-out;
+  transition: all 0.1s ease-out;
   opacity: 1;
 }
 
 .progress-bar-container:hover .progress-bar-background,
 .progress-bar-container:hover .progress-bar-fill {
-  transform: translateY(-10%);
+  transform: translateY(-50%);
   height: 6px;
 }
 

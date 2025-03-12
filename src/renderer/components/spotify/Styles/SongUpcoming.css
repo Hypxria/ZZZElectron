@@ -37,11 +37,19 @@
     transition: transform 0.3s ease;
     display: flex;
     align-items: center;
-    transform: translateX(0.5vw);
+    transform-origin: center;
+    margin-left: 6px;
 }
 
 .collapse-arrow.rotated {
-    transform: rotate(-90deg) translateY(0.5vw);
+    transform: rotate(90deg);
+}
+
+.collapse-arrow svg {
+    --size: 20px;
+    width: var(--size);
+    height: var(--size);
+    font-size: var(--size);
 }
 
 .upcoming-content {
@@ -51,13 +59,17 @@
 }
 
 .upcoming-song-container.collapsed {
-    padding: 8px;
     background-color: rgba(255, 255, 255, 0.1);
-    min-width: 0; /* Remove min-width constraint */
+    min-width: none; /* Remove min-width constraint */
     width: fit-content;
+    max-width: none; /* Override the max-width if needed */
+    padding-right: 12px;
+    padding-left: 12px;
+    padding-top: 12px;
 }
 
 .upcoming-song-container.collapsed .upcoming-content {
+    width: 0;
     height: 0;
     margin-top: 0;
     opacity: 0;
