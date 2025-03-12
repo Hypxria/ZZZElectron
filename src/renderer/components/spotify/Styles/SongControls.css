@@ -3,10 +3,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 4px;
   gap: 20px;
   padding: 0px;
   width: 100%;
   transform: translateY(1vh);
+}
+
+.song-controls {
+  --average-color: '#ffffff';
+  --brighter-color: '#cccccc';
+  --dimmer-color: '#999999';
 }
 
 /* Time Display */
@@ -21,14 +28,18 @@
 }
 
 .time-label-left {
+  font-family: Urbanist;
   top: 25%;
   left: -30px; /* Adjust based on your needs */
+  font-size: 1.15vw;
 }
 
 .time-label-right {
+  font-family: Urbanist;
   top: 25%;
   right: -30px; /* Adjust based on your needs */
   text-align: right;
+  font-size: 1.15vw;
 }
 
 .progress-bar-wrapper {
@@ -183,18 +194,21 @@
 /* Add or update these CSS rules */
 
 .control-icon {
+  color: var(--brighter-color);
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
 
 .skip-icon {
+  color: var(--brighter-color);
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
 }
 
-.back-icon{
+.back-icon {
+  color: var(--brighter-color);
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */

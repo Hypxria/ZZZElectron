@@ -230,7 +230,10 @@ const SongControls: React.FC<SongControlsProps> = ({
   
 
   return (
-    <div className="song-controls" style={lyricsStyle}>
+    <div 
+    className="song-controls" 
+    style={lyricsStyle}
+    >
       <div className="progress-bar-wrapper">
         <div 
           className="progress-bar-container"

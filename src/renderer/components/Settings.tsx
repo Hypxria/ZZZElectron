@@ -53,6 +53,8 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         const id = idInput.value;
         const secret = secretInput.value;
 
+        console.log(id, secret)
+
         secureLocalStorage.setItem('spotify_client_id', id);
         secureLocalStorage.setItem('spotify_client_secret', secret);
 
@@ -60,6 +62,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
     
         // Update the service with new credentials
         spotifyService.updateCredentials(id, secret);
+        window.location.reload();
     };
     
     return (

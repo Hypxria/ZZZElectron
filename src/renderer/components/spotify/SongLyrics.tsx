@@ -28,7 +28,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
   const lyricsStyle = {
     '--average-color': colors?.[0] || '#ffffff',
     '--brighter-color': colors?.[1] || '#cccccc',
-    '--dimmer-color': colors?.[5] || '#999999',
+    '--dimmer-color': colors?.[4] || '#999999',
   } as React.CSSProperties;
 
   useEffect(() => {

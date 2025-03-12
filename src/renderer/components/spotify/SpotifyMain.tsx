@@ -67,24 +67,14 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         const track = await spotifyService.getCurrentTrack();
         if (track) {
           setCurrentTrackData(track);
-          setHasInitialData(true); // Set this flag after first successful API response
+          progressRef.current = track.progress_ms || 0;
+          lastCallName = track.name || "";
+          setHasInitialData(true);
         }
 
         console.log("Track fetched:", track.name);
         if (!isComponentMounted) return;
 
-        if (Date.now() - manualStateUpdateRef.current > 2000) {
-          setCurrentTrackData(track);
-          console.log(track.volume);
-          progressRef.current = track.progress_ms || 0;
-          lastCallName = track.name || "";
-        } else {
-          // Update everything except the progress during debounce period
-          setCurrentTrackData((prev) => ({
-            ...track,
-            progress_ms: progressRef.current, // Keep our local progress
-          }));
-        }
       } catch (error) {
         console.error("Error fetching track:", error);
       }
@@ -101,18 +91,27 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       lastTimeRef.current = now;
 
       if (elapsed > 0) {
-        progressRef.current = Math.min(
+        // Make sure we're not exceeding the duration
+        const newProgress = Math.min(
           progressRef.current + elapsed,
           currentTrackData.duration_ms || 0
         );
+        
+        // Reset progress if we've reached the end
+        if (newProgress >= (currentTrackData.duration_ms || 0)) {
+          progressRef.current = currentTrackData.duration_ms || 0;
+        } else {
+          progressRef.current = newProgress;
+        }
+        
         setLocalProgress(Math.round(progressRef.current));
       }
-
       animationFrameRef.current = requestAnimationFrame(updateProgress);
     };
 
     // Initial fetch and start animation
     fetchCurrentTrack();
+    lastTimeRef.current = performance.now(); // Reset the time reference
     animationFrameRef.current = requestAnimationFrame(updateProgress);
 
     // Set up polling interval for track updates
@@ -124,10 +123,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       clearInterval(pollInterval);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (updateTimeoutRef.current) {
-        cancelAnimationFrame(updateTimeoutRef.current);
-      }
+      }  
     };
   }, [currentTrackData.is_playing]);
 
@@ -175,19 +171,32 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
   const handleSeek = async (seekTime: number) => {
     try {
-      // Update local state immediately for smooth UI
-      setLocalProgress(seekTime);
-      progressRef.current = seekTime;
-      lastTimeRef.current = performance.now(); // Add this line to reset the time reference
-
+      const boundedSeekTime = Math.min(seekTime, currentTrackData.duration_ms || 0);
+  
+      // Set manual update ref FIRST
       manualStateUpdateRef.current = Date.now();
-
-      // Call Spotify API to seek
-      await spotifyService.seek(seekTime);
+  
+      // Update state with new position
+      setCurrentTrackData(prev => ({
+        ...prev,
+        progress_ms: boundedSeekTime,
+        is_playing: true
+      }));
+      
+      // Update local progress tracking
+      progressRef.current = boundedSeekTime;
+      lastTimeRef.current = performance.now();
+      setLocalProgress(boundedSeekTime);
+  
+      // Call Spotify API
+      await spotifyService.seek(boundedSeekTime);
+  
     } catch (error) {
       console.error("Failed to seek:", error);
     }
   };
+  
+  
 
   console.log(
     `Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`
