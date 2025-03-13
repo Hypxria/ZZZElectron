@@ -5,9 +5,10 @@ import SongUpcoming from "./SongUpcoming";
 import SongBackground from "./SongBackground";
 import SongLyrics from "./SongLyrics";
 import "./Styles/Main.css";
-import { spotifyService, Song } from "../../../services/SpotifyService";
+import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService";
 import { ViewState } from "../../../types/viewState";
 import { ColorExtractor } from '../../../utils/ColorExtractor'
+import { clear } from "console";
 
 interface SpotifyMainProps {
   ViewState: ViewState
@@ -52,6 +53,25 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   useEffect(() => {
     let isComponentMounted = true;
 
+    const syncProgress = async () => {
+      try {
+        const track = await spotifyService.getCurrentTrack();
+        if (track && Math.abs((track.progress_ms || 0) - progressRef.current) > 1000) {
+          // If difference is more than 1 second, sync
+          console.log("Syncing progress...", {
+            spotify: track.progress_ms,
+            local: progressRef.current
+          });
+          progressRef.current = track.progress_ms || 0;
+          setLocalProgress(track.progress_ms || 0);
+          lastTimeRef.current = performance.now();
+        }
+      } catch (error) {
+        console.error("Error syncing progress:", error);
+      }
+    };
+
+
     const fetchCurrentTrack = async () => {
       try {
         if (Date.now() - manualStateUpdateRef.current < 2000) {
@@ -84,19 +104,17 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         animationFrameRef.current = requestAnimationFrame(updateProgress);
         return;
       }
-
+  
       const now = performance.now();
       const elapsed = now - lastTimeRef.current;
       lastTimeRef.current = now;
-
+  
       if (elapsed > 0) {
-        // Make sure we're not exceeding the duration
         const newProgress = Math.min(
           progressRef.current + elapsed,
           currentTrackData.duration_ms || 0
         );
         
-        // Reset progress if we've reached the end
         if (newProgress >= (currentTrackData.duration_ms || 0)) {
           progressRef.current = currentTrackData.duration_ms || 0;
         } else {
@@ -107,6 +125,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       }
       animationFrameRef.current = requestAnimationFrame(updateProgress);
     };
+  
 
     // Initial fetch and start animation
     fetchCurrentTrack();
@@ -116,10 +135,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     // Set up polling interval for track updates
     const pollInterval = setInterval(fetchCurrentTrack, 500);
 
+    const syncInterval = setInterval(syncProgress, 5000);
+
     // Cleanup function
     return () => {
       isComponentMounted = false;
       clearInterval(pollInterval);
+      clearInterval(syncInterval)
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }  
@@ -166,7 +188,27 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     };
   }, [currentTrackData.name, nextTrackData.name]);
 
-  // Handles
+  useEffect(() => {
+    const handleTrackChange = async () => {
+      try {
+        const track = await spotifyService.getCurrentTrack();
+        if (track && track.name !== currentTrackData.name) {
+          setCurrentTrackData(track);
+          progressRef.current = track.progress_ms || 0;
+          setLocalProgress(track.progress_ms || 0);
+          lastTimeRef.current = performance.now();
+        }
+      } catch (error) {
+        console.error("Error handling track change:", error);
+      }
+    };
+  
+    // Call immediately and set up interval
+    handleTrackChange();
+    const trackChangeInterval = setInterval(handleTrackChange, 1000);
+  
+    return () => clearInterval(trackChangeInterval);
+  }, [currentTrackData.name]);
 
   const handleSeek = async (seekTime: number) => {
     try {

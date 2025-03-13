@@ -58,7 +58,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         secureLocalStorage.setItem('spotify_client_id', id);
         secureLocalStorage.setItem('spotify_client_secret', secret);
 
-        const { spotifyService } = require('../../services/SpotifyService');
+        const { spotifyService } = require('../../services/spotifyServices/SpotifyService');
     
         // Update the service with new credentials
         spotifyService.updateCredentials(id, secret);
