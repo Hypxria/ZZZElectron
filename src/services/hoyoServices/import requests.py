@@ -4,9 +4,7 @@ import pprint
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  
-
-
+load_dotenv()
 
 class CookieManager:
     def __init__(self):
@@ -77,7 +75,9 @@ class _hoyoManager:
         
         
         self.zzz_info = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/index"
-        self.zzz_battery = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note?server=prod_gf_us&role_id=1000278659"
+        self.zzz_battery = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note"
+        self.deadly_assault = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/mem_detail"
+        self.shiyu = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/challenge"
         
         self.gi_info = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index"
         self.hsr_info =  "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index"
@@ -137,11 +137,15 @@ class _hoyoManager:
     class zenlessManager():
         def __init__(self, main_api):
             self.api = main_api
+            
+            # Getting back vars that I need
             self.zenless_uid = main_api._zenless_uid
             self.zenless_region = main_api._zenless_reigon
             self.cookie_manager = main_api.cookie_manager
             self.zzz_info = main_api.zzz_info
             self.zzz_battery = main_api.zzz_battery
+            self.shiyu = main_api.shiyu
+            self.deadly_assault = main_api.deadly_assault
             
         
         def print_status(self):
@@ -165,6 +169,20 @@ class _hoyoManager:
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}"},
             )
             pprint.pprint(battery_data)
+        
+        def getDeadlyAssault(self):
+            assualt_data = self.api.make_request(
+                self.deadly_assault,
+                params={"region": f"{self.zenless_region}", "uid": f"{self.zenless_uid}", "schedule_type":1},
+            )
+            pprint.pprint(assualt_data)
+        
+        def getShiyu(self):
+            shiyu_data = self.api.make_request(
+                self.shiyu,
+                params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}", "schedule_type":1},
+            )
+            pprint.pprint(shiyu_data)
 
         
 
@@ -182,7 +200,7 @@ def main():
                         ltuid_v2={os.getenv('ltuid_v2')}"""
                         
     api = _hoyoManager(cookie_string, 93112092)
-    api.zenless.get_battery_info()
+    api.zenless.getShiyu()
     
 
 
