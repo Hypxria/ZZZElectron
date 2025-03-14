@@ -81,6 +81,7 @@
     "react-transition-group": "^4.4.5",
     "spotify": "^0.3.0",
     "spotify-web-api-node": "^5.0.2",
+    "ts-node": "^10.9.2",
     "zzzapp": "file:"
   }
 }
