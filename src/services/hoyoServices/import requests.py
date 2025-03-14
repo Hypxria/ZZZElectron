@@ -3,6 +3,11 @@ from typing import Dict, Optional
 import pprint
 from dotenv import load_dotenv
 import os
+import time
+import random
+import string
+import hashlib
+import json
 
 load_dotenv()
 
@@ -51,7 +56,7 @@ https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid=93112
 HSR
 https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index?server={server}&role_id={roleid} (HSR Details)
 https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note?server=prod_official_usa&role_id=615855534 (HSR Battery Charge)
-https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge?schedule_type=1&server=prod_official_usa&role_id=615855534&need_all=false (Something..?)
+https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge?schedule_type=1&server=prod_official_usa&role_id=615855534&need_all=false (HSR Equivalent for Shiyu/Spiral)
 https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge_story?schedule_type=1&server=prod_official_usa&role_id=615855534&need_all=false (also something?)
 https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge_boss?schedule_type=1&server=prod_official_usa&role_id=615855534&need_all=false (???)
 
@@ -67,9 +72,24 @@ https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/challenge?server
 https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/abyss_abstract?server=prod_gf_us&role_id=1000278659 (ZZZ HZ)
 """
 
+def generate_os_dynamic_secret(salt_type):
+    # Generate random string of 6 characters
+    r = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    # Get current timestamp in seconds
+    t = int(time.time())
+    
+    # Create the hash string
+    message = f"salt={salt_type}&t={t}&r={r}"
+    # Generate MD5 hash
+    hash_value = hashlib.md5(message.encode()).hexdigest()
+    
+    return f"{t},{r},{hash_value}"
+
+
 
 class _hoyoManager:  
     def __init__(self, cookie_string, uid):
+        self.salt = f"{os.getenv('SALT')}"
         
         self.user_info = "https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard"
         
@@ -78,9 +98,13 @@ class _hoyoManager:
         self.zzz_battery = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note"
         self.deadly_assault = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/mem_detail"
         self.shiyu = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/challenge"
+        self.hollow = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/abyss_abstract"
         
         self.gi_info = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index"
-        self.hsr_info =  "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index"
+        
+        self.starrail_info =  "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index"
+        self.starrail_battery = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note"
+        self.starrail_shiyu = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge"
         
         self.cookie_manager = CookieManager()
         self.uid = uid
@@ -91,9 +115,27 @@ class _hoyoManager:
         
         self.get_base_details()
         
+        self.version = "2.11.1"
+        self.client_type = "5"
+        
         self.zenless = self.zenlessManager(self)
+        self.starrail = self.starrailManager(self)
+        self.genshin = self.genshinManager(self)
+    
+    def generate_ds(self, data=None):
+        t = int(time.time())
+        r = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
         
+        if data:
+            data_string = json.dumps(data)
+            # Remove spaces in the JSON string
+            data_string = data_string.replace(' ', '')
+            message = f"salt={self.salt}&t={t}&r={r}&b={data_string}&q="
+        else:
+            message = f"salt={self.salt}&t={t}&r={r}"
         
+        hash_value = hashlib.md5(message.encode()).hexdigest()
+        return f"{t},{r},{hash_value}"
     
     def get_base_details(self):
         user_data = self.make_request(self.user_info, params={"uid": self.uid})
@@ -120,10 +162,15 @@ class _hoyoManager:
         """Make API request with proper headers"""
         headers = {
             "Cookie": self.cookie_manager.format_for_header(),
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/132.0",
-            "Origin": "https://act.hoyolab.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
             "Referer": "https://act.hoyolab.com",
-            "x-rpc-language": "en-us",
+            'x-rpc-lang': "en-us", 
+            'x-rpc-language': "en-us",
+            'x-rpc-app_version': "2.11.1",
+            'x-rpc-client_type': "5", 
+            'x-rcp-platform': "4",
+            'Accept-language': "en-US,en;q=0.5",
+            'DS': self.generate_ds(params)
         }
 
         try:
@@ -133,7 +180,68 @@ class _hoyoManager:
         except requests.RequestException as e:
             print(f"Error making request: {e}")
             return None
+    
+    class genshinManager():
+        def __init__(self, main_api):
+            self.api = main_api
+
+            # Getting back vars that I need
+            self.genshin_uid = main_api._genshin_uid
+            self.genshin_region = main_api._genshin_reigon
+            self.gi_info = main_api.gi_info
+
+        def print_status(self):
+            print(self.genshin_uid)
+            if self.genshin_uid and self.genshin_region:
+                print(f"Genshin UID: {self.genshin_uid}, Region: {self.genshin_region}")
+            else:
+                print("No Genshin account found")
+
+        def get_info(self):
+            user_data = self.api.make_request(
+                self.gi_info,
+                params={"server": f"{self.genshin_region}", "role_id": f"{self.genshin_uid}"},
+            )
+            print("\nUser Data Response:")
+            pprint.pprint(user_data)
+    
+    class starrailManager():
+        def __init__(self, main_api):
+            self.api = main_api
+
+            # Getting back vars that I need
+            self.starrail_uid = main_api._starrail_uid
+            self.starrail_region = main_api._starrail_reigon
+            self.starrail_info = main_api.starrail_info
+            self.starrail_shiyu = main_api.starrail_shiyu
+
+        def print_status(self):
+            print(self.starrail_uid)
+            if self.starrail_uid and self.starrail_region:
+                print(f"Starrail UID: {self.starrail_uid}, Region: {self.starrail_region}")
+            else:
+                print("No Starrail account found")
+
+        # Error -10001 occurs because the request is missing required header 'DS'
+        # The DS header contains a dynamic signature that HoYoverse uses for API authentication
+        # Need to add x-rpc-client_type: '5' and proper DS header calculation
+        def get_info(self):
+            user_data = self.api.make_request(
+                self.starrail_info,
+                params={"server": f"{self.starrail_region}", "role_id": f"{self.starrail_uid}"},
+            )
+            print("\nUser Data Response:")
+            pprint.pprint(user_data)
         
+        def getForgottenHall(self):
+            user_data = self.api.make_request(
+                self.starrail_shiyu,
+                params={"server": f"{self.starrail_region}", "role_id": f"{self.starrail_uid}", "need_all":"true", "schedule_type":1},
+            )
+            print(self.starrail_region,self.starrail_uid)
+            print("\nUser Data Response:")
+            pprint.pprint(user_data)
+    
     class zenlessManager():
         def __init__(self, main_api):
             self.api = main_api
@@ -146,6 +254,7 @@ class _hoyoManager:
             self.zzz_battery = main_api.zzz_battery
             self.shiyu = main_api.shiyu
             self.deadly_assault = main_api.deadly_assault
+            self.hollow_zero = main_api.hollow
             
         
         def print_status(self):
@@ -174,7 +283,7 @@ class _hoyoManager:
             assualt_data = self.api.make_request(
                 self.deadly_assault,
                 params={"region": f"{self.zenless_region}", "uid": f"{self.zenless_uid}", "schedule_type":1},
-            )
+            ) 
             pprint.pprint(assualt_data)
         
         def getShiyu(self):
@@ -183,6 +292,13 @@ class _hoyoManager:
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}", "schedule_type":1},
             )
             pprint.pprint(shiyu_data)
+            
+        def getHZ(self):
+            hz_data = self.api.make_request(
+                self.hollow_zero,
+                params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}"},
+            )
+            pprint.pprint(hz_data)
 
         
 
@@ -190,8 +306,6 @@ class _hoyoManager:
 
 
 def main():
-    
-    zzz_info = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/index"
     cookie_string = f"""cookie_token_v2={os.getenv('cookie_token_v2')};
                         account_mid_v2={os.getenv('account_mid_v2')};
                         account_id_v2={os.getenv('account_id_v2')};
@@ -200,7 +314,8 @@ def main():
                         ltuid_v2={os.getenv('ltuid_v2')}"""
                         
     api = _hoyoManager(cookie_string, 93112092)
-    api.zenless.getShiyu()
+    api.starrail.print_status()
+    api.starrail.get_info()
     
 
 
