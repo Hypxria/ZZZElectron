@@ -1,5 +1,5 @@
 import requests
-from typing import Dict, Optional
+from typing import Dict
 import pprint
 from dotenv import load_dotenv
 import os
@@ -7,7 +7,8 @@ import time
 import random
 import string
 import hashlib
-import json
+
+import ds
 
 load_dotenv()
 
@@ -64,6 +65,7 @@ https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge_boss?sch
 GI
 https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index?avatar_list_type=0&server={server}&role_id={roleid} (Genshin Details?)
 
+
 ZZZ
 https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/index?server={server}&role_id={roleid} (ZZZ Details)
 https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note?server=prod_gf_us&role_id=1000278659 (ZZZ Battery Charge)
@@ -87,12 +89,12 @@ def generate_os_dynamic_secret(salt_type):
 
 
 
-class _hoyoManager:  
+class hoyoManager:  
     def __init__(self, cookie_string, uid):
-        self.salt = f"{os.getenv('SALT')}"
+        
+        # URLS
         
         self.user_info = "https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard"
-        
         
         self.zzz_info = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/index"
         self.zzz_battery = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note"
@@ -101,10 +103,13 @@ class _hoyoManager:
         self.hollow = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/abyss_abstract"
         
         self.gi_info = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index"
+        self.gi_spiral = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/spiralAbyss"
         
         self.starrail_info =  "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index"
         self.starrail_battery = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note"
         self.starrail_shiyu = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge"
+        
+        # Vars
         
         self.cookie_manager = CookieManager()
         self.uid = uid
@@ -113,32 +118,23 @@ class _hoyoManager:
         self._zenless_uid = None
         self._zenless_region = None
         
-        self.get_base_details()
+        # CN Failsafe
+        self.cn_regions = ['prod_gf_sg', 'prod_official_cht', 'os_cht']
         
-        self.version = "2.11.1"
-        self.client_type = "5"
+        self.get_base_details()
         
         self.zenless = self.zenlessManager(self)
         self.starrail = self.starrailManager(self)
         self.genshin = self.genshinManager(self)
-    
-    def generate_ds(self, data=None):
-        t = int(time.time())
-        r = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
         
-        if data:
-            data_string = json.dumps(data)
-            # Remove spaces in the JSON string
-            data_string = data_string.replace(' ', '')
-            message = f"salt={self.salt}&t={t}&r={r}&b={data_string}&q="
-        else:
-            message = f"salt={self.salt}&t={t}&r={r}"
         
-        hash_value = hashlib.md5(message.encode()).hexdigest()
-        return f"{t},{r},{hash_value}"
     
     def get_base_details(self):
-        user_data = self.make_request(self.user_info, params={"uid": self.uid})
+        user_data = self.make_request(
+            endpoint=self.user_info,
+            params={"uid": self.uid},
+            region = None
+        )
 
         if user_data:
             print("\nUser Data Response:")
@@ -147,20 +143,20 @@ class _hoyoManager:
         for entry in user_data["data"]["list"]:
             if entry["game_id"] == 2:
                 self._genshin_uid = entry["game_role_id"]
-                self._genshin_reigon = entry["region"]
-                print(self._genshin_uid, self._genshin_reigon)
+                self._genshin_region = entry["region"]
+                print(self._genshin_uid, self._genshin_region)
             if entry["game_id"] == 6:
                 self._starrail_uid = entry["game_role_id"]
-                self._starrail_reigon = entry["region"]
-                print(self._starrail_uid, self._starrail_reigon)
+                self._starrail_region = entry["region"]
+                print(self._starrail_uid, self._starrail_region)
             if entry["game_id"] == 8:
                 self._zenless_uid = entry["game_role_id"]
-                self._zenless_reigon = entry["region"]
-                print(self._zenless_uid, self._zenless_reigon)
+                self._zenless_region = entry["region"]
+                print(self._zenless_uid, self._zenless_region)
     
-    def make_request(self, endpoint: str, params: Dict = None):
+    def make_request(self, endpoint: str, params: Dict = None, region = None):
         """Make API request with proper headers"""
-        headers = {
+        self.headers = {
             "Cookie": self.cookie_manager.format_for_header(),
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0",
             "Referer": "https://act.hoyolab.com",
@@ -170,11 +166,18 @@ class _hoyoManager:
             'x-rpc-client_type': "5", 
             'x-rcp-platform': "4",
             'Accept-language': "en-US,en;q=0.5",
-            'DS': self.generate_ds(params)
+            'DS': ds.generate_cn_dynamic_secret(params, params) if region in self.cn_regions else ds.generate_dynamic_secret()
         }
+        
+        if region in self.cn_regions:
+            self.headers['DS'] = ds.generate_cn_dynamic_secret()
+        elif region is not None:
+            self.headers['DS'] = ds.generate_dynamic_secret()
+
+
 
         try:
-            response = requests.get(endpoint, headers=headers, params=params)
+            response = requests.get(endpoint, headers=self.headers, params=params)
             response.raise_for_status()
             return response.json()
         except requests.RequestException as e:
@@ -187,8 +190,10 @@ class _hoyoManager:
 
             # Getting back vars that I need
             self.genshin_uid = main_api._genshin_uid
-            self.genshin_region = main_api._genshin_reigon
+            self.genshin_region = main_api._genshin_region
+            
             self.gi_info = main_api.gi_info
+            self.gi_spiral = main_api.gi_spiral
 
         def print_status(self):
             print(self.genshin_uid)
@@ -199,11 +204,23 @@ class _hoyoManager:
 
         def get_info(self):
             user_data = self.api.make_request(
-                self.gi_info,
+                region = self.genshin_region,
+                endpoint = self.gi_info,
                 params={"server": f"{self.genshin_region}", "role_id": f"{self.genshin_uid}"},
             )
             print("\nUser Data Response:")
             pprint.pprint(user_data)
+        
+        def get_spiral(self):
+            user_data = self.api.make_request(
+                region = self.genshin_region,
+                endpoint = self.gi_spiral,
+                params={"server": f"{self.genshin_region}", "role_id": f"{self.genshin_uid}", "schedule_type":1},
+            )
+            print("\nUser Data Response:")
+            pprint.pprint(user_data)
+            
+        
     
     class starrailManager():
         def __init__(self, main_api):
@@ -211,9 +228,12 @@ class _hoyoManager:
 
             # Getting back vars that I need
             self.starrail_uid = main_api._starrail_uid
-            self.starrail_region = main_api._starrail_reigon
+            self.starrail_region = main_api._starrail_region
+            
             self.starrail_info = main_api.starrail_info
             self.starrail_shiyu = main_api.starrail_shiyu
+            self.starrail_battery = main_api.starrail_battery
+            
 
         def print_status(self):
             print(self.starrail_uid)
@@ -227,7 +247,17 @@ class _hoyoManager:
         # Need to add x-rpc-client_type: '5' and proper DS header calculation
         def get_info(self):
             user_data = self.api.make_request(
-                self.starrail_info,
+                region = self.starrail_region,
+                endpoint = self.starrail_info,
+                params = {"server": f"{self.starrail_region}", "role_id": f"{self.starrail_uid}"},
+            )
+            print("\nUser Data Response:")
+            pprint.pprint(user_data)
+            
+        def get_stamina(self):
+            user_data = self.api.make_request(
+                region = self.starrail_region,
+                endpoint = self.starrail_battery,
                 params={"server": f"{self.starrail_region}", "role_id": f"{self.starrail_uid}"},
             )
             print("\nUser Data Response:")
@@ -235,7 +265,8 @@ class _hoyoManager:
         
         def getForgottenHall(self):
             user_data = self.api.make_request(
-                self.starrail_shiyu,
+                region = self.starrail_region,
+                endpoint = self.starrail_shiyu,
                 params={"server": f"{self.starrail_region}", "role_id": f"{self.starrail_uid}", "need_all":"true", "schedule_type":1},
             )
             print(self.starrail_region,self.starrail_uid)
@@ -248,7 +279,7 @@ class _hoyoManager:
             
             # Getting back vars that I need
             self.zenless_uid = main_api._zenless_uid
-            self.zenless_region = main_api._zenless_reigon
+            self.zenless_region = main_api._zenless_region
             self.cookie_manager = main_api.cookie_manager
             self.zzz_info = main_api.zzz_info
             self.zzz_battery = main_api.zzz_battery
@@ -266,7 +297,8 @@ class _hoyoManager:
             
         def get_info(self):
             user_data = self.api.make_request(
-                self.zzz_info,
+                region = self.zenless_region,
+                endpoint = self.zzz_info,
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}"},
             )
             print("\nUser Data Response:")
@@ -274,28 +306,32 @@ class _hoyoManager:
             
         def get_battery_info(self):
             battery_data = self.api.make_request(
-                self.zzz_battery,
+                region = self.zenless_region,
+                endpoint = self.zzz_battery,
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}"},
             )
             pprint.pprint(battery_data)
         
         def getDeadlyAssault(self):
             assualt_data = self.api.make_request(
-                self.deadly_assault,
+                region = self.zenless_region,
+                endpoint = self.deadly_assault,
                 params={"region": f"{self.zenless_region}", "uid": f"{self.zenless_uid}", "schedule_type":1},
             ) 
             pprint.pprint(assualt_data)
         
         def getShiyu(self):
             shiyu_data = self.api.make_request(
-                self.shiyu,
+                region = self.zenless_region,
+                endpoint = self.shiyu,
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}", "schedule_type":1},
             )
             pprint.pprint(shiyu_data)
             
         def getHZ(self):
             hz_data = self.api.make_request(
-                self.hollow_zero,
+                region = self.zenless_region,
+                endpoint = self.hollow_zero,
                 params={"server": f"{self.zenless_region}", "role_id": f"{self.zenless_uid}"},
             )
             pprint.pprint(hz_data)
@@ -313,21 +349,11 @@ def main():
                         ltmid_v2={os.getenv('ltmid_v2')};
                         ltuid_v2={os.getenv('ltuid_v2')}"""
                         
-    api = _hoyoManager(cookie_string, 93112092)
+    api = hoyoManager(cookie_string, 93112092)
     api.starrail.print_status()
-    api.starrail.get_info()
+    api.zenless.get_info()
     
-
-
-    # user_data = make_request(
-    #     cookie_manager,
-    #     zzz_info,
-    #     params={"server": "prod_gf_us", "role_id": f"{zenless_uid}"},
-    # )
-    # print("\nUser Data Response:")
-   
-
-
+    
 
 if __name__ == "__main__":
     main()
