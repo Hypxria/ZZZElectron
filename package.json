@@ -69,6 +69,7 @@
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "axios": "^1.8.1",
     "cryptojs": "^2.5.3",
+    "dotenv": "^16.4.7",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
     "fast-average-color": "^9.4.0",

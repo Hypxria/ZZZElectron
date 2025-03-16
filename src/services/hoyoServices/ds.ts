@@ -1,78 +1,63 @@
-import { createHash } from 'crypto';
+import { randomBytes } from 'crypto';
+import { Region, Game, DSHeaders } from './types';
 
-export enum Region {
-    OVERSEAS = "OVERSEAS",
-    CHINESE = "CHINESE"
-}
+const CN_TIMEZONE = 8 * 60 * 60 * 1000; // UTC+8 in milliseconds
 
-export enum Game {
-    GENSHIN = "GENSHIN",
-    STARRAIL = "STARRAIL",
-    ZENLESS = "ZENLESS"
-}
-
-const DS_SALT = {
-    [Region.OVERSEAS]: {
-        [Game.GENSHIN]: "6s25p5ox5y14umn1p61aqyyvbvvl3lrt",
-        [Game.STARRAIL]: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        [Game.ZENLESS]: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    },
-    [Region.CHINESE]: {
-        [Game.GENSHIN]: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        [Game.STARRAIL]: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    }
+export const DS_SALT = {
+  [Region.OVERSEAS]: "6s25p5ox5y14umn1p61aqyyvbvvl3lrt",
+  [Region.CHINESE]: "xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs",
+  app_login: "IZPgfb0dRPtBeLuFkdDznSZ6f4wWt6y2",
+  cn_signin: "LyD1rXqMv2GJhnwdvCBjFOKGiKuLY3aO",
+  cn_passport: "JwYDpKvLj6MrMqqYU6jTKF17KNO2PXoS",
 };
 
-const DS_SALT_2 = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-const DS_SALT_PAS = "5pFRlzRCPlVHRTI8";
+const APP_KEYS = {
+  [Game.GENSHIN]: {
+    [Region.OVERSEAS]: "6a4c78fe0356ba4673b8071127b28123",
+    [Region.CHINESE]: "d0d3a7342df2026a70f650b907800111",
+  },
+  // Add other game keys as needed
+};
 
-export function generateDynamicSecret(salt: string = DS_SALT[Region.OVERSEAS][Game.GENSHIN]): string {
-    const time = Math.floor(Date.now() / 1000);
-    const random = Math.floor(Math.random() * 100000).toString().padStart(6, '0');
-    const stringToHash = `salt=${salt}&t=${time}&r=${random}`;
-    const check = createHash('md5').update(stringToHash).digest('hex');
-    return `${time},${random},${check}`;
+export function generateDynamicSecret(salt: string = DS_SALT[Region.OVERSEAS]): string {
+  const t = Math.floor(Date.now() / 1000);
+  const r = randomBytes(6).toString('hex').slice(0, 6);
+  const message = `salt=${salt}&t=${t}&r=${r}`;
+  const hash = require('crypto').createHash('md5').update(message).digest('hex');
+  return `${t},${r},${hash}`;
 }
 
-export function generateCnDynamicSecret(body: Record<string, any> = {}, query: string = ""): string {
-    const salt = DS_SALT[Region.CHINESE][Game.GENSHIN];
-    const time = Math.floor(Date.now() / 1000);
-    const stringToHash = `salt=${salt}&t=${time}&r=&b=${JSON.stringify(body)}&q=${query}`;
-    const check = createHash('md5').update(stringToHash).digest('hex');
-    return `${time},,${check}`;
+export function generateCnDynamicSecret(
+  body: any = null,
+  query: Record<string, any> | null = null,
+  salt: string = DS_SALT[Region.CHINESE]
+): string {
+  const t = Math.floor(Date.now() / 1000);
+  const r = Math.floor(100001 + Math.random() * 100000);
+  const b = body ? JSON.stringify(body) : "";
+  const q = query ? Object.entries(query)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`)
+    .join("&") : "";
+
+  const message = `salt=${salt}&t=${t}&r=${r}&b=${b}&q=${q}`;
+  const hash = require('crypto').createHash('md5').update(message).digest('hex');
+  return `${t},${r},${hash}`;
 }
 
-export function getDsHeaders(
-    region: Region = Region.OVERSEAS,
-    game: Game = Game.GENSHIN,
-    body: Record<string, any> = {},
-    query: string = ""
-): Record<string, string> {
-    const ds = region === Region.CHINESE
-        ? generateCnDynamicSecret(body, query)
-        : generateDynamicSecret(DS_SALT[region][game]);
-    
+export function getDsHeaders(region: Region, data?: any, params?: Record<string, any>, lang?: string): DSHeaders {
+  if (region === Region.OVERSEAS) {
     return {
-        'DS': ds,
-        'x-rpc-app_version': '2.40.0',
-        'x-rpc-client_type': '5',
+      "x-rpc-app_version": "1.5.0",
+      "x-rpc-client_type": "5",
+      "x-rpc-language": lang,
+      "x-rpc-lang": lang,
+      ds: generateDynamicSecret(),
     };
-}
-
-export function generatePassportDs(body: Record<string, any>): string {
-    const salt = DS_SALT_PAS;
-    const time = Math.floor(Date.now() / 1000);
-    const random = Math.floor(Math.random() * 100000).toString().padStart(6, '0');
-    const stringToHash = `salt=${salt}&t=${time}&r=${random}&b=${JSON.stringify(body)}`;
-    const check = createHash('md5').update(stringToHash).digest('hex');
-    return `${time},${random},${check}`;
-}
-
-export function generateGeetestDs(region: Region): string {
-    const salt = DS_SALT_2;
-    const time = Math.floor(Date.now() / 1000);
-    const random = Math.floor(Math.random() * 100000).toString().padStart(6, '0');
-    const stringToHash = `salt=${salt}&t=${time}&r=${random}`;
-    const check = createHash('md5').update(stringToHash).digest('hex');
-    return `${time},${random},${check}`;
+  }
+  return {
+    "x-rpc-app_version": "2.11.1",
+    "x-rpc-client_type": "5",
+    ds: generateCnDynamicSecret(data, params),
+  };
 }
