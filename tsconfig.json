@@ -16,8 +16,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": ["./node_modules/@types", "./src/types/"],
+    "types": ["node", "tough-cookie"],
+    "useUnknownInCatchVariables": false,
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
+  
 }
