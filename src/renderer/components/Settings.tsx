@@ -1,5 +1,5 @@
 // Settings.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import secureLocalStorage from "react-secure-storage";
 import './Settings.css';
@@ -65,6 +65,18 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         window.location.reload();
     };
     
+    const handleCredentialsHoyo = () => {
+        const idInput = document.querySelector('.hoyolab-input') as HTMLInputElement;
+        const secretInput = document.querySelector('.hoyolab-input-secret') as HTMLInputElement;
+
+        const account = idInput.value;
+        const password = secretInput.value;
+
+        secureLocalStorage.setItem('hoyolab_username', account);
+        secureLocalStorage.setItem('hoyolab_password', password);
+
+    }
+
     return (
         <div 
             className={`settings ${isSettings ? 'show' : ''}`} 
@@ -155,7 +167,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Client ID"
                                     className="spotify-input"
-                                    value={localStorage.getItem('spotify_client_id') || ''}
+                                    value={String(secureLocalStorage.getItem('spotify_client_id')) || ''}
                                 />
                             </div>
                             <div className="input-group">
@@ -163,12 +175,39 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Client Secret"
                                     className="spotify-input-secret"
-                                    value={localStorage.getItem('spotify_client_secret') || ''}
+                                    value={String(secureLocalStorage.getItem('spotify_client_secret')) || ''}
 
                                 />
                             </div>
                             <div className="save-input">
                                 <button className="save-button" onClick={handleCredentials}>Save</button>
+                            </div>  
+                        </div>
+                    </div>
+                )}
+
+                {/* Spotify Settings section */}
+                {activeMenu === 'Hoyolab Settings' && (
+                    <div className="options-menu">
+                        <div className="spotify-credentials">
+                            <div className="input-group">
+                                <input 
+                                    type="text"
+                                    placeholder="Hoyolab Username/Email"
+                                    className="hoyo-input"
+                                    value={String(secureLocalStorage.getItem('hoyolab_username')) === 'null' ? '' : String(secureLocalStorage.getItem('hoyolab_username'))}
+                                />
+                            </div>
+                            <div className="input-group">
+                                <input 
+                                    type="password"
+                                    placeholder="Hoyolab Password"
+                                    className="hoyo-input-secret"
+                                    value={String(secureLocalStorage.getItem('hoyolab_password')) === 'null' ? '' : String(secureLocalStorage.getItem('hoyolab_password'))}
+                                />
+                            </div>
+                            <div className="save-input">
+                                <button className="save-button" onClick={handleCredentialsHoyo}>Save</button>
                             </div>  
                         </div>
                     </div>

@@ -4,34 +4,28 @@ import * as tough from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import { config } from 'dotenv';
 import crypto from 'crypto'
-import base64 from 'base64-js'
 
 config();
 
-tough.Cookie
+interface cookies {
+    cookie_token_v2: string
+    account_mid_v2: string
+    account_id_v2: string
+    ltoken_v2: string
+    ltmid_v2: string
+    ltuid_v2: string
+}
 
 interface AuthResult {
-    cookies: Record<string, string>;
+    cookies: cookies;
     uid?: string;
 }
 
-interface LoginResponse {
-    data: {
-        uid: string;
-        // Add other relevant fields from the login response
-    };
-    message: string;
-    retcode: number;
+interface AuthResponse {
+    uid: string;
+    cookies: cookies;
 }
 
-interface UserInfoResponse {
-    data: {
-        uid: string;
-        // Add other user info fields
-    };
-    message: string;
-    retcode: number;
-}
 
 const LOGIN_KEY_TYPE_1 = `
 -----BEGIN PUBLIC KEY-----
@@ -56,11 +50,9 @@ CgGs52bFoYMtyi+xEQIDAQAB
 
 export class HoyolabAuth {
     private client: axios.AxiosInstance;
-    private cookieJar: tough.CookieJar;
 
     constructor() {
         const cookieJar = new tough.CookieJar();
-        this.cookieJar = cookieJar;
         this.client = wrapper(axios.create({
             jar: cookieJar,
             headers: {
@@ -86,7 +78,7 @@ export class HoyolabAuth {
         return response.data;
     }
 
-    private async sendLoginRequest(account: string, password: string): Promise<string> {
+    private async sendLoginRequest(account: string, password: string): Promise<AuthResponse> {
         interface LoginRequest {
             account: string;
             password: string;
@@ -100,7 +92,7 @@ export class HoyolabAuth {
             token_type: 6
         };
 
-        const response = await axios.post<any>(url, requestData, {
+        const response = await this.client.post<any>(url, requestData, {
             headers: {
                 'x-rpc-source': 'v2.webLogin',
                 'x-rpc-device_fp': '38d7ee588249d',
@@ -111,13 +103,19 @@ export class HoyolabAuth {
                 'x-rpc-client_type': '4',
                 'x-rpc-referrer': 'https://account.hoyolab.com/',
                 'Origin': 'https://account.hoyolab.com',
-                'Referer': 'https://account.hoyolab.com/'
+                'Referer': 'https://account.hoyolab.com/',
+                'Accept': '*/*',
             }
         });
+
+
+        // console.log(response.headers['set-cookie']?.[0])
 
         if (response.status !== 200) {
             throw new Error(`Login failed with status: ${response.status}`);
         }
+
+
 
         const cookies = this.parseCookies(response.headers['set-cookie'] ?? []);
 
@@ -128,7 +126,19 @@ export class HoyolabAuth {
             throw new Error('UID not found in response');
         }
 
-        return uid; // Return the UID as a string
+        const sortedCookies: cookies = {
+            cookie_token_v2: cookies['cookie_token_v2'],
+            account_mid_v2: cookies['account_mid_v2'],
+            account_id_v2: cookies['account_id_v2'],
+            ltoken_v2: cookies['ltoken_v2'],
+            ltmid_v2: cookies['ltmid_v2'],
+            ltuid_v2: cookies['ltuid_v2'],
+        }
+
+        return {
+            uid: uid,
+            cookies: sortedCookies
+        };
 
         // Access response data
 
@@ -138,12 +148,15 @@ export class HoyolabAuth {
         const cookies: Record<string, string> = {};
 
         setCookieHeaders?.forEach(header => {
+
             const cookie = tough.Cookie.parse(header);
             if (cookie) {
                 cookies[cookie.key] = cookie.value;
             }
         });
 
+
+        console.log(cookies)
         return cookies;
     }
 
@@ -155,15 +168,13 @@ export class HoyolabAuth {
             console.log('Login page loaded successfully');
 
             // Perform login
-            const uid = await this.sendLoginRequest(account, password);
+            const loginResponse: AuthResponse = await this.sendLoginRequest(account, password);
+
+            const uid = loginResponse.uid
+            const cookies = loginResponse.cookies
+
             console.log('Login request sent successfully');
             console.log('UID retrieved successfully:', uid);
-
-            // Get UID
-
-
-            // Extract cookies
-            const cookies = await this.getCookies();
             console.log('Cookies extracted successfully:', cookies);
 
             return { cookies, uid };
@@ -172,22 +183,7 @@ export class HoyolabAuth {
         }
     }
 
-    private async getCookies(): Promise<Record<string, string>> {
-        const cookies = await this.client.get('https://account.hoyoverse.com/');
-        const cookieHeader = cookies.headers['set-cookie'];
-
-        console.log(cookies.headers)
-
-        const cookieDict: Record<string, string> = {};
-        cookieHeader?.forEach((cookie: string) => {
-            const parsed = tough.parse(cookie);
-            if (parsed) {
-                cookieDict[parsed.key] = parsed.value;
-            }
-        });
-
-        return cookieDict;
-    }
+    
 }
 
 // Usage (isolated in separate file)
