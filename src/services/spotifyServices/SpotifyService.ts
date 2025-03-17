@@ -2,6 +2,10 @@ import axios from 'axios';
 import qs from 'qs';
 import secureLocalStorage from "react-secure-storage";
 
+/*
+Do I really need to make comments for this... It's the spotify API.
+*/
+
 
 export enum RepeatState {
     OFF = 'off',

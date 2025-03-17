@@ -1,3 +1,8 @@
+/*
+Pretty much just a copy of Vibrant npm library, but I didn't want to install too many libraries because there are already too many.
+I'm not sure if this is the best way to do it, but it works for now.
+*/
+
 export interface Swatch {
     rgb: [number, number, number];
     population: number;

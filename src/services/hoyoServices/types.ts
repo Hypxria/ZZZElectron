@@ -1,3 +1,7 @@
+/*
+Useful types when working with hoyo services
+*/
+
 export enum Region {
   OVERSEAS = "os",
   CHINESE = "cn"

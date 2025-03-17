@@ -3,6 +3,13 @@ import { Region, Game, DSHeaders } from './types';
 
 const CN_TIMEZONE = 8 * 60 * 60 * 1000; // UTC+8 in milliseconds
 
+/*
+I'm BAAAACKKK
+Dynamic signatures. We need this for HSR for some reason.
+I don't know how it works, but it does.
+I'm not sure if it's needed for other games, but I'm not going to bother with it.
+*/
+
 export const DS_SALT = {
   [Region.OVERSEAS]: "6s25p5ox5y14umn1p61aqyyvbvvl3lrt",
   [Region.CHINESE]: "xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs",
@@ -19,6 +26,7 @@ const APP_KEYS = {
   // Add other game keys as needed
 };
 
+// Stolen from TukanDev (https://github.com/TukanDev/qingyi/) 
 export function generateDynamicSecret(salt: string = DS_SALT[Region.OVERSEAS]): string {
   const t = Math.floor(Date.now() / 1000);
   const r = randomBytes(6).toString('hex').slice(0, 6);
@@ -27,6 +35,7 @@ export function generateDynamicSecret(salt: string = DS_SALT[Region.OVERSEAS]): 
   return `${t},${r},${hash}`;
 }
 
+// https://github.com/TukanDev/qingyi/
 export function generateCnDynamicSecret(
   body: any = null,
   query: Record<string, any> | null = null,

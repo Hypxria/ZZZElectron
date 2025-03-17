@@ -8,22 +8,32 @@ const CN_REGIONS = ['prod_gf_sg', 'prod_official_cht', 'os_cht'];
 export class HoyoManager {
   // API endpoints
   public readonly userInfoUrl = "https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard";
+
+  // ZZZ
   public readonly zzzInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/index";
   public readonly zzzBatteryUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/note";
   public readonly deadlyAssaultUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/mem_detail";
   public readonly shiyuUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/challenge";
   public readonly hollowUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/abyss_abstract";
+
+  // GI
   public readonly giInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index";
   public readonly giSpiralUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/spiralAbyss";
+
+  // HSR
   public readonly starrailInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index";
   public readonly starrailBatteryUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note";
   public readonly starrailShiyuUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge";
 
+  // Nested class recreation (in practice) from an old version of this in python (Commit d587ea4c491d9c776be3eb35162b65f804e66297)
   public readonly zenless: ZenlessManager;
   public readonly starrail: StarrailManager;
   public readonly genshin: GenshinManager;
 
+  // Explained in file
   private cookieManager: CookieManager;
+  
+  // I needed it throughout the entire class I think
   private uid: string;
   
   // Game properties
@@ -88,6 +98,8 @@ export class HoyoManager {
     params?: Record<string, any>,
     region?: string
   ): Promise<T | null> {
+
+    // Check ds.ts for what's going on here/ why I'm doing it.
     const ds = region && CN_REGIONS.includes(region)
       ? generateCnDynamicSecret(params, params, DS_SALT[Region.CHINESE])
       : generateDynamicSecret();
@@ -101,6 +113,10 @@ export class HoyoManager {
     };
   
     // Create DS headers with proper typing
+    /*
+    Now. See the DS creation in all its idiocy.
+    Still don't know why it exists
+    */
     const dsHeaders: DSHeaders = {
       'x-rpc-app_version': '2.11.1',
       'x-rpc-client_type': '5',
@@ -145,7 +161,7 @@ export class HoyoManager {
   get zenlessRegion(): string | undefined { return this._zenlessRegion; }
 }
 
-// Helper Classes
+// Helper/Game Classes
 class GenshinManager {
   constructor(private mainApi: HoyoManager) {}
 

@@ -1,3 +1,9 @@
+/*
+Hyperiya again!
+This time, we are going to make a cookie manager. 
+We will be using the cookie string to get the essential cookies and format them for the header. (AI GENERATED COMMENT.)
+*/
+
 export class CookieManager {
   private cookieData: Record<string, string> = {};
 
