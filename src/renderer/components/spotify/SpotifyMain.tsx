@@ -8,7 +8,6 @@ import "./Styles/Main.css";
 import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService";
 import { ViewState } from "../../../types/viewState";
 import { ColorExtractor } from '../../../utils/ColorExtractor'
-import { clear } from "console";
 
 interface SpotifyMainProps {
   ViewState: ViewState
@@ -55,7 +54,12 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
     const syncProgress = async () => {
       try {
-        const track = await spotifyService.getCurrentTrack();
+        const track = currentTrackData
+        console.log("Syncing progress...", {
+          spotify: track.progress_ms,
+          local: progressRef.current
+        });
+        console.log(Math.abs((track.progress_ms || 0) - progressRef.current))
         if (track && Math.abs((track.progress_ms || 0) - progressRef.current) > 1000) {
           // If difference is more than 1 second, sync
           console.log("Syncing progress...", {
@@ -133,9 +137,15 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     animationFrameRef.current = requestAnimationFrame(updateProgress);
 
     // Set up polling interval for track updates
+    console.log("Setting up polling interval")
     const pollInterval = setInterval(fetchCurrentTrack, 500);
+    console.log("Polling interval set up")
 
+    console.log("Setting up sync interval")
     const syncInterval = setInterval(syncProgress, 5000);
+    console.log("Sync interval set up")
+
+    syncProgress()
 
     // Cleanup function
     return () => {
@@ -146,7 +156,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         cancelAnimationFrame(animationFrameRef.current);
       }  
     };
-  }, [currentTrackData.is_playing]);
+  }, [currentTrackData.is_playing, currentTrackData]);
 
   // NextTrack tracking
 

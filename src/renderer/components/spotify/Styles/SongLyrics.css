@@ -7,7 +7,7 @@
   color: white;
   text-align: center;
   max-height: 100vh;
-  overflow: hidden;
+  overflow: show;
   left: 72.5vw;
   top: 50%;
   transform: translateY(-50%) translateX(-50%);
@@ -64,6 +64,7 @@
   transform: scale(1);
   translate: 0% -100%;
   mask-image: linear-gradient(0deg, var(--dimmer-color), transparent 150% );
+  font-family: Urbanist;
 }
 
 .current-lyric {
@@ -71,6 +72,7 @@
   font-size: 1.7rem;
   font-weight: bold;
   margin: -0.5rem 0;
+  font-family: urbanist;
 }
 
 .next-lyric {
@@ -78,7 +80,8 @@
   font-size: 1.4rem;
   transform: scale(1);
   translate: 0% 100%;
-  mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150% )
+  mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150% );
+  font-family: Urbanist;
 }
 
 .loading {
