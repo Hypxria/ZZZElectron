@@ -15,6 +15,8 @@ interface SpotifyMainProps {
 
 spotifyService.authorize();
 
+spotifyService.startLinkWs();
+
 const SpotifyMain: React.FC<SpotifyMainProps> = (
   viewState
 ) => {

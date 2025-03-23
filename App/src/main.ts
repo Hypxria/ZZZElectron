@@ -185,7 +185,7 @@ async function createCallbackServer(): Promise<string> {
 }
 
 ipcMain.handle('spotify-link', async () => {
-  createWebSocketServer()
+  await createWebSocketServer()
 })
 
 ipcMain.handle('open-external', async (_, url: string) => {

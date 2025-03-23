@@ -55,8 +55,18 @@ class SpotifyService {
         this.authorize();
     }
     
-    constructor() {
+    constructor(spicetify:boolean = true) {
         console.log('SpotifyService constructed');
+        
+    }
+
+    public async startLinkWs() {
+        if (!window.electron) {
+            console.error('Electron API is not available');
+            return;
+        }
+        
+        await window.electron.spotifyLink()
     }
 
     async handleMessage(message: string) {
@@ -96,6 +106,7 @@ class SpotifyService {
             console.error('Electron API is not available');
             return;
         }
+
         if (window.electron) {
             await window.electron.openExternal(authUrl);
         }
