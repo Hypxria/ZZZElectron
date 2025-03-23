@@ -235,6 +235,9 @@ class ZZZElectron {
               case 'next':
                 // Handle getting next track info
                 const nextTrack = Spicetify.Queue.nextTracks[0];
+
+                const nextalbumId = nextTrack.
+
                 this.sendMessage(JSON.stringify({
                   type: 'response',
                   action: 'next',
@@ -265,6 +268,7 @@ class ZZZElectron {
                     .then(albumData => {
                       // Extract year from release_date
                       const year = albumData.release_date?.split('-')[0];
+                      const album_cover = albumData.images?.[0]?.url;
 
                       console.log('sending')
                       this.sendMessage(JSON.stringify({
@@ -275,7 +279,7 @@ class ZZZElectron {
                           artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
                           album: currentTrack?.album?.name || 'Unknown',
                           duration_ms: currentTrack?.duration || 0,
-                          album_cover: currentTrack.images?.[0]?.url,
+                          album_cover: album_cover, 
                           year: year || 'Unknown Year',
                           volume: Spicetify.Player.getVolume(),
                           is_playing: !Spicetify.Player.isPlaying,
