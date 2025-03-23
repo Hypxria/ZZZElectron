@@ -167,7 +167,6 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Client ID"
                                     className="spotify-input"
-                                    value={String(secureLocalStorage.getItem('spotify_client_id')) || ''}
                                 />
                             </div>
                             <div className="input-group">
@@ -175,8 +174,6 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Client Secret"
                                     className="spotify-input-secret"
-                                    value={String(secureLocalStorage.getItem('spotify_client_secret')) || ''}
-
                                 />
                             </div>
                             <div className="save-input">
@@ -195,7 +192,6 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="text"
                                     placeholder="Hoyolab Username/Email"
                                     className="hoyo-input"
-                                    value={String(secureLocalStorage.getItem('hoyolab_username')) === 'null' ? '' : String(secureLocalStorage.getItem('hoyolab_username'))}
                                 />
                             </div>
                             <div className="input-group">
@@ -203,7 +199,6 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     type="password"
                                     placeholder="Hoyolab Password"
                                     className="hoyo-input-secret"
-                                    value={String(secureLocalStorage.getItem('hoyolab_password')) === 'null' ? '' : String(secureLocalStorage.getItem('hoyolab_password'))}
                                 />
                             </div>
                             <div className="save-input">
