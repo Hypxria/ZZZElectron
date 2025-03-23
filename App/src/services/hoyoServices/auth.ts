@@ -279,6 +279,8 @@ async function main() {
         console.log('UID:', result.uid);
         console.log('Cookies:', result.cookies);
 
+        console.log(result.cookies.account_id_v2)
+
     } catch (error) {
         console.error('Login failed:', error.message);
     }
