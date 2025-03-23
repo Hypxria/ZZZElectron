@@ -2,21 +2,90 @@
 import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
 import * as http from 'http';
 import { URL } from 'url';
+import { WebSocketServer } from 'ws';
+import SpotifyService from './services/spotifyServices/SpotifyService';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let callbackServer: http.Server | null = null;
 let isServerRunning = false;
+let wss: WebSocketServer | null = null;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+function createWebSocketServer() {
+  if (wss) {
+    console.log('WebSocket server already running');
+    return;
+  }
+
+  wss = new WebSocketServer({ port: 5001 });
+
+  wss.on('listening', () => {
+    console.log('WebSocket server is listening on port 5001');
+  });
+
+  const handleSpicetifyMessage = (message: string): Promise<any> => {
+    return new Promise((resolve) => {
+      // You can route different message types here
+      SpotifyService.handleMessage(message)
+        .then(result => resolve(result))
+        .catch(error => resolve({ error: error.message }));
+    });
+  };
+
+  wss.on('connection', (ws) => {
+    console.log('New Spicetify client connected');
+
+    ws.on('message', async (message) => {
+      try {
+        const messageString = message.toString();
+        console.log('Received:', messageString);
+
+        const response = await handleSpicetifyMessage(messageString);
+
+        // Echo back the message
+        ws.send(`Server received: ${messageString}`);
+      } catch (error) {
+        console.error('Error handling message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log('Client disconnected');
+    });
+
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+
+    // Send initial connection confirmation
+    ws.send('Connected to Electron WebSocket Server');
+  });
+
+  wss.on('error', (error) => {
+    console.error('WebSocket server error:', error);
+  });
+
+  const healthServer = http.createServer((req, res) => {
+    if (req.url === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok' }));
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  });
+  healthServer.listen(5001, '127.0.0.1', () => {
+    console.log('Health check server listening on port 5000');
+  });  
+}
+
 const createWindow = async (): Promise<void> => {
   // Create the browser window.
-  
-
   const mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
@@ -37,7 +106,7 @@ const createWindow = async (): Promise<void> => {
           "default-src 'self';",
           "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
-          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com http://127.0.0.1:8080 https://api.spotify.com;",
+          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com http://127.0.0.1:8080 https://api.spotify.com ws://localhost:5001;",
           "img-src 'self' data: http://localhost:8080 http://127.0.0.1:8080 https:;"
         ].join(' ')
       }
@@ -115,7 +184,9 @@ async function createCallbackServer(): Promise<string> {
   });
 }
 
-
+ipcMain.handle('spotify-link', async () => {
+  createWebSocketServer()
+})
 
 ipcMain.handle('open-external', async (_, url: string) => {
   try {
@@ -155,6 +226,13 @@ app.on('before-quit', () => {
       console.log('Closing callback server...');
       callbackServer.close();
       callbackServer = null;
+  }
+  if (wss) {
+    console.log('Closing WebSocket server...');
+    wss.close(() => {
+      console.log('WebSocket server closed');
+      wss = null;
+    });
   }
 });
 

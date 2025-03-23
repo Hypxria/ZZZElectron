@@ -59,6 +59,18 @@ class SpotifyService {
         console.log('SpotifyService constructed');
     }
 
+    async handleMessage(message: string) {
+        try {
+          const data = JSON.parse(message);
+          
+          return data
+
+        } catch (error) {
+          console.error('Error in handleMessage:', error);
+          return { error: 'Failed to process message' };
+        }
+      }
+
     async initiateLogin(): Promise<void> {
         console.log('initiateLogin method called');
         const state = crypto.getRandomValues(new Uint8Array(16)).join('');
