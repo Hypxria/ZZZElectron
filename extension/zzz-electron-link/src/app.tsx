@@ -10,9 +10,16 @@ self.onmessage = function(e) {
 };
 `
   ;
+/*
+Hyperiya comments are back
+This worker is just to get the song progress *really* often because (as stated far below) get onsongprogress is slow when tabbed out.
+*/
 
 class ZZZElectron {
+  // Websocket to send info back to the app
   private ws: WebSocket | null = null;
+
+  // In case connections fail, made a few vars with this kinda stuff
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000; // Start with 1 second
@@ -96,12 +103,14 @@ class ZZZElectron {
 
   private async checkServerAvailable(): Promise<boolean> {
     try {
+      // Checking if the server is actually alive before attempting connection
       const response = await fetch('http://127.0.0.1:5001/health', {
         method: 'HEAD',
         mode: 'no-cors'
       });
       return true;
     } catch (error) {
+      // it'll fail if its not up, so we'll just return false
       return false;
     }
   }
@@ -310,6 +319,13 @@ class ZZZElectron {
                   .then(response => response.json())
                   .then(albumData => {
                     // Extract year from release_date
+
+                    /*
+                    Hyperiya:
+                    This is finnicky, and i need to change the endpoint that I get the release date from. If it's on player instead of albums, it means I changed it.
+                    */
+
+
                     const year = albumData.release_date?.split('-')[0];
 
                     console.log('sending')
@@ -351,7 +367,6 @@ class ZZZElectron {
                   });
 
                 break;
-              // ... rest of your switch cases
             }
         }
       };

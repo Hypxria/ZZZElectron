@@ -1,11 +1,3 @@
-import axios from 'axios';
-
-
-/*
-Do I really need to make comments for this... It's the spotify API.
-*/
-
-
 export enum RepeatState {
     OFF = 'off',
     CONTEXT = 'context', // Repeats the playlist/album
@@ -153,7 +145,7 @@ class SpotifyService {
     }
 
 
-    // In SpotifyService.ts
+    // In SpotifyService.ts methods
     async getCurrentTrack(): Promise<Song> {
         try {
             console.log('getcurrenttrack run')
@@ -266,7 +258,10 @@ class SpotifyService {
         }
     }
 
-
+    /*
+    Not many comments here, but basically i'm sending a type (info or playback) of the request i'm sending, then the app.tsx extention automatically sorts between the two types
+    and sends the appropriate response for what I need.
+    */
 
     async playNextSong(): Promise<void> {
         try {
@@ -332,6 +327,7 @@ class SpotifyService {
         }
     }
 
+    // Seeking using Ws Message
     async seek(position: number): Promise<void> {
         try {
             this.sendWsMessage({
