@@ -160,6 +160,9 @@ class ZZZElectron {
         switch (data.type) {
           case 'playback':
             switch (data.action) {
+              case 'seek':
+                console.log(data.value)
+                Spicetify.Player.seek(data.value)
               case 'play':
                 Spicetify.Player.play();
                 break;
