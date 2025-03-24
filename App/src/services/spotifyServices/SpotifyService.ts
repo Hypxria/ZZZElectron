@@ -138,11 +138,11 @@ class SpotifyService {
                         console.log(`event: ${event.data}`)
                         const response = JSON.parse(event.data);
 
-                        console.log(`resonse: ${response}`)
                         // Check if this is the response we're waiting for
                         if (response.type === 'response' && response.action === 'current') {
                             // Remove the message handler
                             this.ws?.removeEventListener('message', messageHandler);
+                            console.log(`response: ${JSON.stringify(response, null, 10)}`)
 
                             // Format the data into Song interface
                             const song: Song = {
@@ -151,10 +151,11 @@ class SpotifyService {
                                 album_cover: response.data.album_cover || null,
                                 year: response.data.year,
                                 album: response.data.album,
-                                duration_ms: response.data.duration,
-                                is_playing: true // Since it's the current song
+                                duration_ms: response.data.duration_ms?.milliseconds,
+                                progress_ms: response.data.progress_ms,
+                                is_playing: response.data.is_playing // Since it's the current song
                             };
-                            console.log(`song: ${song.album_cover}`)
+                            console.log(`song: ${JSON.stringify(song, null, 10)}`)
 
                             resolve(song);
                         }
@@ -182,6 +183,7 @@ class SpotifyService {
 
     async getNextSong(): Promise<Song> {
         try {
+            console.log('getnextsong run-----------------------------------------------------------------------------------------')
             // Send the request for next song info
             this.sendWsMessage({
                 type: 'info',
@@ -278,7 +280,7 @@ class SpotifyService {
             // Send message through WebSocket
             this.sendWsMessage({
                 type: 'playback',
-                action: 'resume'
+                action: 'play'
             });
         } catch (error) {
             console.error('Error pausing playback:', error);

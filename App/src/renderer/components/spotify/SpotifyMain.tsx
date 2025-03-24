@@ -36,7 +36,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     artist: "",
     album_cover: "",
   });
-  
+
   const [localProgress, setLocalProgress] = useState<number>(0);
   const [hasInitialData, setHasInitialData] = useState(false);
 
@@ -72,8 +72,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         const track = await spotifyService.getCurrentTrack();
         if (track) {
           setCurrentTrackData(prev => {
-            if (prev.name === track.name && prev.artist === track.artist && 
-               prev.duration_ms === track.duration_ms && prev.is_playing === track.is_playing) {
+            if (prev.name === track.name && prev.artist === track.artist &&
+              prev.duration_ms === track.duration_ms && prev.is_playing === track.is_playing) {
               return prev;
             }
             return { ...prev, ...track };
@@ -91,17 +91,17 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       if (!currentTrackData.is_playing || !isMountedRef.current) {
         return;
       }
-  
+
       const now = performance.now();
       const elapsed = now - lastTimeRef.current;
       lastTimeRef.current = now;
-  
+
       if (elapsed > 0) {
         const newProgress = Math.min(
           progressRef.current + elapsed,
           currentTrackData.duration_ms || 0
         );
-        
+
         progressRef.current = newProgress;
         setLocalProgress(Math.round(newProgress));
       }
@@ -120,14 +120,16 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       clearInterval(syncInterval);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
-      }  
+      }
     };
   }, [currentTrackData.is_playing, currentTrackData.duration_ms]);
 
   // NextTrack tracking
   const initialNextTrack = useCallback(async () => {
+    console.log("initialNextTrack called");
     try {
       const nextTrack = await spotifyService.getNextSong();
+      console.log(`next track:${nextTrack}`)
       setNextTrackData(nextTrack);
     } catch (error) {
       console.error("Error fetching next track:", error);
@@ -139,6 +141,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     const debounceTimeout = setTimeout(async () => {
       try {
         const nextTrack = await spotifyService.getNextSong();
+        console.log(`next track:${nextTrack}`)
         setNextTrackData(prev => {
           if (prev.name === nextTrack.name && prev.artist === nextTrack.artist) return prev;
           return nextTrack;
@@ -163,13 +166,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     }
   };
 
-  
-  
+
+
 
   console.log(
     `Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`
   );
-  
+
   // Getting Avg Colors
   const [colors, setColors] = useState<string[]>([]);
 
@@ -196,8 +199,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
     getColors();
   }, [currentTrackData.album_cover]);
-  
-  
+
+
 
   return (
     <div className="spotify">
@@ -242,7 +245,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               console.error("Error during back operation:", error);
             }
           }}
-          
+
           onNext={async () => {
             try {
               setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
@@ -259,7 +262,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               console.error("Error during back operation:", error);
             }
           }}
-          
+
           onSeek={handleSeek}
           volume={currentTrackData.volume || 0}
           onVolumeChange={async (volume: number) => {
@@ -268,7 +271,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             await spotifyService.setVolume(volume);
           }}
           albumCover={currentTrackData.album_cover || "sex"}
-          colors={colors}  
+          colors={colors}
         />
       </div>
       <SongUpcoming
@@ -282,13 +285,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       {hasInitialData && (
         <div className="song-lyrics">
           <SongLyrics
-            currentSong = {{
+            currentSong={{
               name: currentTrackData.name || "",
               artist: currentTrackData.artist || "",
               album: currentTrackData.album || "",
             }}
-            currentTime = {localProgress || 0}
-            viewState = {viewState.ViewState}
+            currentTime={localProgress || 0}
+            viewState={viewState.ViewState}
             colors={colors}
             onSeek={handleSeek}
           />

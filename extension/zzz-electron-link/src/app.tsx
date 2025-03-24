@@ -20,6 +20,8 @@ class ZZZElectron {
 
   private progressWorker: Worker | null = null;
 
+  private coverBaseUrl: string = 'https://i.scdn.co/image/';
+
   constructor() {
     this.main();
   }
@@ -52,6 +54,14 @@ class ZZZElectron {
 
     // Clean up the URL
     URL.revokeObjectURL(workerUrl);
+  }
+
+  private convertSpotifyImageUriToUrl(uri: string): string {
+    // Extract the image ID from the URI
+    const imageId = uri.split(':').pop();
+    if (!imageId) return '';
+
+    return `https://i.scdn.co/image/${imageId}`;
   }
 
   private startProgressTracking() {
@@ -234,18 +244,19 @@ class ZZZElectron {
             switch (data.action) {
               case 'next':
                 // Handle getting next track info
-                const nextTrack = Spicetify.Queue.nextTracks[0];
+                const nextTrack = Spicetify.Queue.nextTracks[0]['contextTrack']['metadata'];
 
-                const nextalbumId = nextTrack.
+                console.log(`Next Tracks: ${JSON.stringify(Spicetify.Queue.nextTracks[0]['contextTrack']['metadata'], null, 2)}`);
 
                 this.sendMessage(JSON.stringify({
                   type: 'response',
                   action: 'next',
                   data: {
-                    name: nextTrack.name,
-                    artist: nextTrack.artists[0].name,
-                    album: nextTrack.album.name,
-                    duration: nextTrack.duration
+                    name: nextTrack.title,
+                    artist: nextTrack.artist_name,
+                    album: nextTrack.album_title,
+                    duration: nextTrack.duration,
+                    album_cover: await this.convertSpotifyImageUriToUrl(nextTrack.image_xlarge_url)
                   }
                 }));
                 break;
@@ -279,10 +290,10 @@ class ZZZElectron {
                           artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
                           album: currentTrack?.album?.name || 'Unknown',
                           duration_ms: currentTrack?.duration || 0,
-                          album_cover: album_cover, 
+                          album_cover: album_cover,
                           year: year || 'Unknown Year',
                           volume: Spicetify.Player.getVolume(),
-                          is_playing: !Spicetify.Player.isPlaying,
+                          is_playing: Spicetify.Player.isPlaying(),
                           repeat_state: Spicetify.Player.getRepeat(),
                           shuffle_state: Spicetify.Player.getShuffle(),
                           progress_ms: Spicetify.Player.getProgress(),
@@ -420,4 +431,5 @@ class ZZZElectron {
 }
 
 const zzzElectron = new ZZZElectron();
-export default zzzElectron.main.bind(zzzElectron);
+export default zzzElectron;
+
