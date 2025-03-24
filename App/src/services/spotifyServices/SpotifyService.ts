@@ -25,9 +25,15 @@ export interface Song {
     album?: string;
 }
 
-export interface LyricsResponse {
-    lyrics: string;
-    error?: string;
+// export interface LyricsResponse {
+//     lyrics: string;
+//     error?: string;
+// }
+
+interface ProgressData {
+    progress: number;
+    duration: number;
+    percentage: number;
 }
 
 class SpotifyService {
@@ -39,7 +45,7 @@ class SpotifyService {
     private reconnectAttempts = 0;
     private readonly MAX_RECONNECT_ATTEMPTS = 5;
 
-
+    private currentProgress:ProgressData | null = null
 
     constructor() {
         console.log('SpotifyService constructed');
@@ -70,6 +76,9 @@ class SpotifyService {
 
             this.ws.onmessage = (event) => {
                 try {
+                    // This is for the progress update thingies
+                    if (event.data?.type === 'progress') this.handleProgress(event.data)
+
                     const response = JSON.parse(event.data);
                     console.log('Received message in SpotifyService:', response);
                     // Handle any responses from app.tsx here if needed
@@ -183,7 +192,6 @@ class SpotifyService {
 
     async getNextSong(): Promise<Song> {
         try {
-            console.log('getnextsong run-----------------------------------------------------------------------------------------')
             // Send the request for next song info
             this.sendWsMessage({
                 type: 'info',
@@ -343,6 +351,19 @@ class SpotifyService {
             throw error;
         }
     }
+
+    // Track Progress?
+    private async handleProgress(data: ProgressData): Promise<void> {
+        this.currentProgress = data;
+        // You can emit an event or call a callback here if needed
+        console.log('Progress updated:', {
+            progress: data.progress,
+            duration: data.duration,
+            percentage: data.percentage
+        });
+    }
+
+
 }
 
 export const spotifyService = new SpotifyService();

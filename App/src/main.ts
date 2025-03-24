@@ -56,7 +56,7 @@ function createWebSocketServer() {
         });
 
 
-        
+
 
         const response = await handleSpicetifyMessage(messageString);
 
@@ -95,10 +95,26 @@ function createWebSocketServer() {
       res.end();
     }
   });
+
   healthServer.listen(5001, '127.0.0.1', () => {
-    console.log('Health check server listening on port 5000');
+    console.log('Health check server listening on port 5001');
   });
 }
+
+
+
+ipcMain.handle('spotify-link', async () => {
+  await createWebSocketServer()
+})
+
+ipcMain.handle('open-external', async (_, url: string) => {
+  try {
+    await shell.openExternal(url);
+  } catch (error) {
+    console.error('Failed to open external URL:', error);
+    throw error;
+  }
+});
 
 const createWindow = async (): Promise<void> => {
   // Create the browser window.
@@ -139,90 +155,8 @@ const createWindow = async (): Promise<void> => {
   }
 };
 
-async function createCallbackServer(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // If server is already running, reject
-    if (isServerRunning) {
-      console.log('Server already running, skipping creation');
-      return;
-    }
 
-    console.log('Creating new callback server');
-    isServerRunning = true;
 
-    // Close any existing server
-    if (callbackServer) {
-      callbackServer.close();
-    }
-
-    callbackServer = http.createServer((req, res) => {
-      const url = new URL(req.url!, `http://${req.headers.host}`);
-      const code = url.searchParams.get('code');
-
-      if (code) {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end('Authentication successful! You can close this window.');
-        resolve(code);
-
-        // Close and clear the server reference
-        callbackServer?.close();
-        callbackServer = null;
-        isServerRunning = false;
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/html' });
-        res.end('Authentication failed! Please try again.');
-        reject(new Error('No code received'));
-
-        callbackServer?.close();
-        callbackServer = null;
-        isServerRunning = false;
-      }
-    });
-
-    const timeout = setTimeout(() => {
-      callbackServer?.close();
-      callbackServer = null;
-      isServerRunning = false;
-      reject(new Error('Authorization timeout after 5 minutes'));
-    }, 5 * 60 * 1000);
-
-    callbackServer.on('error', (error) => {
-      clearTimeout(timeout);
-      callbackServer?.close();
-      callbackServer = null;
-      isServerRunning = false;
-      reject(error);
-    });
-
-    callbackServer.listen(8080, '127.0.0.1', () => {
-      console.log('Callback server listening on port 8080');
-    });
-  });
-}
-
-ipcMain.handle('spotify-link', async () => {
-  await createWebSocketServer()
-})
-
-ipcMain.handle('open-external', async (_, url: string) => {
-  try {
-    await shell.openExternal(url);
-  } catch (error) {
-    console.error('Failed to open external URL:', error);
-    throw error;
-  }
-});
-
-// In your main process
-ipcMain.handle('LISTEN_FOR_SPOTIFY_CALLBACK', async () => {
-  try {
-    const code = await createCallbackServer();
-    return code;
-  } catch (error) {
-    console.error('Error in callback server:', error);
-    throw error;
-  }
-});
 
 ipcMain.on('console-log', (_, message) => {
   console.log(message); // This will print to terminal
