@@ -245,11 +245,25 @@ class ZZZElectron {
             break;
           case 'info':
             switch (data.action) {
+
               case 'next':
                 // Handle getting next track info
                 const nextTrack = Spicetify.Queue.nextTracks[0]['contextTrack']['metadata'];
-
+                const nextAlbumId = nextTrack.album_uri?.split(':')[2]
+                const nextAccessToken = Spicetify.Platform.Session.accessToken;
+                let nextYear
                 console.log(`Next Tracks: ${JSON.stringify(Spicetify.Queue.nextTracks[0]['contextTrack']['metadata'], null, 2)}`);
+
+                fetch(`https://api.spotify.com/v1/albums/${nextAlbumId}`, {
+                  headers: {
+                    'Authorization': `Bearer ${nextAccessToken}`
+                  }
+                })
+                  .then(response => response.json())
+                  .then(albumData => {
+                    // Extract year from release_date
+                    nextYear = albumData.release_date?.split('-')[0];
+                  })
 
                 this.sendMessage(JSON.stringify({
                   type: 'response',
@@ -259,7 +273,8 @@ class ZZZElectron {
                     artist: nextTrack.artist_name,
                     album: nextTrack.album_title,
                     duration: nextTrack.duration,
-                    album_cover: await this.convertSpotifyImageUriToUrl(nextTrack.image_xlarge_url)
+                    album_cover: this.convertSpotifyImageUriToUrl(nextTrack.image_xlarge_url),
+                    year: nextYear || 2000
                   }
                 }));
                 break;
@@ -271,57 +286,58 @@ class ZZZElectron {
                 // Get album ID from the current track
                 const albumId = currentTrack?.album?.uri?.split(':')[2];
 
-                if (albumId) {
-                  // Fetch album details to get release date
-                  fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
-                    headers: {
-                      'Authorization': `Bearer ${accessToken}`
-                    }
-                  })
-                    .then(response => response.json())
-                    .then(albumData => {
-                      // Extract year from release_date
-                      const year = albumData.release_date?.split('-')[0];
-                      const album_cover = albumData.images?.[0]?.url;
+                console.log(JSON.stringify(currentTrack, null, 10))
 
-                      console.log('sending')
-                      this.sendMessage(JSON.stringify({
-                        type: 'response',
-                        action: 'current',
-                        data: {
-                          name: currentTrack?.name || 'No Song Playing',
-                          artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
-                          album: currentTrack?.album?.name || 'Unknown',
-                          duration_ms: currentTrack?.duration || 0,
-                          album_cover: album_cover,
-                          year: year || 'Unknown Year',
-                          volume: Spicetify.Player.getVolume(),
-                          is_playing: Spicetify.Player.isPlaying(),
-                          repeat_state: Spicetify.Player.getRepeat(),
-                          shuffle_state: Spicetify.Player.getShuffle(),
-                          progress_ms: Spicetify.Player.getProgress(),
-                          progress_percentage: Spicetify.Player.getProgressPercent() * 100
-                        }
-                      }));
-                    })
-                    .catch(error => {
-                      console.error('Error fetching album details:', error);
-                      // Send message without year if fetch fails
-                      this.sendMessage(JSON.stringify({
-                        type: 'response',
-                        action: 'current',
-                        data: {
-                          name: currentTrack?.name || 'No Song Playing',
-                          artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
-                          album: currentTrack?.album?.name || 'Unknown',
-                          duration: currentTrack?.duration || 0,
-                          album_cover: currentTrack?.metadata?.image_url,
-                          year: 'Unknown Year',
-                          is_playing: !Spicetify.Player.isPlaying
-                        }
-                      }));
-                    });
-                }
+
+                // Fetch album details to get release date
+                fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+                  headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                  }
+                })
+                  .then(response => response.json())
+                  .then(albumData => {
+                    // Extract year from release_date
+                    const year = albumData.release_date?.split('-')[0];
+
+                    console.log('sending')
+                    this.sendMessage(JSON.stringify({
+                      type: 'response',
+                      action: 'current',
+                      data: {
+                        name: currentTrack?.name || 'No Song Playing',
+                        artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
+                        album: currentTrack?.album?.name || 'Unknown',
+                        duration_ms: currentTrack?.duration || 0,
+                        album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata?.image_xlarge_url),
+                        year: year || 'Unknown Year',
+                        volume: Spicetify.Player.getVolume(),
+                        is_playing: Spicetify.Player.isPlaying(),
+                        repeat_state: Spicetify.Player.getRepeat(),
+                        shuffle_state: Spicetify.Player.getShuffle(),
+                        progress_ms: Spicetify.Player.getProgress(),
+                        progress_percentage: Spicetify.Player.getProgressPercent() * 100
+                      }
+                    }));
+                  })
+                  .catch(error => {
+                    console.error('Error fetching album details:', error);
+                    // Send message without year if fetch fails
+                    this.sendMessage(JSON.stringify({
+                      type: 'response',
+                      action: 'current',
+                      data: {
+                        name: currentTrack?.name || 'No Song Playing',
+                        artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
+                        album: currentTrack?.album?.name || 'Unknown',
+                        duration: currentTrack?.duration || 0,
+                        album_cover: currentTrack?.metadata?.image_url,
+                        year: 'Unknown Year',
+                        is_playing: !Spicetify.Player.isPlaying
+                      }
+                    }));
+                  });
+
                 break;
               // ... rest of your switch cases
             }
