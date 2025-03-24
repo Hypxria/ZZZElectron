@@ -93,6 +93,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   // Regular progress tracking effect
   useEffect(() => {
     const updateProgress = () => {
+      
+      setTimeout(() => {
+        if (Date.now() - manualStateUpdateRef.current < 2000) return;
+      }, 200)
       const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
 
       console.log('Progress Update:', {

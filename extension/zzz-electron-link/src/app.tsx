@@ -440,12 +440,18 @@ class ZZZElectron {
   }
 
   private async listenForSongChange() {
-    let previousDuration = 0;
+    let previousDuration = Spicetify.Player.getDuration();;
     let previousProgress = 0;
 
+    setInterval(() => {
+      previousProgress = Spicetify.Player.getProgress();
+    }, 50);      
+    
     Spicetify.Player.addEventListener('songchange', (event) => {
       // Check if previous song ended naturally (within 1.5s of its end)
+      console.log(`song: ${Spicetify.Player.getProgress()}`)
       if (previousProgress > (previousDuration - 1500)) {
+        console.log('Song ended naturally')
         this.wasAutoSwitched = true;
         this.wasAutoSwitchedThisSong = true;
         setTimeout(() => {
@@ -455,11 +461,15 @@ class ZZZElectron {
       } else {
         this.wasAutoSwitchedThisSong = false;
         this.wasAutoSwitched = false;
+        console.log('Song ended abruptly')
       }
+
+      
+      console.log(`Song ended: Previous Duration: ${previousDuration}`)
+      console.log(`Song ended: Previous Progress: ${previousProgress}`)
 
       // Store current values for next change
       previousDuration = Spicetify.Player.getDuration();
-      previousProgress = Spicetify.Player.getProgress();
 
       // Your existing song change message
       this.sendMessage(`Song change: ${event?.data.item.name}`);
