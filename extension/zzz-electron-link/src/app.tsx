@@ -1,4 +1,4 @@
-var interval = 1000
+var interval = 100
 const workerCode =
   `
 self.onmessage = function(e) {
@@ -22,9 +22,15 @@ class ZZZElectron {
 
   private coverBaseUrl: string = 'https://i.scdn.co/image/';
 
+  private lastSongEndTime: number | null = null;
+  private wasAutoSwitched: boolean = false;
+  private wasAutoSwitchedThisSong: boolean = false;
+
   constructor() {
     this.main();
   }
+
+  
 
   private setupProgressWorker() {
     // Create a Blob containing the worker code
@@ -36,7 +42,13 @@ class ZZZElectron {
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
-      const progress = Spicetify.Player.getProgress();
+      let subtract
+      if (this.wasAutoSwitchedThisSong){
+        subtract = 1100
+      } else {
+        subtract = 0
+      }
+      const progress = Math.max((Spicetify.Player.getProgress() - subtract), 0);
       const duration = Spicetify.Player.getDuration();
 
       this.sendMessage(JSON.stringify({
@@ -428,10 +440,32 @@ class ZZZElectron {
   }
 
   private async listenForSongChange() {
+    let previousDuration = 0;
+    let previousProgress = 0;
+
     Spicetify.Player.addEventListener('songchange', (event) => {
+      // Check if previous song ended naturally (within 1.5s of its end)
+      if (previousProgress > (previousDuration - 1500)) {
+        this.wasAutoSwitched = true;
+        this.wasAutoSwitchedThisSong = true;
+        setTimeout(() => {
+          // Reset after 2 seconds
+          this.wasAutoSwitched = false;
+        }, 2000);
+      } else {
+        this.wasAutoSwitchedThisSong = false;
+        this.wasAutoSwitched = false;
+      }
+
+      // Store current values for next change
+      previousDuration = Spicetify.Player.getDuration();
+      previousProgress = Spicetify.Player.getProgress();
+
+      // Your existing song change message
       this.sendMessage(`Song change: ${event?.data.item.name}`);
     });
   }
+
 
   private async listenForPlayPause() {
     Spicetify.Player.addEventListener('onplaypause', (event) => {

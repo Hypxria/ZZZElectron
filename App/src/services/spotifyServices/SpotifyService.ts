@@ -31,9 +31,9 @@ export interface Song {
 // }
 
 interface ProgressData {
-    progress: number;
-    duration: number;
-    percentage: number;
+    progress_ms: number | null;
+    duration_ms: number | null;
+    percentage: number | null;
 }
 
 class SpotifyService {
@@ -45,7 +45,26 @@ class SpotifyService {
     private reconnectAttempts = 0;
     private readonly MAX_RECONNECT_ATTEMPTS = 5;
 
-    private currentProgress:ProgressData | null = null
+    private _currentProgress: {
+        progress_ms: number;
+        duration_ms: number;
+        percentage: number;
+    } | null = null;
+
+    get currentProgress() {
+        try {
+            console.log('Getting currentProgress:', {
+                hasProgress: !!this._currentProgress,
+                value: this._currentProgress?.progress_ms,
+            });
+            return this._currentProgress;
+        } catch (error) {
+            console.error('Error in currentProgress getter:', error);
+            return null;
+        }
+    }
+
+
 
     constructor() {
         console.log('SpotifyService constructed');
@@ -76,10 +95,14 @@ class SpotifyService {
 
             this.ws.onmessage = (event) => {
                 try {
-                    // This is for the progress update thingies
-                    if (event.data?.type === 'progress') this.handleProgress(event.data)
+                    // This is for the progress update thingies)
+                    
 
                     const response = JSON.parse(event.data);
+
+                    console.log(`response: ${response.type}`)
+
+                    if (response.type === 'progress') this.handleProgress(response)
                     console.log('Received message in SpotifyService:', response);
                     // Handle any responses from app.tsx here if needed
                 } catch (error) {
@@ -353,17 +376,20 @@ class SpotifyService {
     }
 
     // Track Progress?
-    private async handleProgress(data: ProgressData): Promise<void> {
-        this.currentProgress = data;
-        // You can emit an event or call a callback here if needed
-        console.log('Progress updated:', {
-            progress: data.progress,
-            duration: data.duration,
-            percentage: data.percentage
-        });
+    private handleProgress = (message: any) => {
+        try {
+            if (message.type === 'progress' && message.data) {
+                this._currentProgress = {
+                    progress_ms: message.data.progress,
+                    duration_ms: message.data.duration,
+                    percentage: message.data.percentage
+                };
+                console.log('Progress updated:', this._currentProgress);
+            }
+        } catch (error) {
+            console.error('Error handling progress:', error);
+        }
     }
-
-
 }
 
 export const spotifyService = new SpotifyService();

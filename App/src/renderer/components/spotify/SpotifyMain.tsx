@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, use } from "react";
 import SongInfo from "./SongInfo";
 import SongControls from "./SongControls";
 import SongUpcoming from "./SongUpcoming";
@@ -38,32 +38,17 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   });
 
   const [localProgress, setLocalProgress] = useState<number>(0);
+
   const [hasInitialData, setHasInitialData] = useState(false);
 
-  const progressRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(performance.now());
-  const animationFrameRef = useRef<number | null>(null);
   const manualStateUpdateRef = useRef<number>(0);
   const isMountedRef = useRef<boolean>(true);
 
-  let lastCallName = '';
+  const progressRef = useRef<number>(0); // Add a ref to track between renders
 
   // CurrentTrack Tracking
   useEffect(() => {
     isMountedRef.current = true;
-
-    const syncProgress = async () => {
-      try {
-        const track = currentTrackData;
-        if (track && Math.abs((track.progress_ms || 0) - progressRef.current) > 1000) {
-          progressRef.current = track.progress_ms || 0;
-          setLocalProgress(track.progress_ms || 0);
-          lastTimeRef.current = performance.now();
-        }
-      } catch (error) {
-        console.error("Error syncing progress:", error);
-      }
-    };
 
     const fetchCurrentTrack = async () => {
       try {
@@ -76,10 +61,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               prev.duration_ms === track.duration_ms && prev.is_playing === track.is_playing) {
               return prev;
             }
-            return { ...prev, ...track };
-          });
-          progressRef.current = track.progress_ms || 0;
-          lastCallName = track.name || "";
+            // Exclude progress_ms from the update
+            const { progress_ms, ...trackWithoutProgress } = track;
+            return { ...prev, ...trackWithoutProgress };
+          })
           if (!hasInitialData) setHasInitialData(true);
         }
       } catch (error) {
@@ -87,42 +72,58 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       }
     };
 
-    const updateProgress = () => {
-      if (!currentTrackData.is_playing || !isMountedRef.current) {
-        return;
-      }
-
-      const now = performance.now();
-      const elapsed = now - lastTimeRef.current;
-      lastTimeRef.current = now;
-
-      if (elapsed > 0) {
-        const newProgress = Math.min(
-          progressRef.current + elapsed,
-          currentTrackData.duration_ms || 0
-        );
-
-        progressRef.current = newProgress;
-        setLocalProgress(Math.round(newProgress));
-      }
-      animationFrameRef.current = requestAnimationFrame(updateProgress);
-    };
 
     fetchCurrentTrack();
-    animationFrameRef.current = requestAnimationFrame(updateProgress);
 
-    const pollInterval = setInterval(fetchCurrentTrack, 2000);
-    const syncInterval = setInterval(syncProgress, 5000);
+    const pollInterval = setInterval(fetchCurrentTrack, 500);
 
     return () => {
       isMountedRef.current = false;
       clearInterval(pollInterval);
-      clearInterval(syncInterval);
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
     };
   }, [currentTrackData.is_playing, currentTrackData.duration_ms]);
+
+  useEffect(() => {
+    // Immediate sync with current progress
+    if (spotifyService.currentProgress?.progress_ms) {
+      setLocalProgress(spotifyService.currentProgress.progress_ms);
+    }
+  }, []); // Run once on mount
+
+  // Regular progress tracking effect
+  useEffect(() => {
+    const updateProgress = () => {
+      const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
+
+      console.log('Progress Update:', {
+        serviceProgress,
+        currentLocalProgress: localProgress,
+        refProgress: progressRef.current,
+        stateUpdateTriggered: serviceProgress !== progressRef.current
+      });
+
+      if (serviceProgress !== progressRef.current) {
+        progressRef.current = serviceProgress;
+        setLocalProgress(serviceProgress);
+      }
+    };
+
+    // Run immediately
+    updateProgress();
+
+    const interval = setInterval(updateProgress, 100);
+    return () => clearInterval(interval);
+  }, []); // Remove localProgress from dependencies
+
+  useEffect(() => {
+    console.log('Local progress state updated:', {
+      newValue: localProgress,
+      refValue: progressRef.current
+    });
+  }, [localProgress]);
+
+
+
 
   // NextTrack tracking
   const initialNextTrack = useCallback(async () => {
@@ -158,7 +159,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     try {
       const boundedSeekTime = Math.min(seekTime, currentTrackData.duration_ms || 0);
       manualStateUpdateRef.current = Date.now();
-      progressRef.current = boundedSeekTime;
       setLocalProgress(boundedSeekTime);
       await spotifyService.seek(boundedSeekTime);
     } catch (error) {
@@ -217,7 +217,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         />
         <SongControls
           isPlaying={currentTrackData.is_playing || false}
-          currentTime={localProgress}
+          currentTime={spotifyService.currentProgress?.progress_ms ?? 0}
           duration={currentTrackData.duration_ms || 0}
           onPlay={() => {
             manualStateUpdateRef.current = Date.now();
@@ -238,8 +238,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               if (track) {
                 setCurrentTrackData(track);
                 setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-                progressRef.current = track.progress_ms || 0;
-                lastCallName = track.name || "";
               }
             } catch (error) {
               console.error("Error during back operation:", error);
@@ -255,8 +253,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               if (track) {
                 setCurrentTrackData(track);
                 setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-                progressRef.current = track.progress_ms || 0;
-                lastCallName = track.name || "";
               }
             } catch (error) {
               console.error("Error during back operation:", error);
@@ -290,7 +286,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               artist: currentTrackData.artist || "",
               album: currentTrackData.album || "",
             }}
-            currentTime={localProgress || 0}
+            currentTime={spotifyService.currentProgress?.progress_ms ?? 0}
             viewState={viewState.ViewState}
             colors={colors}
             onSeek={handleSeek}
