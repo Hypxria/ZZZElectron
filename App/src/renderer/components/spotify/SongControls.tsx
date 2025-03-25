@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Styles/SongControls.css';
+
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
 import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
+import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
+import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
+
 
 interface SongControlsProps {
   isPlaying: boolean;
@@ -18,8 +23,12 @@ interface SongControlsProps {
   onBack: () => void;
   volume: number;
   onVolumeChange: (volume: number) => void;
+  onShuffle: () => void;
+  onLoop: () => void;
   albumCover: string;
   colors: string[];
+  shuffle: boolean;
+  loop: number;
 }
 
 const SongControls: React.FC<SongControlsProps> = ({
@@ -31,9 +40,13 @@ const SongControls: React.FC<SongControlsProps> = ({
   onPause,
   onNext,
   onBack,
+  onLoop,
   volume,
   onVolumeChange,
   colors,
+  onShuffle,
+  shuffle,
+  loop,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
@@ -46,7 +59,7 @@ const SongControls: React.FC<SongControlsProps> = ({
     '--dimmer-color': colors?.[5] || '#999999',
   } as React.CSSProperties;
 
-// Progress Bar
+  // Progress Bar
   useEffect(() => {
     if (!isDragging) {
       setSliderValue((currentTime / duration) * 100);
@@ -79,19 +92,19 @@ const SongControls: React.FC<SongControlsProps> = ({
         const imageRect = songImage.getBoundingClientRect();
         const controlsRect = controls.getBoundingClientRect();
         volumeControl.style.position = 'absolute'; // Change to absolute
-        volumeControl.style.left = `${imageRect.width+15}px`;
-        volumeControl.style.top = `${-imageRect.height * 0.5 - controlsRect.height}px`; 
+        volumeControl.style.left = `${imageRect.width + 15}px`;
+        volumeControl.style.top = `${-imageRect.height * 0.5 - controlsRect.height}px`;
         volumeControl.style.transformOrigin = `left`
 
-        volumeBar.style.width = `${imageRect.height-28*2}px`
+        volumeBar.style.width = `${imageRect.height - 28 * 2}px`
 
-        volumeControl.style.transform = 'rotate(90deg) translate(-55%, -0%)'        
+        volumeControl.style.transform = 'rotate(90deg) translate(-55%, -0%)'
       }
     };
-  
+
     positionVolumeControl();
     window.addEventListener('resize', positionVolumeControl);
-    
+
     return () => {
       window.removeEventListener('resize', positionVolumeControl);
     };
@@ -105,20 +118,22 @@ const SongControls: React.FC<SongControlsProps> = ({
       onPlay();
     }
   };
-  
+
   const handleSkip = () => {
     onNext();
   }
 
   const handleBack = () => {
-    window.electron.log(`${currentTime/1000}`)
-    if (currentTime/1000 < 3) {
+    window.electron.log(`${currentTime / 1000}`)
+    if (currentTime / 1000 < 3) {
       onBack();
       return;
-    } 
-    onSeek(0)
+    }
+
   }
 
+  
+  
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     updateProgressBar(e);
@@ -151,54 +166,57 @@ const SongControls: React.FC<SongControlsProps> = ({
     const rect = volumeBarRef.current.getBoundingClientRect();
     const y = e.clientY - rect.top;
     const percentage = Math.max(0, Math.min(100, (y / rect.height) * 100));
-    
-    if (!isDraggingVolume){
+
+    if (!isDraggingVolume) {
       onVolumeChange(percentage);
     }
   };
-  
+
   useEffect(() => {
     const handleVolumeDrag = (e: MouseEvent) => {
+      e.stopPropagation(); // Add this
       if (isDraggingVolume) {
         updateVolumeFromMouseEvent(e);
       }
     };
-  
+
     const handleMouseUp = () => {
       setIsDraggingVolume(false);
       document.removeEventListener('mousemove', handleVolumeDrag);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  
+
     if (isDraggingVolume) {
+
       document.addEventListener('mousemove', handleVolumeDrag);
       document.addEventListener('mouseup', handleMouseUp);
     }
-  
+
     return () => {
       document.removeEventListener('mousemove', handleVolumeDrag);
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDraggingVolume, onVolumeChange]);
-  
+
   const handleVolumeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
     setIsDraggingVolume(true);
     updateVolumeFromMouseEvent(e);
   };
-  
+
 
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
     updateProgressBarTouch(e);
   };
-  
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (isDragging) {
       updateProgressBarTouch(e);
     }
   };
-  
+
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (isDragging) {
       updateProgressBarTouch(e);
@@ -208,7 +226,7 @@ const SongControls: React.FC<SongControlsProps> = ({
     setIsDragging(false);
     setDisplayTime(currentTime);
   };
-  
+
   // Add this new function to handle touch coordinates
   const updateProgressBarTouch = (e: React.TouchEvent) => {
     if (progressBarRef.current) {
@@ -216,7 +234,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       // For touchend, use changedTouches instead of touches
       const touch = e.type === 'touchend' ? e.changedTouches[0] : e.touches[0];
       if (!touch) return;
-  
+
       const x = touch.clientX - rect.left;
       const width = rect.width;
       const percentage = Math.min(Math.max((x / width) * 100, 0), 100);
@@ -230,42 +248,92 @@ const SongControls: React.FC<SongControlsProps> = ({
       setDisplayTime(currentTime);
     }
   }, [currentTime, isDragging]);
-  
+
   // Buttons
   const songButton = (
-    <button 
-        className="song-button" 
-        id="play"
-        onClick={handlePlayPause}
+    <button
+      className="song-button"
+      id="play"
+      onClick={handlePlayPause}
     >
-        {isPlaying ? (
-            <PauseIcon className="control-icon" />
-        ) : (
-            <PlayArrowIcon className="control-icon" />
-        )}
+      {isPlaying ? (
+        <PauseIcon className="control-icon" />
+      ) : (
+        <PlayArrowIcon className="control-icon" />
+      )}
     </button>
   );
 
   const skipButton = (
-    <button 
-        className="skip-button" 
-        id="skip"
-        onClick={handleSkip}
+    <button
+      className="skip-button"
+      id="skip"
+      onClick={handleSkip}
     >
       <SkipNextRoundedIcon className="skip-icon" />
     </button>
   );
 
   const backButton = (
-    <button 
-        className="back-button" 
-        id="back"
-        onClick={handleBack}
+    <button
+      className="back-button"
+      id="back"
+      onClick={handleBack}
     >
       <SkipPreviousRoundedIcon className="back-icon" />
     </button>
   );
 
+  const shuffleButton = (
+    <button
+      className="shuffle-button"
+      id="shuffle"
+      onClick={onShuffle}
+    >
+      {(() => {
+        console.log(`${shuffle} && ${typeof (shuffle)}`)
+        switch (shuffle) {
+          case true:
+            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+          case false:
+            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+          default:
+            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+        }
+      })()}
+    </button>
+  );
+
+  const loopButton = (
+    <button
+      className="loop-button"
+      id="loop"
+      onClick={onLoop}
+    >
+      {(() => {
+        console.log(`${loop} && ${typeof (loop)}`)
+        switch (loop) {
+
+          /**
+           * From `spicetify.d.ts`:
+           * 0: No repeat
+           * 1: Repeat all
+           * 2: Repeat one
+           * 
+           * Return current Repeat state (No repeat = 0/Repeat all = 1/Repeat one = 2).
+           */
+          case 0:
+            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
+          case 2:
+            return <RepeatOneRoundedIcon className="loop-icon" data-state={loop} />;
+          case 1:
+            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
+          default:
+            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
+        }
+      })()}
+    </button>
+  );
   // Misc
   const formatTime = (ms: number) => {
     const seconds = Math.floor((ms / 1000) << 0);
@@ -274,16 +342,24 @@ const SongControls: React.FC<SongControlsProps> = ({
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const handleVolumeIconClick = (icon: 'up' | 'down') => {
+    if (icon === 'down') {
+      onVolumeChange(0);
+    } else {
+      onVolumeChange(100); // Since your volume is 0-100 based on the code
+    }
+  };
 
-  
+
+
 
   return (
-    <div 
-    className="song-controls" 
-    style={lyricsStyle}
+    <div
+      className="song-controls"
+      style={lyricsStyle}
     >
       <div className="progress-bar-wrapper">
-        <div 
+        <div
           className="progress-bar-container"
           ref={progressBarRef}
           onMouseDown={handleMouseDown}
@@ -296,47 +372,62 @@ const SongControls: React.FC<SongControlsProps> = ({
         >
           <span className="time-label time-label-left">{formatTime(displayTime)}</span>
           <div className="progress-bar-background">
-          <div 
-            className="progress-bar-fill"
-            style={{ transform: `scaleX(${sliderValue / 100})` }}
-          />
-            <div 
+            <div
+              className="progress-bar-fill"
+              style={{ transform: `scaleX(${sliderValue / 100})` }}
+            />
+            {/* <div
               className="progress-bar-handle"
               style={{ left: `${sliderValue}%` }}
-            />
+            /> */}
           </div>
           <span className="time-label time-label-right">{formatTime(duration)}</span>
         </div>
       </div>
       <div className="song-button-container">
-        {backButton}
-        {songButton}
-        {skipButton}
+        <div className="main-controls-row">
+          {backButton}
+          {songButton}
+          {skipButton}
+        </div>
+        <div className="secondary-controls-row">
+          {shuffleButton}
+          {loopButton}
+        </div>
       </div>
-      
+
       <div className="volume-control-wrapper">
-        <VolumeDownRoundedIcon className="volume-icon" />
+        <VolumeDownRoundedIcon
+          className="volume-icon"
+          onClick={() => handleVolumeIconClick('down')}
+        />
         <div className="volume-slider-container">
-          <div 
+          <div
             className="volume-slider-background"
-            onClick={handleVolumeMouseDown}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleVolumeMouseDown(e);
+            }}
             ref={volumeBarRef}
           >
-            <div 
+            <div
               className="volume-slider-fill"
               style={{ transform: `scaleX(${volume / 100})` }}
             />
-            <div 
+            <div
               className="volume-slider-handle"
               style={{ left: `${volume}%` }}
             />
           </div>
         </div>
-        <VolumeUpRoundedIcon className="volume-icon" />
+        <VolumeUpRoundedIcon
+          className="volume-icon"
+          onClick={() => handleVolumeIconClick('up')}
+        />
       </div>
-      
+
     </div>
   );
-};  
+};
 
 export default SongControls;

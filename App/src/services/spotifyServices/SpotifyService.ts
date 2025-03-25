@@ -12,9 +12,11 @@ export interface Song {
     is_playing?: boolean;
     progress_ms?: number;
     duration_ms?: number;
-    repeat_state?: string;
+    repeat_state?: number;
     volume?: number;
     album?: string;
+    shuffle_state?: boolean;
+
 }
 
 // export interface LyricsResponse {
@@ -177,7 +179,10 @@ class SpotifyService {
                                 album: response.data.album,
                                 duration_ms: response.data.duration_ms?.milliseconds,
                                 progress_ms: response.data.progress_ms,
-                                is_playing: response.data.is_playing // Since it's the current song
+                                is_playing: response.data.is_playing, 
+                                volume: response.data.volume*109,
+                                repeat_state: response.data.repeat_state,
+                                shuffle_state: response.data.shuffle_state,
                             };
                             console.log(`song: ${JSON.stringify(song, null, 10)}`)
 
@@ -339,6 +344,20 @@ class SpotifyService {
             console.error('Error seeking position:', error);
             throw error;
         }
+    }
+
+    async toggleShuffle(): Promise<void> {
+        try {
+            // Send message through WebSocket
+            this.sendWsMessage({
+                type: 'playback',
+                action: 'shuffle'
+            });
+        } catch (error) {
+            console.error('Error toggling shuffle:', error);
+            throw error;
+        }
+    
     }
 
     async toggleRepeatMode(): Promise<void> {

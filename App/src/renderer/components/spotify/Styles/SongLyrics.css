@@ -23,6 +23,8 @@
 
 .lyrics-container {
   opacity: 0;
+  user-select: none;
+  pointer-events: none;
 }
   
 .lyrics-container.shown {

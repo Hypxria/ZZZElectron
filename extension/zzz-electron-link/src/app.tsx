@@ -33,6 +33,8 @@ class ZZZElectron {
   private wasAutoSwitched: boolean = false;
   private wasAutoSwitchedThisSong: boolean = false;
 
+  private progress:number = 0
+
   constructor() {
     this.main();
   }
@@ -51,12 +53,13 @@ class ZZZElectron {
     this.progressWorker.onmessage = () => {
       let subtract
       if (this.wasAutoSwitchedThisSong){
-        subtract = 1100
+        subtract = 1000
       } else {
         subtract = 0
       }
       const progress = Math.max((Spicetify.Player.getProgress() - subtract), 0);
       const duration = Spicetify.Player.getDuration();
+      this.progress = progress
 
       this.sendMessage(JSON.stringify({
         type: 'progress',
@@ -152,38 +155,19 @@ class ZZZElectron {
         const data = JSON.parse(event.data);
         console.log(`data: ${data}`)
 
-        // First check if data is a string (for backwards compatibility)
-        if (typeof data === 'string') {
-          switch (data) {
-            case 'play':
-              Spicetify.Player.play();
-              break;
-            case 'pause':
-              Spicetify.Player.pause();
-              break;
-            case 'next':
-              Spicetify.Player.next();
-              break;
-            case 'prev':
-              Spicetify.Player.back();
-              break;
-            case 'toggle':
-              Spicetify.Player.togglePlay();
-              break;
-            default:
-              console.log('Unknown command:', data);
-              break;
-          }
-          return;
-        }
+        
 
         // Handle structured messages with type and action
         switch (data.type) {
           case 'playback':
             switch (data.action) {
+              case 'volume':
+                Spicetify.Player.setVolume(data.value/100);
+                break;
               case 'seek':
                 console.log(data.value)
                 Spicetify.Player.seek(data.value)
+                break;
               case 'play':
                 Spicetify.Player.play();
                 break;
@@ -198,6 +182,9 @@ class ZZZElectron {
                 break;
               case 'toggle':
                 Spicetify.Player.togglePlay();
+                break;
+              case 'shuffle':
+                Spicetify.Player.toggleShuffle();
                 break;
               case 'setRepeat':
                 // Convert RepeatState string to Spicetify number value
@@ -231,7 +218,7 @@ class ZZZElectron {
               case 'toggleRepeat':
                 const currentState = Spicetify.Player.getRepeat();
                 let newState;
-
+                
                 // Toggle between states: off -> context -> track -> off
                 switch (currentState) {
                   case 0: // off
@@ -300,18 +287,138 @@ class ZZZElectron {
                 }));
                 break;
               case 'current':
+                /*
+                {
+                  "type": "track",
+                  "uri": "spotify:track:2EiJ8L7AFkiKXHqqU6x96K",
+                  "uid": "5d7691ae0c51fde1",
+                  "name": "Red Light",
+                  "mediaType": "audio",
+                  "duration": {
+                    "milliseconds": 124000
+                  },
+                  "album": {
+                    "type": "album",
+                    "uri": "spotify:album:3Ow1LjWwNkxd2VpJiS9gdc",
+                    "name": "Red Light",
+                    "images": [
+                      {
+                        "url": "spotify:image:ab67616d00001e02b805db0afcb1e919ebf1548b",
+                        "label": "standard"
+                      },
+                      {
+                        "url": "spotify:image:ab67616d00004851b805db0afcb1e919ebf1548b",
+                        "label": "small"
+                      },
+                      {
+                        "url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                        "label": "large"
+                      },
+                      {
+                        "url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                        "label": "xlarge"
+                      }
+                    ]
+                  },
+                  "artists": [
+                    {
+                      "type": "artist",
+                      "uri": "spotify:artist:5pTDhtjL1lF9Mft8TYCjv6",
+                      "name": "QKReign"
+                    },
+                    {
+                      "type": "artist",
+                      "uri": "spotify:artist:3BTY807ipaaT6QHW1tHTt0",
+                      "name": "RJ Pasin"
+                    }
+                  ],
+                  "isLocal": false,
+                  "isExplicit": false,
+                  "is19PlusOnly": false,
+                  "hasAssociatedVideo": false,
+                  "provider": "context",
+                  "metadata": {
+                    "album_uri": "spotify:album:3Ow1LjWwNkxd2VpJiS9gdc",
+                    "interaction_id": "6A8D174C-8117-48E7-B813-93E6494DAE44",
+                    "canvas.id": "ffa63edec79b4d21ba10b2e647ad5f06",
+                    "context_uri": "spotify:playlist:1ZV8LNpHE9A9fP6cojtj0T",
+                    "collection.can_add": "true",
+                    "canvas.artist.name": "QKReign",
+                    "actions.skipping_next_past_track": "resume",
+                    "popularity": "66",
+                    "album_disc_number": "1",
+                    "canvas.type": "VIDEO_LOOPING_RANDOM",
+                    "collection.can_ban": "true",
+                    "canvas.url": "https://canvaz.scdn.co/upload/artist/5pTDhtjL1lF9Mft8TYCjv6/video/ffa63edec79b4d21ba10b2e647ad5f06.cnvs.mp4",
+                    "canvas.entityUri": "spotify:track:2EiJ8L7AFkiKXHqqU6x96K",
+                    "entity_uri": "spotify:playlist:1ZV8LNpHE9A9fP6cojtj0T",
+                    "image_small_url": "spotify:image:ab67616d00004851b805db0afcb1e919ebf1548b",
+                    "collection.in_collection": "false",
+                    "album_disc_count": "1",
+                    "collection.artist.is_banned": "false",
+                    "duration": "124000",
+                    "canvas.artist.avatar": "https://open.spotify.com/image/ab6761610000f17883629564c38a28c28771d0e1",
+                    "image_url": "spotify:image:ab67616d00001e02b805db0afcb1e919ebf1548b",
+                    "artist_name": "QKReign",
+                    "canvas.fileId": "368cdaff8a813ed9b5aa840a099613f0",
+                    "marked_for_download": "false",
+                    "album_title": "Red Light",
+                    "original_index": "46",
+                    "canvas.uploadedBy": "artist",
+                    "title": "Red Light",
+                    "artist_name:1": "RJ Pasin",
+                    "album_track_count": "0",
+                    "image_large_url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                    "has_lyrics": "true",
+                    "album_track_number": "1",
+                    "image_xlarge_url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                    "artist_uri:1": "spotify:artist:3BTY807ipaaT6QHW1tHTt0",
+                    "page_instance_id": "ABC83BF4-39FD-460E-8913-743124D45CF5",
+                    "added_at": "1739610556",
+                    "album_artist_name": "QKReign",
+                    "canvas.explicit": "false",
+                    "canvas.canvasUri": "spotify:canvas:7Mp16wHJy24S8bYkiMAM2G",
+                    "canvas.artist.uri": "spotify:artist:5pTDhtjL1lF9Mft8TYCjv6",
+                    "iteration": "4",
+                    "artist_uri": "spotify:artist:5pTDhtjL1lF9Mft8TYCjv6",
+                    "track_player": "audio",
+                    "collection.is_banned": "false",
+                    "actions.skipping_prev_past_track": "resume"
+                  },
+                  "images": [
+                    {
+                      "url": "spotify:image:ab67616d00001e02b805db0afcb1e919ebf1548b",
+                      "label": "standard"
+                    },
+                    {
+                      "url": "spotify:image:ab67616d00004851b805db0afcb1e919ebf1548b",
+                      "label": "small"
+                    },
+                    {
+                      "url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                      "label": "large"
+                    },
+                    {
+                      "url": "spotify:image:ab67616d0000b273b805db0afcb1e919ebf1548b",
+                      "label": "xlarge"
+                    }
+                  ]
+                }
+                */
+
+
                 // Handle getting current track info
                 const currentTrack = Spicetify.Player.data.item;
                 const accessToken = Spicetify.Platform.Session.accessToken;
 
                 // Get album ID from the current track
-                const albumId = currentTrack?.album?.uri?.split(':')[2];
+                const trackId = currentTrack?.uri?.split(':')[2];
 
-                console.log(JSON.stringify(currentTrack, null, 10))
+                console.log(JSON.stringify(currentTrack, null, 2))
 
 
                 // Fetch album details to get release date
-                fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+                fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
                   headers: {
                     'Authorization': `Bearer ${accessToken}`
                   }
@@ -322,11 +429,11 @@ class ZZZElectron {
 
                     /*
                     Hyperiya:
-                    This is finnicky, and i need to change the endpoint that I get the release date from. If it's on player instead of albums, it means I changed it.
+                    This is finnicky, and i need to change the endpoint that I get the release date from. If it's on tracks instead of albums, it means I changed it.
                     */
 
 
-                    const year = albumData.release_date?.split('-')[0];
+                    const year = albumData.album?.release_date?.split('-')[0];
 
                     console.log('sending')
                     this.sendMessage(JSON.stringify({
@@ -456,16 +563,11 @@ class ZZZElectron {
 
   private async listenForSongChange() {
     let previousDuration = Spicetify.Player.getDuration();;
-    let previousProgress = 0;
-
-    setInterval(() => {
-      previousProgress = Spicetify.Player.getProgress();
-    }, 50);      
-    
+        
     Spicetify.Player.addEventListener('songchange', (event) => {
       // Check if previous song ended naturally (within 1.5s of its end)
       console.log(`song: ${Spicetify.Player.getProgress()}`)
-      if (previousProgress > (previousDuration - 1500)) {
+      if (this.progress > (previousDuration - 3550)) {
         console.log('Song ended naturally')
         this.wasAutoSwitched = true;
         this.wasAutoSwitchedThisSong = true;
@@ -481,7 +583,7 @@ class ZZZElectron {
 
       
       console.log(`Song ended: Previous Duration: ${previousDuration}`)
-      console.log(`Song ended: Previous Progress: ${previousProgress}`)
+      console.log(`Song ended: Previous Progress: ${this.progress}`)
 
       // Store current values for next change
       previousDuration = Spicetify.Player.getDuration();

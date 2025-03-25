@@ -28,7 +28,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     progress_ms: 0,
     duration_ms: 0,
     volume: 0,
-    repeat_state: "off",
+    repeat_state: 0,
   });
 
   const [nextTrackData, setNextTrackData] = useState<Song>({
@@ -57,8 +57,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         const track = await spotifyService.getCurrentTrack();
         if (track) {
           setCurrentTrackData(prev => {
-            if (prev.name === track.name && prev.artist === track.artist &&
-              prev.duration_ms === track.duration_ms && prev.is_playing === track.is_playing) {
+            if (prev.name === track.name &&
+              prev.artist === track.artist &&
+              prev.duration_ms === track.duration_ms &&
+              prev.is_playing === track.is_playing &&
+              prev.volume === track.volume &&
+              prev.repeat_state === track.repeat_state &&
+              prev.shuffle_state === track.shuffle_state) {
               return prev;
             }
             // Exclude progress_ms from the update
@@ -92,11 +97,39 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
   // Regular progress tracking effect
   useEffect(() => {
-    const updateProgress = () => {
-      
-      setTimeout(() => {
-        if (Date.now() - manualStateUpdateRef.current < 2000) return;
-      }, 200)
+    let timeoutId: NodeJS.Timeout | undefined
+    var justInTimeout: boolean = false
+
+    const updateProgress = async () => {
+      const timeSinceManualUpdate = Date.now() - manualStateUpdateRef.current;
+
+      console.log('Update Progress Check:', {
+        currentTime: Date.now(),
+        manualStateUpdateTime: manualStateUpdateRef.current,
+        timeSinceManualUpdate,
+        shouldSkip: timeSinceManualUpdate < 200
+      });
+
+      if (timeSinceManualUpdate < 200) {
+        const remainingWait = 200 - timeSinceManualUpdate;
+        console.log(`Waiting for ${remainingWait}ms before resuming updates`);
+
+        if (timeoutId) clearTimeout(timeoutId);
+
+
+        justInTimeout = true
+        // Wait for the remaining time
+        await new Promise(resolve => setTimeout(resolve, remainingWait));
+
+      } else {
+        if (justInTimeout) {
+          justInTimeout = false
+          console.log('Resuming updates');
+        }
+      }
+
+      console.log('updating')
+
       const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
 
       console.log('Progress Update:', {
@@ -116,8 +149,13 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     updateProgress();
 
     const interval = setInterval(updateProgress, 100);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []); // Remove localProgress from dependencies
+
+
 
   useEffect(() => {
     console.log('Local progress state updated:', {
@@ -221,7 +259,11 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
         />
         <SongControls
           isPlaying={currentTrackData.is_playing || false}
-          currentTime={spotifyService.currentProgress?.progress_ms ?? 0}
+          currentTime={
+            Date.now() - manualStateUpdateRef.current < 200
+              ? localProgress
+              : (spotifyService.currentProgress?.progress_ms ?? 0)
+          }
           duration={currentTrackData.duration_ms || 0}
           onPlay={() => {
             manualStateUpdateRef.current = Date.now();
@@ -262,8 +304,17 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               console.error("Error during back operation:", error);
             }
           }}
-
-          onSeek={handleSeek}
+          onShuffle={async () => {
+            manualStateUpdateRef.current = Date.now();
+            setCurrentTrackData((prev) => ({ ...prev, shuffle_state: (!prev.shuffle_state) }));
+            await spotifyService.toggleShuffle()
+          }}
+          onLoop={async () => {
+            manualStateUpdateRef.current = Date.now();
+            setCurrentTrackData((prev) => ({ ...prev, repeat_state: ((prev.repeat_state ?? 0) + 1) % 3 }));
+            await spotifyService.toggleRepeatMode()
+          }}
+          onSeek={handleSeek} 
           volume={currentTrackData.volume || 0}
           onVolumeChange={async (volume: number) => {
             manualStateUpdateRef.current = Date.now();
@@ -272,6 +323,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
           }}
           albumCover={currentTrackData.album_cover || "sex"}
           colors={colors}
+          shuffle={currentTrackData.shuffle_state || false}
+          loop={currentTrackData.repeat_state || 0}
         />
       </div>
       <SongUpcoming
@@ -290,7 +343,11 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               artist: currentTrackData.artist || "",
               album: currentTrackData.album || "",
             }}
-            currentTime={spotifyService.currentProgress?.progress_ms ?? 0}
+            currentTime={
+              Date.now() - manualStateUpdateRef.current < 200
+                ? localProgress
+                : (spotifyService.currentProgress?.progress_ms ?? 0)
+            }
             viewState={viewState.ViewState}
             colors={colors}
             onSeek={handleSeek}

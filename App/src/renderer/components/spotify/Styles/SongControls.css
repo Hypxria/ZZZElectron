@@ -46,15 +46,21 @@
   position: relative;
   width: 110%;
   padding: 0 50px;
+  box-sizing: border-box; /* Add this */
 }
 
 .progress-bar-container {
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 4px;
   cursor: pointer;
   touch-action: none;
   padding: 8px 0;
+  box-sizing: border-box; /* Add this */
+  transform: translateZ(0); /* Add this to force GPU rendering */
+  /* or try without padding and use margin instead */
+  margin: 8px 0;
+  padding: 0;
 }
 
 
@@ -65,8 +71,9 @@
   /* Change the background color to be more transparent */
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
-
-  overflow: hidden;
+  transform-origin: center; /* Add this */
+  pointer-events: none; /* Add this to ensure clicks go to the container */
+  overflow: none;
   transition: all 0.2s ease;
 }
 
@@ -115,7 +122,7 @@
   position: absolute;
   align-items: center;
   justify-content: center;
-  flex-direction: row;
+  flex-direction: column;
   transform: translateY(60%);
 }
 
@@ -161,6 +168,11 @@
   height: 4px;
   position: relative;
   cursor: pointer;
+  z-index: 10;
+  pointer-events: all;
+  overflow: hidden;
+  padding: 10px 0;
+  margin: -10px 0; /* Offset the padding to maintain layout */
 }
 
 .volume-slider-background {
@@ -170,6 +182,8 @@
   border-radius: 2px;
   position: relative;
   overflow: hidden;
+  z-index: 10;
+  pointer-events: all;
 }
 
 .volume-slider-fill {
@@ -181,6 +195,7 @@
   background: #fff;
   transform-origin: left;
   transition: transform 0.1s ease;
+  overflow: hidden;
 }
 
 .volume-slider-handle {
@@ -194,7 +209,7 @@
   cursor: grab;
   opacity: 1;
   transition: opacity 0.2s ease;
-  
+  overflow: hidden;
 }
 
 .volume-slider-container:hover .volume-slider-handle {
@@ -203,6 +218,20 @@
 
 
 /* Add or update these CSS rules */
+
+.main-controls-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: -17.5px;
+  margin-bottom: -22.5px;
+}
+
+.secondary-controls-row {
+  display: flex;
+  gap: 20px;  /* Larger gap between shuffle and loop */
+  align-items: center;
+}
 
 .control-icon {
   color: var(--average-color);
@@ -226,6 +255,37 @@
   font-size: 30px !important;  /* Adjust this value to fit your circle */
   width: 30px !important;      /* Force icon width */
   height: 30px !important;     /* Force icon height */
+}
+
+.loop-icon {
+  color: var(--average-color);
+  border-radius: 50%;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.loop-icon[data-state="1"],
+.loop-icon[data-state="2"] {
+  background-color: var(--brighter-color);
+  color: var(--dimmer-color);
+  padding: 4px;
+  transition: all 0.2s ease;
+}
+
+.shuffle-icon {
+  color: var(--average-color);
+  border-radius: 50%;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.shuffle-icon[data-state="true"] {
+  background-color: var(--brighter-color);
+  color: var(--dimmer-color);
+  padding: 4px;
+  transition: all 0.2s ease;
 }
 
 .song-button-container button {
