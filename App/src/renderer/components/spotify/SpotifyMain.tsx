@@ -80,7 +80,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
     fetchCurrentTrack();
 
-    const pollInterval = setInterval(fetchCurrentTrack, 500);
+    const pollInterval = setInterval(fetchCurrentTrack, 250);
 
     return () => {
       isMountedRef.current = false;
