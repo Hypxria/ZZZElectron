@@ -23,7 +23,7 @@
 
 .lyrics-container {
   opacity: 0;
-  user-select: none;
+  user-select: all;
   pointer-events: none;
 }
   
