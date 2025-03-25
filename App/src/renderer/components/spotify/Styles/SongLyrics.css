@@ -28,6 +28,7 @@
 }
   
 .lyrics-container.shown {
+  pointer-events: all;
   opacity: 1;
 }
 
