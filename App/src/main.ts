@@ -134,12 +134,12 @@ const createWindow = async (): Promise<void> => {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          "font-src 'self' https://fonts.gstatic.com;",
+          "font-src 'self';",
           "default-src 'self';",
           "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
-          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
-          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com http://127.0.0.1:8080 https://api.spotify.com ws://127.0.0.1:5000 ws://127.0.0.1:5001 ws://localhost:5000 ws://localhost:5001;",
-          "img-src 'self' data: http://localhost:8080 http://127.0.0.1:8080 https:;"
+          "style-src 'self' 'unsafe-inline';",
+          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com ws://127.0.0.1:5000 ws://127.0.0.1:5001 ws://localhost:5000 ws://localhost:5001;",
+          "img-src 'self' data: https:;"
         ].join(' ')
       }
     });
