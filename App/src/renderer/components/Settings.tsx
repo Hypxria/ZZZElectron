@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import secureLocalStorage from "react-secure-storage";
-import './Settings.css';
+import './Settings.scss';
 
 interface SettingsProps {
     isSettings: boolean;

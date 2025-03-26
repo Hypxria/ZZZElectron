@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import './Titlebar.css'
+import './Titlebar.scss'
 import FullscreenRoundedIcon from '@mui/icons-material/FullscreenRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MinimizeRoundedIcon from '@mui/icons-material/MinimizeRounded';

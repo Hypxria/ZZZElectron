@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './Styles/SongControls.css';
+import './Styles/SongControls.scss';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';

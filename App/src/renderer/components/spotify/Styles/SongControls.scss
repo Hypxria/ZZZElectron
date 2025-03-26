@@ -1,4 +1,5 @@
 /* Song Controls Container */
+
 .song-controls {
   display: flex;
   flex-direction: column;
@@ -8,15 +9,13 @@
   padding: 0px;
   width: 100%;
   transform: translateY(1vh);
-}
-
-.song-controls {
-  --average-color: '#ffffff';
-  --brighter-color: '#cccccc';
-  --dimmer-color: '#999999';
+  --average-color:'#ffffff';
+  --brighter-color:'#cccccc';
+  --dimmer-color:'#999999';
 }
 
 /* Time Display */
+
 .time-label {
   position: absolute;
   top: 50%;
@@ -30,14 +29,18 @@
 .time-label-left {
   font-family: Urbanist;
   top: 25%;
-  left: -35px; /* Adjust based on your needs */
+  left: -35px;
+
+  /* Adjust based on your needs */
   font-size: 1rem;
 }
 
 .time-label-right {
   font-family: Urbanist;
   top: 25%;
-  right: -35px; /* Adjust based on your needs */
+  right: -35px;
+
+  /* Adjust based on your needs */
   text-align: right;
   font-size: 1rem;
 }
@@ -46,7 +49,9 @@
   position: relative;
   width: 110%;
   padding: 0 50px;
-  box-sizing: border-box; /* Add this */
+  box-sizing: border-box;
+
+  /* Add this */
 }
 
 .progress-bar-container {
@@ -56,27 +61,34 @@
   cursor: pointer;
   touch-action: none;
   padding: 8px 0;
-  box-sizing: border-box; /* Add this */
-  transform: translateZ(0); /* Add this to force GPU rendering */
+  box-sizing: border-box;
+
+  /* Add this */
+  transform: translateZ(0);
+
+  /* Add this to force GPU rendering */
   /* or try without padding and use margin instead */
   margin: 8px 0;
   padding: 0;
 }
 
-
 .progress-bar-background {
   position: relative;
   width: 100%;
   height: 4px;
+
   /* Change the background color to be more transparent */
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
-  transform-origin: center; /* Add this */
-  pointer-events: none; /* Add this to ensure clicks go to the container */
+  transform-origin: center;
+
+  /* Add this */
+  pointer-events: none;
+
+  /* Add this to ensure clicks go to the container */
   overflow: none;
   transition: all 0.2s ease;
 }
-
 
 .progress-bar-fill {
   position: absolute;
@@ -91,10 +103,11 @@
   opacity: 1;
 }
 
-.progress-bar-container:hover .progress-bar-background,
-.progress-bar-container:hover .progress-bar-fill {
-  transform: translateY(-50%);
-  height: 6px;
+.progress-bar-container:hover {
+  .progress-bar-background, .progress-bar-fill {
+    transform: translateY(-50%);
+    height: 6px;
+  }
 }
 
 .progress-bar-handle {
@@ -108,14 +121,18 @@
   opacity: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease-out;
+
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
 }
 
-.progress-bar-handle:hover,
 .progress-bar-container:active .progress-bar-handle {
   transform: translate(-50%, -50%) scale(1.2);
 }
 
 /* Button Container */
+
 .song-button-container {
   display: flex;
   gap: 20px;
@@ -124,23 +141,28 @@
   justify-content: center;
   flex-direction: column;
   transform: translateY(60%);
+
+  button {
+    padding: 6vmin;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+
+    /* or whatever size your circle is */
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    /* Remove any padding */
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0);
+  }
 }
 
 /* Control Buttons */
-.song-button-container button {
-  padding: 6vmin;
-  border: none;
-  cursor: pointer;
-  width: 40px;  /* or whatever size your circle is */
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;  /* Remove any padding */
-  opacity: 1;
-  background-color: rgba(0,0,0,0);
-}
 
 .volume-control-wrapper {
   position: absolute;
@@ -157,10 +179,10 @@
   opacity: 0.7;
   transition: opacity 0.2s ease;
   transform: rotate(-90deg);
-}
 
-.volume-icon:hover {
-  opacity: 1;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .volume-slider-container {
@@ -172,7 +194,9 @@
   pointer-events: all;
   overflow: hidden;
   padding: 10px 0;
-  margin: -10px 0; /* Offset the padding to maintain layout */
+  margin: -10px 0;
+
+  /* Offset the padding to maintain layout */
 }
 
 .volume-slider-background {
@@ -216,7 +240,6 @@
   opacity: 1;
 }
 
-
 /* Add or update these CSS rules */
 
 .main-controls-row {
@@ -229,32 +252,24 @@
 
 .secondary-controls-row {
   display: flex;
-  gap: 20px;  /* Larger gap between shuffle and loop */
+  gap: 20px;
+
+  /* Larger gap between shuffle and loop */
   align-items: center;
 }
 
-.control-icon {
+.control-icon, .skip-icon, .back-icon {
   color: var(--average-color);
   border-radius: 50%;
-  font-size: 30px !important;  /* Adjust this value to fit your circle */
-  width: 30px !important;      /* Force icon width */
-  height: 30px !important;     /* Force icon height */
-}
+  font-size: 30px !important;
 
-.skip-icon {
-  color: var(--average-color);
-  border-radius: 50%;
-  font-size: 30px !important;  /* Adjust this value to fit your circle */
-  width: 30px !important;      /* Force icon width */
-  height: 30px !important;     /* Force icon height */
-}
+  /* Adjust this value to fit your circle */
+  width: 30px !important;
 
-.back-icon {
-  color: var(--average-color);
-  border-radius: 50%;
-  font-size: 30px !important;  /* Adjust this value to fit your circle */
-  width: 30px !important;      /* Force icon width */
-  height: 30px !important;     /* Force icon height */
+  /* Force icon width */
+  height: 30px !important;
+
+  /* Force icon height */
 }
 
 .loop-icon {
@@ -263,14 +278,13 @@
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
-}
 
-.loop-icon[data-state="1"],
-.loop-icon[data-state="2"] {
-  background-color: var(--brighter-color);
-  color: var(--dimmer-color);
-  padding: 4px;
-  transition: all 0.2s ease;
+  &[data-state="1"], &[data-state="2"] {
+    background-color: var(--brighter-color);
+    color: var(--dimmer-color);
+    padding: 4px;
+    transition: all 0.2s ease;
+  }
 }
 
 .shuffle-icon {
@@ -279,36 +293,40 @@
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
-}
 
-.shuffle-icon[data-state="true"] {
-  background-color: var(--brighter-color);
-  color: var(--dimmer-color);
-  padding: 4px;
-  transition: all 0.2s ease;
+  &[data-state="true"] {
+    background-color: var(--brighter-color);
+    color: var(--dimmer-color);
+    padding: 4px;
+    transition: all 0.2s ease;
+  }
 }
 
 .song-button-container button {
-  position: relative;  /* Add this to position the pseudo-element */
-}
+  position: relative;
 
-.song-button-container button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 40px;  /* Adjust size as needed */
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--dimmer-color);
-  opacity: 0.3;
-  transition: transform 0.2s ease;
-  z-index: -1;
-}
+  /* Add this to position the pseudo-element */
 
-.song-button-container button:hover::before {
-  transform: translate(-50%, -50%) scale(1);
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 40px;
+
+    /* Adjust size as needed */
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--dimmer-color);
+    opacity: 0.3;
+    transition: transform 0.2s ease;
+    z-index: -1;
+  }
+
+  &:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @media (hover: hover) {
@@ -316,22 +334,18 @@
     transform: translate(-50%, -50%) scale(1);
   }
 
-  .progress-bar-container:hover .progress-bar-background,
-  .progress-bar-container:hover .progress-bar-fill {
-    transform: translateY(-10%);
-    height: 6px;
+  .progress-bar-container:hover {
+    .progress-bar-background, .progress-bar-fill {
+      transform: translateY(-10%);
+      height: 6px;
+    }
   }
 
-  .progress-bar-handle:hover,
-  .progress-bar-container:active .progress-bar-handle {
+  .progress-bar-handle:hover, .progress-bar-container:active .progress-bar-handle {
     transform: translate(-50%, -50%) scale(1.2);
   }
 
-  .volume-icon:hover {
-    opacity: 1;
-  }
-
-  .volume-slider-container:hover .volume-slider-handle {
+  .volume-icon:hover, .volume-slider-container:hover .volume-slider-handle {
     opacity: 1;
   }
 }

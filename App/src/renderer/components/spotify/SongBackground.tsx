@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './Styles/SongBackground.css'; // We'll create this file for the animations
+import './Styles/SongBackground.scss'; // We'll create this file for the animations
 
 const SongBackground: React.FC<{ coverUrl: string }> = ({ coverUrl }) => {
   const [backgroundColors, setBackgroundColors] = useState<string[]>([]);

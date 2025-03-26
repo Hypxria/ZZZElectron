@@ -1,0 +1,16 @@
+.notification-container {
+  position: fixed;
+  top: 75px; /* Assuming your titlebar is 30px high - adjust this value based on your actual titlebar height */
+  right: 50%; /* Adjust this value for desired distance from right edge */
+  z-index: 1000; /* Make sure it appears above other content */
+  background-color: #2f3136; /* Discord-like dark theme color */
+  border-radius: 25%;
+  margin-top: 8px; /* Space between titlebar and notification */
+  translate: 50% 0%;
+  width: 300px;
+
+  --height: 100px;
+  height: var(--height);
+  border-radius: calc(var(--height) / 2);
+}
+

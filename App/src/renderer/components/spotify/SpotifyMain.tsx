@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback, use } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import SongInfo from "./SongInfo";
 import SongControls from "./SongControls";
 import SongUpcoming from "./SongUpcoming";
 import SongBackground from "./SongBackground";
 import SongLyrics from "./SongLyrics";
-import "./Styles/Main.css";
+import "./Styles/Main.scss";
 import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService";
 import { ViewState } from "../../../types/viewState";
 import { ColorExtractor } from '../../../utils/ColorExtractor'

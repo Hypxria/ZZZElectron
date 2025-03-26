@@ -1,4 +1,4 @@
-import './Styles/SongLyrics.css';
+import './Styles/SongLyrics.scss';
 import { LrcLibApi } from '../../../services/spotifyServices/LrcLibService';
 import React, { useState, useEffect } from 'react';
 import { ViewState } from '../../../types/viewState'

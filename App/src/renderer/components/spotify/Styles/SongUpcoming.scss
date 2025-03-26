@@ -1,0 +1,131 @@
+.upcoming-song-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  width: 13vmax;
+  min-width: 50px;
+  max-width: 300px;
+  position: fixed;
+  top: 2vmin;
+  left: 2vmin;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.upcoming-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  h3 {
+    color: white;
+    margin: 0;
+    font-size: 1rem;
+    font-family: "Urbanist", sans-serif;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    white-space: nowrap;
+
+    /* Prevents text wrapping */
+  }
+}
+
+.collapse-arrow {
+  color: white;
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  transform-origin: center;
+  margin-left: 6px;
+
+  &.rotated {
+    transform: rotate(90deg);
+  }
+
+  svg {
+    --size: 20px;
+    width: var(--size);
+    height: var(--size);
+    font-size: var(--size);
+  }
+}
+
+.upcoming-content {
+  margin-top: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.upcoming-song-container.collapsed {
+  background-color: rgba(255, 255, 255, 0.1);
+  min-width: none;
+
+  /* Remove min-width constraint */
+  width: fit-content;
+  max-width: none;
+
+  /* Override the max-width if needed */
+  padding-right: 12px;
+  padding-left: 12px;
+  padding-top: 12px;
+
+  .upcoming-content {
+    width: 0;
+    height: 0;
+    margin-top: 0;
+    opacity: 0;
+  }
+}
+
+.next-song-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-song-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.next-song-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+
+  /* Allows text to truncate properly */
+}
+
+.next-song-title {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+}
+
+.next-song-artist {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Urbanist", sans-serif;
+  font-weight: 400;
+}

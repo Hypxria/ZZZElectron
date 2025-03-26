@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import SpotifyMain from './components/spotify/SpotifyMain';
-import Titlebar from './components/Titlebar'
+import Titlebar from './components/Titlebar';
 import Settings from './components/Settings';
-import '../index.css';
-import {ViewState} from '../types/viewState';
+import DiscordNotification from './components/discord/DiscordNotification';
+import '../index.scss';
+import { ViewState } from '../types/viewState';
+
 
 declare global {
   interface Window {
-      discord: {
-          onNotification: (callback: (notification: any) => void) => void;
-      }
+    discord: {
+      onNotification: (callback: (notification: any) => void) => void;
+    }
   }
 }
 
@@ -29,36 +31,35 @@ const App: React.FC<AppProps> = () => {
   };
 
   window.electron.log(`ViewState: ${viewState}`)
-
-  window.discord.onNotification((notification) => {
-    console.log('Received Discord notification:', notification);
-    // Handle the notification in your UI
-  });
-
-
-  
+  var isEnabled = true
   return (
-    <div 
-    className='App' 
-    onClick={isSettings ? handleOutsideClick : undefined}
+    <div
+      className='App'
+      onClick={isSettings ? handleOutsideClick : undefined}
     >
       <Titlebar
-        isSettings={isSettings} 
+        isSettings={isSettings}
         setIsSettings={setIsSettings}
         viewState={viewState}
-        setViewState={setViewState}  
+        setViewState={setViewState}
       />
+
       
+
+      <DiscordNotification
+      isEnabled={isEnabled}
+      />
+
       {isSettings && (
-        <div 
+        <div
           className="settings-backdrop"
           onClick={handleOutsideClick}
         >
-          <Settings isSettings={isSettings} setIsSettings={setIsSettings}/>
+          <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
         </div>
       )}
 
-      
+
       <div className={`content-wrapper ${viewState}`}>
         <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
           <SpotifyMain

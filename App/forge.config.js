@@ -40,7 +40,7 @@ module.exports = {
             ],
           },
           resolve: {
-            extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
+            extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.scss', '.json'],
           },
         },
         renderer: {
@@ -62,6 +62,10 @@ module.exports = {
                   use: ['style-loader', 'css-loader'],
                 },
                 {
+                  test: /\.scss$/,
+                  use: ['style-loader', 'css-loader', 'sass-loader'],
+                },
+                {
                   test: /\.(jpg|png|svg|gif)$/,
                   use: {
                     loader: 'file-loader',
@@ -73,7 +77,7 @@ module.exports = {
               ],
             },
             resolve: {
-              extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+              extensions: ['.js', '.ts', '.jsx', '.tsx', '.scss', '.css'],
             },
           },
           entryPoints: [

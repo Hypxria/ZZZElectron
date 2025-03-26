@@ -1,6 +1,6 @@
 // src/renderer/components/spotify/SongInfo.tsx
 import React from 'react';
-import './Styles/SongInfo.css';
+import './Styles/SongInfo.scss';
 
 interface Song {
   name: string;

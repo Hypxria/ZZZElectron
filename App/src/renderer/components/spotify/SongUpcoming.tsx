@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
-import './Styles/SongUpcoming.css';
+import './Styles/SongUpcoming.scss';
 
 interface Song {
   id: string;

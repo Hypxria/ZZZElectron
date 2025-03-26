@@ -33,13 +33,13 @@ class ZZZElectron {
   private wasAutoSwitched: boolean = false;
   private wasAutoSwitchedThisSong: boolean = false;
 
-  private progress:number = 0
+  private progress: number = 0
 
   constructor() {
     this.main();
   }
 
-  
+
 
   private setupProgressWorker() {
     // Create a Blob containing the worker code
@@ -51,8 +51,9 @@ class ZZZElectron {
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
+      console.log('message')
       let subtract
-      if (this.wasAutoSwitchedThisSong){
+      if (this.wasAutoSwitchedThisSong) {
         subtract = 1000
       } else {
         subtract = 0
@@ -60,6 +61,16 @@ class ZZZElectron {
       const progress = Math.max((Spicetify.Player.getProgress() - subtract), 0);
       const duration = Spicetify.Player.getDuration();
       this.progress = progress
+
+      console.log(JSON.stringify({
+        type: 'progress',
+        data: {
+          progress,
+          duration,
+          percentage: (progress / duration) * 100
+        }
+      }));
+
 
       this.sendMessage(JSON.stringify({
         type: 'progress',
@@ -155,14 +166,14 @@ class ZZZElectron {
         const data = JSON.parse(event.data);
         console.log(`data: ${data}`)
 
-        
+
 
         // Handle structured messages with type and action
         switch (data.type) {
           case 'playback':
             switch (data.action) {
               case 'volume':
-                Spicetify.Player.setVolume(data.value/100);
+                Spicetify.Player.setVolume(data.value / 100);
                 break;
               case 'seek':
                 console.log(data.value)
@@ -218,7 +229,7 @@ class ZZZElectron {
               case 'toggleRepeat':
                 const currentState = Spicetify.Player.getRepeat();
                 let newState;
-                
+
                 // Toggle between states: off -> context -> track -> off
                 switch (currentState) {
                   case 0: // off
@@ -548,10 +559,8 @@ class ZZZElectron {
 
   private async establishListeners() {
 
-    if (Spicetify.Player.isPlaying()) {
-      this.startProgressTracking();
-    }
-
+    this.startProgressTracking();
+    
     /*
     Deprecated- Short lived due to electron's background tab throttling, slowing the messages
 
@@ -563,7 +572,7 @@ class ZZZElectron {
 
   private async listenForSongChange() {
     let previousDuration = Spicetify.Player.getDuration();;
-        
+
     Spicetify.Player.addEventListener('songchange', (event) => {
       // Check if previous song ended naturally (within 1.5s of its end)
       console.log(`song: ${Spicetify.Player.getProgress()}`)
@@ -581,7 +590,7 @@ class ZZZElectron {
         console.log('Song ended abruptly')
       }
 
-      
+
       console.log(`Song ended: Previous Duration: ${previousDuration}`)
       console.log(`Song ended: Previous Progress: ${this.progress}`)
 
