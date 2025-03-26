@@ -5,7 +5,13 @@ import Settings from './components/Settings';
 import '../index.css';
 import {ViewState} from '../types/viewState';
 
-
+declare global {
+  interface Window {
+      discord: {
+          onNotification: (callback: (notification: any) => void) => void;
+      }
+  }
+}
 
 interface AppProps {
 }
@@ -24,7 +30,13 @@ const App: React.FC<AppProps> = () => {
 
   window.electron.log(`ViewState: ${viewState}`)
 
+  window.discord.onNotification((notification) => {
+    console.log('Received Discord notification:', notification);
+    // Handle the notification in your UI
+  });
 
+
+  
   return (
     <div 
     className='App' 
