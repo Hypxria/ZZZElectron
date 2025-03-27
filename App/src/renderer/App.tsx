@@ -47,7 +47,7 @@ const App: React.FC<AppProps> = () => {
       
 
       <DiscordNotification
-      isEnabled={isEnabled}
+      
       />
 
       {isSettings && (

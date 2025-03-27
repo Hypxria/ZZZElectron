@@ -49,7 +49,6 @@ function createWebSocketServer() {
         const messageStr = message.toString();
 
         clients.forEach(client => {
-          console.log(`Echoing to client: ${messageStr}`)
           if (client !== ws && client.readyState === WebSocket.OPEN) {
             client.send(messageStr);
           }
@@ -126,6 +125,14 @@ const createWindow = async (): Promise<void> => {
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
+    },
+  });
+
+  const discordWindow = new BrowserWindow({
+    show: false, // Hide if not needed
+    webPreferences: {
+      contextIsolation: false,
+      nodeIntegration: true, // Allow Node.js APIs
     },
   });
 

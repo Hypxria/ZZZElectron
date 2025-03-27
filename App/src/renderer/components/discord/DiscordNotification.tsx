@@ -1,20 +1,62 @@
-import React from 'react'
-import './Styles/DiscordNotification.css'
+import React, {useState, useEffect} from 'react';
+import './Styles/DiscordNotification.scss';
+import discordService from './../../../services/discordServices/DiscordService';
+import { DiscordNotificationType } from './../../../services/discordServices/types';
 
 interface NotificationProps {
-  isEnabled: boolean
+  author: string;
+  message: string;
+  timestamp: string;
+  avatarUrl?: string;
+  isVisible?: boolean;
 }
 
-const DiscordNotification: React.FC<NotificationProps> = ({isEnabled}) => {
 
-  React.useEffect(() => {
-    return () => {
-      // Cleanup on unmount
-    };
-  }, []);
+
+
+const DiscordNotification: React.FC = ({
+
+}) => {
+
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [author, setAuthor] = useState<string>('');
+  const [timestamp, setTimestamp] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+
+  useEffect(() => {
+    
+    const discord = new discordService()
+
+    discord.start()
+
+    
+
+    
+    
+  }, []); // Empty dependency array means this runs once on mount
+
 
   return (
-      <div className={`notification-container ${isEnabled}`}></div>
+    <div className={`notification-container`}>
+      <div className="profile-picture">
+        {avatarUrl ? (
+          <img src={avatarUrl} alt={author} />
+        ) : (
+          <div className="default-avatar" />
+        )}
+      </div>
+
+      <div className="notification-content">
+        <div className="notification-header">
+          <span className="author">{author}</span>
+          <span className="timestamp">{timestamp}</span>
+        </div>
+
+        <div className="notification-message">
+          {message}
+        </div>
+      </div>
+    </div>
   );
 };
 
