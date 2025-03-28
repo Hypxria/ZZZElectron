@@ -35,6 +35,8 @@ class ZZZElectron {
 
   private progress: number = 0
 
+  private songyear: number | null | undefined
+
   constructor() {
     this.main();
   }
@@ -416,70 +418,26 @@ class ZZZElectron {
 
 
                 // Handle getting current track info
-                const currentTrack = Spicetify.Player.data.item;
-                const accessToken = Spicetify.Platform.Session.accessToken;
 
-                // Get album ID from the current track
-                const trackId = currentTrack?.uri?.split(':')[2];
-
-                console.log(JSON.stringify(currentTrack, null, 2))
-
-
-                // Fetch album details to get release date
-                fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-                  headers: {
-                    'Authorization': `Bearer ${accessToken}`
+                console.log('sending')
+                this.sendMessage(JSON.stringify({
+                  type: 'response',
+                  action: 'current',
+                  data: {
+                    name: currentTrack?.name || 'No Song Playing',
+                    artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
+                    album: currentTrack?.album?.name || 'Unknown',
+                    duration_ms: currentTrack?.duration || 0,
+                    album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata?.image_xlarge_url),
+                    year: this.songyear || 'Unknown Year',
+                    volume: Spicetify.Player.getVolume(),
+                    is_playing: Spicetify.Player.isPlaying(),
+                    repeat_state: Spicetify.Player.getRepeat(),
+                    shuffle_state: Spicetify.Player.getShuffle(),
+                    progress_ms: Spicetify.Player.getProgress(),
+                    progress_percentage: Spicetify.Player.getProgressPercent() * 100
                   }
-                })
-                  .then(response => response.json())
-                  .then(albumData => {
-                    // Extract year from release_date
-
-                    /*
-                    Hyperiya:
-                    This is finnicky, and i need to change the endpoint that I get the release date from. If it's on tracks instead of albums, it means I changed it.
-                    */
-
-
-                    const year = albumData.album?.release_date?.split('-')[0];
-
-                    console.log('sending')
-                    this.sendMessage(JSON.stringify({
-                      type: 'response',
-                      action: 'current',
-                      data: {
-                        name: currentTrack?.name || 'No Song Playing',
-                        artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
-                        album: currentTrack?.album?.name || 'Unknown',
-                        duration_ms: currentTrack?.duration || 0,
-                        album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata?.image_xlarge_url),
-                        year: year || 'Unknown Year',
-                        volume: Spicetify.Player.getVolume(),
-                        is_playing: Spicetify.Player.isPlaying(),
-                        repeat_state: Spicetify.Player.getRepeat(),
-                        shuffle_state: Spicetify.Player.getShuffle(),
-                        progress_ms: Spicetify.Player.getProgress(),
-                        progress_percentage: Spicetify.Player.getProgressPercent() * 100
-                      }
-                    }));
-                  })
-                  .catch(error => {
-                    console.error('Error fetching album details:', error);
-                    // Send message without year if fetch fails
-                    this.sendMessage(JSON.stringify({
-                      type: 'response',
-                      action: 'current',
-                      data: {
-                        name: currentTrack?.name || 'No Song Playing',
-                        artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
-                        album: currentTrack?.album?.name || 'Unknown',
-                        duration: currentTrack?.duration || 0,
-                        album_cover: currentTrack?.metadata?.image_url,
-                        year: 'Unknown Year',
-                        is_playing: !Spicetify.Player.isPlaying
-                      }
-                    }));
-                  });
+                }));
 
                 break;
             }
@@ -587,6 +545,24 @@ class ZZZElectron {
         console.log('Song ended abruptly')
       }
 
+      const currentTrack = Spicetify.Player.data.item;
+      const accessToken = Spicetify.Platform.Session.accessToken;
+
+      // Get album ID from the current track
+      const trackId = currentTrack?.uri?.split(':')[2];
+
+      console.log(JSON.stringify(currentTrack, null, 2))
+
+
+      // Fetch album details to get release date
+      fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      }).then(response => response.json())
+        .then(albumData => {
+          this.songyear = albumData.album?.release_date?.split('-')[0];
+        })
 
       console.log(`Song ended: Previous Duration: ${previousDuration}`)
       console.log(`Song ended: Previous Progress: ${this.progress}`)
@@ -618,4 +594,13 @@ class ZZZElectron {
 
 const zzzElectron = new ZZZElectron();
 export default zzzElectron;
+
+const currentTrack = Spicetify.Player.data.item;
+const accessToken = Spicetify.Platform.Session.accessToken;
+
+// Get album ID from the current track
+const trackId = currentTrack?.uri?.split(':')[2];
+
+console.log(JSON.stringify(currentTrack, null, 2))
+
 

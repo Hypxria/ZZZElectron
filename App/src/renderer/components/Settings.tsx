@@ -89,6 +89,17 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
 
         // Refreshing discord connection with the new credentials
         const result = window.discord.connect(String(id), String(secret));
+        window.electron.restart();
+    }
+
+    const handleDiscordReset = async () => {
+        try {
+            await window.discord.revokeAllTokens();
+            await window.discord.disconnect();
+            await window.electron.restart();
+        } catch (error) {
+            console.error('Error in the middle of discord reset:', error);
+        }    
     }
 
     return (
@@ -226,6 +237,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
 
                             <div className="save-input">
                                 <button className="save-button" onClick={handleCredentialsDiscord}>Save</button>
+                                <button className="save-button" onClick={handleDiscordReset}>Reset</button>
                             </div>
                         </div>
                     </div>

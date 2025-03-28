@@ -197,6 +197,24 @@ ipcMain.handle('discord:disconnect', async () => {
   }
 });
 
+ipcMain.handle('discord:revoke', async () => {
+  try {
+    if (discordRPC) {
+      await discordRPC.revokeAllTokens();
+      return { success: true };
+    } else {
+      return { success: false, error: 'DiscordRPC instance not initialized' };
+    }
+  } catch (error) {
+    console.error('Failed to revoke tokens:', error);
+    return { success: false, error: error.message };
+  }
+}) 
+
+ipcMain.handle('restart-app', () => {
+  app.relaunch(); // Relaunch the application
+  app.exit(); // Quit the current instance
+})
 
 
 
@@ -214,7 +232,7 @@ app.whenReady().then(async () => {
   });
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', async () => {
   if (callbackServer) {
     console.log('Closing callback server...');
     callbackServer.close();
@@ -227,10 +245,32 @@ app.on('before-quit', () => {
       wss = null;
     });
   }
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  if (discordRPC) {
+    await discordRPC.disconnect();
+    discordRPC = null;
   }
 });
+
+// Add this to handle development hot reloads
+if (process.env.NODE_ENV === 'development') {
+  app.on('window-all-closed', async () => {
+    if (process.platform !== 'darwin') {
+      if (wss) {
+        wss.clients.forEach(client => {
+          client.terminate();
+        });
+        wss.close();
+        wss = null;
+      }
+      if (discordRPC) {
+        await discordRPC.disconnect();
+        discordRPC = null;
+      }
+      // Force kill any remaining connections
+      setTimeout(() => {
+        app.quit();
+      }, 100);
+    }
+  });
+}
+

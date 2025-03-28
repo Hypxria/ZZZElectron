@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('versions', {
 });
 
 contextBridge.exposeInMainWorld('electron', {
+  restart: () => ipcRenderer.invoke('restart-app'),
   openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
   log: (message: any) => ipcRenderer.send('console-log', message),
   spotifyLink: () => ipcRenderer.invoke('spotify-link'),
@@ -29,6 +30,7 @@ contextBridge.exposeInMainWorld('discord', {
   },
   removeNotificationListener: () => {
       ipcRenderer.removeAllListeners('discord:notification');
-  }
+  },
+  revokeAllTokens: () => ipcRenderer.invoke('discord:revokeAllTokens')
 });
 

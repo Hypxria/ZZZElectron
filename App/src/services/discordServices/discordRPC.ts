@@ -31,7 +31,7 @@ class DiscordRPC extends EventEmitter {
     private store: any;
 
 
-    constructor(CLIENT_ID: string, CLIENT_SECRET: string) {
+    constructor(CLIENT_ID?: string, CLIENT_SECRET?: string) {
         super();
         this.socket = new net.Socket();
         this.buffer = Buffer.alloc(0);
@@ -39,10 +39,8 @@ class DiscordRPC extends EventEmitter {
         this.setupSocket();
 
 
-        this.CLIENT_ID = CLIENT_ID
-        this.CLIENT_SECRET = CLIENT_SECRET
-        console.log(`RPC: ${this.CLIENT_ID}, ${this.CLIENT_SECRET}`)
-
+        this.CLIENT_ID = CLIENT_ID || ''
+        this.CLIENT_SECRET = CLIENT_SECRET || ''
         this.initializeStoreAndSetup();
 
     }
@@ -51,7 +49,6 @@ class DiscordRPC extends EventEmitter {
         try {
             this.store = await initializeStore();
             console.log(this.store.get('unicorn'));
-            console.log(`RPC: ${this.CLIENT_ID}, ${this.CLIENT_SECRET}`);
         } catch (error) {
             console.error('Failed to initialize store:', error);
         }
@@ -74,37 +71,43 @@ class DiscordRPC extends EventEmitter {
             const ipcPath = process.platform === 'win32'
                 ? '\\\\?\\pipe\\discord-ipc-0'
                 : '/tmp/discord-ipc-0';
-
-            // Add connection timeout
-            const timeout = setTimeout(() => {
-                this.socket?.destroy();
-                reject(new Error('Connection timeout'));
-            }, this.connectionTimeout);
-
-            console.log('Connecting attempt:', this.connectionAttempts + 1);
-
-            this.socket!.connect(ipcPath);
-
-            this.socket!.once('ready', () => {
-                clearTimeout(timeout);
-                this.connectionAttempts = 0;
-                resolve(true);
-            });
-
-            this.socket!.once('error', (err) => {
-                clearTimeout(timeout);
-                if (this.connectionAttempts < this.maxRetries) {
-                    this.connectionAttempts++;
-                    console.log('Retrying connection...');
-                    this.socket = new net.Socket();
-                    this.setupSocket();
-                    this.connect().then(resolve).catch(reject);
+    
+            console.log('Attempting to connect to:', ipcPath);
+    
+            // Try multiple pipe numbers if the first one fails
+            const tryConnect = (pipeNum: number) => {
+                const currentPath = process.platform === 'win32'
+                    ? `\\\\?\\pipe\\discord-ipc-${pipeNum}`
+                    : `/tmp/discord-ipc-${pipeNum}`;
+    
+                console.log(`Trying pipe ${pipeNum}:`, currentPath);
+    
+                this.socket!.connect(currentPath);
+            };
+    
+            let currentPipe = 0;
+            const maxPipes = 10;
+    
+            this.socket!.on('error', (err) => {
+                console.log(`Failed to connect to pipe ${currentPipe}:`, err.message);
+                currentPipe++;
+                if (currentPipe < maxPipes) {
+                    tryConnect(currentPipe);
                 } else {
-                    reject(err);
+                    reject(new Error('Failed to connect to Discord IPC'));
                 }
             });
+    
+            this.socket!.once('connect', () => {
+                console.log('Connected to Discord IPC pipe:', currentPipe);
+                resolve(true);
+            });
+    
+            tryConnect(currentPipe);
         });
     }
+    
+    
 
     private async handleConnect() {
         console.log('Connected to Discord IPC');
@@ -112,19 +115,27 @@ class DiscordRPC extends EventEmitter {
     }
 
     private async sendHandshake() {
-        // First send the handshake
-        const handshakePayload = {
-            v: 1,
-            client_id: this.CLIENT_ID,
-            op: 0 // HANDSHAKE opcode
-        };
-
-        console.log('Sending initial handshake');
-        this.sendFrame(handshakePayload);
-
-        await this.authorize()
+        return new Promise((resolve, reject) => {
+            const handshakePayload = {
+                v: 1,
+                client_id: this.CLIENT_ID,
+                nonce: this.generateNonce(),
+                op: 0
+            };
+    
+            console.log('Sending handshake payload:', handshakePayload);
+            this.sendFrame(handshakePayload);
+    
+            // Set up a timeout for handshake response
+            
+            // Wait for handshake response
+            this.once('ready', () => {
+                resolve(true);
+                this.authorize();
+            });
+        });
     }
-
+        
     public async revokeAllTokens() {
         const tokens = {
             access_token: this.store.get('access_token'),
@@ -154,9 +165,11 @@ class DiscordRPC extends EventEmitter {
             })
         });
 
-        this.store.delete('access_token');
-        this.store.delete('refresh_token');
-        this.store.delete('expires_at');
+        await this.store.delete('access_token');
+        await this.store.delete('refresh_token');
+        await this.store.delete('expires_at');
+
+        await window.electron.restart();
     }
 
     private async authorize() {
@@ -166,10 +179,14 @@ class DiscordRPC extends EventEmitter {
             expires_at: this.store.get('expires_at')
         }
 
-        if (tokens.access_token && tokens.expires_at > Date.now() && tokens.refresh_token) {
+        console.log(`access tokens: ${tokens.access_token}, ${tokens.refresh_token}, ${tokens.expires_at}`)
+
+        if (tokens.access_token !== undefined && tokens.expires_at > Date.now() && tokens.refresh_token !== undefined) {
+            console.log('skippy')
             this.authenticate(tokens.access_token);
             return;
-        } else if (tokens.refresh_token && tokens.expires_at < Date.now()) {
+        } else if (tokens.refresh_token !== undefined && tokens.expires_at < Date.now()) {
+            console.log('refreshing')
             const response = await fetch("https://discord.com/api/v10//oauth2/token", {
                 method: 'POST',
                 headers: {
@@ -189,15 +206,15 @@ class DiscordRPC extends EventEmitter {
             this.authenticate(data.access_token);
             return;
         }
+
         // After handshake is successful, you'll receive a READY event
         // Then you should send IDENTIFY
         this.once('codeReceived', (code) => {
+            console.log('getting token');
             this.getToken(code)
         });
 
-        this.once('ready', () => {
-            this.sendFrame(identifyPayload);
-        });
+        
 
         const identifyPayload = {
             op: 1, // FRAME opcode
@@ -211,8 +228,8 @@ class DiscordRPC extends EventEmitter {
             }
         };
 
-        console.log('Sending identify payload');
-
+        
+        this.sendFrame(identifyPayload);
         // Handlemessage Takes it from here to get the code by codeReceived
 
     }
@@ -295,6 +312,11 @@ class DiscordRPC extends EventEmitter {
             if (this.buffer.length < totalLength) break;
 
             const payload = JSON.parse(this.buffer.subarray(8, totalLength).toString());
+            console.log('Received raw payload:', {
+                opcode,
+                length,
+                payload
+            });    
             console.log('Received payload:', JSON.stringify(payload, null, 2));
             this.handleMessage(opcode, payload);
 

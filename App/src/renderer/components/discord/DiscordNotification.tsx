@@ -14,6 +14,7 @@ interface NotificationProps {
 declare global {
   interface Window {
     discord: {
+      revokeAllTokens: () => Promise<void>; // Add this line
       connect: ( id:string, secret:string) => Promise<{ success: boolean; error?: string }>;
       disconnect: () => Promise<void>;
       onNotification: (callback: (notification: any) => void) => void;
@@ -76,24 +77,33 @@ const DiscordNotification: React.FC = ({
   const [message, setMessage] = useState<string>('');
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+
+  useEffect(() => {
+    // Clear any existing timeout when component unmounts
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Function to handle showing and hiding notification
   const showNotification = useCallback(() => {
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Show the notification
     setIsVisible(true);
+    // Only set the hide timeout if not currently hovered
+    if (!isHovered) {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+      hideTimeoutRef.current = setTimeout(() => {
+        setIsVisible(false);
+      }, 5000); // 5 seconds
+    }
+  }, [isHovered]);
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      setIsVisible(false);
-    }, 5000);
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -112,7 +122,6 @@ const DiscordNotification: React.FC = ({
         }
 
         window.discord.onNotification((notification: DiscordNotificationType) => {
-          if (!mounted) return;
           // Getting values that we need
           console.log('Notification received:', notification);
           setAvatarUrl(notification.icon_url);
@@ -174,18 +183,27 @@ const DiscordNotification: React.FC = ({
     };
   }, [showNotification]);
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    // Clear the hide timeout when mouse enters
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+  };
 
-
-
-
-
-
-
-
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    // Start the hide timeout when mouse leaves
+    hideTimeoutRef.current = setTimeout(() => {
+      setIsVisible(false);
+    }, 5000);
+  };
 
 
   return (
-    <div className={`notification-container ${isVisible ? 'visible' : ''}`}>
+    <div className={`notification-container ${isVisible ? 'visible' : ''}`} onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    >
       <div className="profile-picture">
         {avatarUrl ? (
           <img src={avatarUrl} alt={author} />
@@ -210,5 +228,7 @@ const DiscordNotification: React.FC = ({
     </div>
   );
 };
+
+
 
 export default DiscordNotification;
