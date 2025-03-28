@@ -1,222 +1,227 @@
 /* Settings.css */
 
 .settings * {
-    font-family: 'Urbanist', sans-serif;
+  font-family: "Urbanist", sans-serif;
+}
+
+.settings-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  /* Optional: adds a semi-transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.settings {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 50vw;
+  opacity: 0;
+  z-index: 1000;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
   }
-  
-  .settings-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-  
-    /* Optional: adds a semi-transparent overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
+}
+
+.settings-container {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.navigation-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-arrow {
+  font-size: 14px !important;
+  color: #666;
+}
+
+.nav-item {
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    background-color: #f0f0f0;
+    color: #333;
   }
-  
-  .settings {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    position: fixed;
-    padding: 24px;
-    max-width: 800px;
-    margin: 0 auto;
-    width: 50vw;
-    opacity: 0;
-    z-index: 1000;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  
-    &.show {
-      opacity: 1;
-      visibility: visible;
-    }
+
+  &.active {
+    color: #333;
+    font-weight: 500;
   }
-  
-  .settings-container {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.3);
   }
-  
-  .navigation-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .nav-arrow {
-    font-size: 14px !important;
-    color: #666;
-  }
-  
+}
+
+@media (prefers-color-scheme: dark) {
   .nav-item {
-    font-size: 16px;
-    color: #666;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    user-select: none;
-  
     &:hover {
-      background-color: #f0f0f0;
-      color: #333;
-    }
-  
-    &.active {
-      color: #333;
-      font-weight: 500;
-    }
-  
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.3);
-    }
-  }
-  
-  @media (prefers-color-scheme: dark) {
-    .nav-item {
-      &:hover {
-        background-color: #2a2a2a;
-        color: #fff;
-      }
-  
-      &.active {
-        color: #fff;
-      }
-    }
-  }
-  
-  .settings .main-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-    flex-grow: 1;
-  }
-  
-  .settings-button {
-    text-align: left;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    background-color: #f5f5f5;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  
-    &:hover {
-      background-color: #e8e8e8;
-    }
-  }
-  
-  .options-menu {
-    flex-grow: 1;
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-  }
-  
-  .option-button {
-    text-align: left;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    background-color: #f5f5f5;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  
-    &:hover {
-      background-color: #e8e8e8;
-    }
-  }
-  
-  .spotify-credentials {
-    width: inherit;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-  
-  .spotify-input, .spotify-input-secret, .hoyo-input, .hoyo-input-secret {
-    width: 40vw;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    margin-bottom: 5px;
-    margin-top: 5px;
-  }
-  
-  .save-button {
-    border-radius: 8px;
-    margin-bottom: 10px;
-    width: 60px;
-    height: 40px;
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-  
-    to {
-      opacity: 1;
-    }
-  }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .settings-container {
-      background-color: #1a1a1a;
-    }
-  
-    .navigation-header {
-      border-bottom-color: #333;
-    }
-  
-    .nav-arrow {
-      color: #999;
-    }
-  
-    .nav-item {
-      color: #999;
-  
-      &.active {
-        color: #fff;
-      }
-    }
-  
-    .settings-button, .option-button {
       background-color: #2a2a2a;
-      color: #e0e0e0;
-  
-      &:hover {
-        background-color: #333;
-      }
+      color: #fff;
+    }
+
+    &.active {
+      color: #fff;
     }
   }
-  
+}
+
+.settings .main-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.settings-button {
+  text-align: left;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #e8e8e8;
+  }
+}
+
+.options-menu {
+  flex-grow: 1;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.option-button {
+  text-align: left;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #e8e8e8;
+  }
+}
+
+.credentials {
+  width: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.spotify-input,
+.spotify-input-secret,
+.hoyo-input,
+.hoyo-input-secret,
+.discord-input,
+.discord-input-secret {
+  width: 40vw;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.save-button {
+  border-radius: 8px;
+  margin-bottom: 10px;
+  width: 60px;
+  height: 40px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .settings-container {
+    background-color: #1a1a1a;
+  }
+
+  .navigation-header {
+    border-bottom-color: #333;
+  }
+
+  .nav-arrow {
+    color: #999;
+  }
+
+  .nav-item {
+    color: #999;
+
+    &.active {
+      color: #fff;
+    }
+  }
+
+  .settings-button,
+  .option-button {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+
+    &:hover {
+      background-color: #333;
+    }
+  }
+}

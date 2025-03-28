@@ -4,6 +4,7 @@ import * as http from 'http';
 import { URL } from 'url';
 import WebSocket, { WebSocketServer } from 'ws';
 import SpotifyService from './services/spotifyServices/SpotifyService';
+import secureLocalStorage from 'react-secure-storage';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -161,9 +162,12 @@ ipcMain.handle('open-external', async (_, url: string) => {
 import DiscordRPC from './services/discordServices/discordRPC';
 
 
-ipcMain.handle('discord:connect', async () => {
+ipcMain.handle('discord:connect', async (_, id, secret) => {
   try {
-      discordRPC = new DiscordRPC();
+      const client_id = id
+      const client_secret = secret
+      console.log(client_id, client_secret)
+      discordRPC = new DiscordRPC(String(client_id), String(client_secret));
       await discordRPC.connect();
       
       // Forward notifications to renderer

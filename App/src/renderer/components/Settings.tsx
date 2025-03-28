@@ -9,15 +9,16 @@ interface SettingsProps {
     setIsSettings: (value: boolean) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSettings}) => {
+const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSettings }) => {
     const [navigationPath, setNavigationPath] = useState<string[]>(['Settings']);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
-    
+
 
     const generalOptions = [
         'Spotify Settings',
         'Hoyolab Settings',
+        'Discord Settings',
         'Credits',
     ];
 
@@ -59,12 +60,12 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         secureLocalStorage.setItem('spotify_client_secret', secret);
 
         const { spotifyService } = require('../../services/spotifyServices/SpotifyService');
-    
+
         // Update the service with new credentials
         spotifyService.updateCredentials(id, secret);
         window.location.reload();
     };
-    
+
     const handleCredentialsHoyo = () => {
         const idInput = document.querySelector('.hoyolab-input') as HTMLInputElement;
         const secretInput = document.querySelector('.hoyolab-input-secret') as HTMLInputElement;
@@ -74,12 +75,25 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
 
         secureLocalStorage.setItem('hoyolab_username', account);
         secureLocalStorage.setItem('hoyolab_password', password);
+    }
 
+    const handleCredentialsDiscord = () => {
+        const idInput = document.querySelector('.discord-input') as HTMLInputElement;
+        const secretInput = document.querySelector('.discord-input-secret') as HTMLInputElement;
+
+        const id = idInput.value;
+        const secret = secretInput.value;
+
+        secureLocalStorage.setItem('discord_client_id', id);
+        secureLocalStorage.setItem('discord_client_secret', secret);
+
+        // Refreshing discord connection with the new credentials
+        const result = window.discord.connect(String(id), String(secret));
     }
 
     return (
-        <div 
-            className={`settings ${isSettings ? 'show' : ''}`} 
+        <div
+            className={`settings ${isSettings ? 'show' : ''}`}
             onClick={(e) => e.stopPropagation()}
         >
             <div className="settings-container">
@@ -90,10 +104,9 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                             {index > 0 && (
                                 <ArrowForwardIosRoundedIcon className="nav-arrow" />
                             )}
-                            <span 
-                                className={`nav-item ${
-                                    index === navigationPath.length - 1 ? 'active' : ''
-                                }`}
+                            <span
+                                className={`nav-item ${index === navigationPath.length - 1 ? 'active' : ''
+                                    }`}
                                 onClick={() => handleNavigationClick(index)}
                                 role="button"
                                 tabIndex={0}
@@ -107,13 +120,13 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                 {/* Main menu */}
                 {!activeMenu && (
                     <div className="main-buttons">
-                        <button 
+                        <button
                             className="settings-button"
                             onClick={() => handleMenuSelect('General')}
                         >
                             General
                         </button>
-                        <button 
+                        <button
                             className="settings-button"
                             onClick={() => handleMenuSelect('Appearance')}
                         >
@@ -129,8 +142,8 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                     <div className="options-menu">
                         <div className="options-list">
                             {generalOptions.map((option, index) => (
-                                <button 
-                                    key={index} 
+                                <button
+                                    key={index}
                                     className="option-button"
                                     onClick={() => handleMenuSelect(option)}
                                 >
@@ -146,8 +159,8 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                     <div className="options-menu">
                         <div className="options-list">
                             {appearanceOptions.map((option, index) => (
-                                <button 
-                                    key={index} 
+                                <button
+                                    key={index}
                                     className="option-button"
                                     onClick={() => handleMenuSelect(option)}
                                 >
@@ -161,41 +174,25 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                 {/* Spotify Settings section */}
                 {activeMenu === 'Spotify Settings' && (
                     <div className="options-menu">
-                        <div className="spotify-credentials">
-                            <div className="input-group">
-                                <input 
-                                    type="text"
-                                    placeholder="Client ID"
-                                    className="spotify-input"
-                                />
-                            </div>
-                            <div className="input-group">
-                                <input 
-                                    type="text"
-                                    placeholder="Client Secret"
-                                    className="spotify-input-secret"
-                                />
-                            </div>
-                            <div className="save-input">
-                                <button className="save-button" onClick={handleCredentials}>Save</button>
-                            </div>  
-                        </div>
+
                     </div>
                 )}
 
-                {/* Spotify Settings section */}
+
+
+                {/* Hoyoverse Settings section */}
                 {activeMenu === 'Hoyolab Settings' && (
                     <div className="options-menu">
-                        <div className="spotify-credentials">
+                        <div className="credentials">
                             <div className="input-group">
-                                <input 
+                                <input
                                     type="text"
                                     placeholder="Hoyolab Username/Email"
                                     className="hoyo-input"
                                 />
                             </div>
                             <div className="input-group">
-                                <input 
+                                <input
                                     type="password"
                                     placeholder="Hoyolab Password"
                                     className="hoyo-input-secret"
@@ -203,12 +200,40 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                             </div>
                             <div className="save-input">
                                 <button className="save-button" onClick={handleCredentialsHoyo}>Save</button>
-                            </div>  
+                            </div>
                         </div>
                     </div>
                 )}
+
+                {/* Discord Settings section */}
+                {activeMenu === 'Discord Settings' && (
+                    <div className="options-menu">
+                        <div className="credentials">
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Discord Client ID"
+                                    className="discord-input"
+                                />
+                            </div>
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Discord Client Secret"
+                                    className="discord-input-secret"
+                                />
+                            </div>
+
+                            <div className="save-input">
+                                <button className="save-button" onClick={handleCredentialsDiscord}>Save</button>
+                            </div>
+                        </div>
+                    </div>
+
+                )}
+
             </div>
-        </div>
+        </div >
     );
 };
 

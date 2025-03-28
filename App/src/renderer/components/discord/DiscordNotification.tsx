@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Styles/DiscordNotification.scss';
 import { DiscordNotificationType } from './../../../services/discordServices/types';
+import secureLocalStorage from 'react-secure-storage';
 
 interface NotificationProps {
   author: string;
@@ -13,7 +14,7 @@ interface NotificationProps {
 declare global {
   interface Window {
     discord: {
-      connect: () => Promise<{ success: boolean; error?: string }>;
+      connect: ( id:string, secret:string) => Promise<{ success: boolean; error?: string }>;
       disconnect: () => Promise<void>;
       onNotification: (callback: (notification: any) => void) => void;
       removeNotificationListener: () => void;
@@ -57,7 +58,10 @@ const DiscordNotification: React.FC = ({
 
     const connectToDiscord = async () => {
       try {
-        const result = await window.discord.connect();
+        const id = secureLocalStorage.getItem('discord_client_id');
+        const secret = secureLocalStorage.getItem('discord_client_secret');
+        
+        const result = await window.discord.connect(String(id), String(secret));
         if (!mounted) return;
 
         if (!result.success) {

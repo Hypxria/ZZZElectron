@@ -1,8 +1,6 @@
 import net from 'net';
 import { EventEmitter } from 'events';
 
-const CLIENT_ID = ''; // Replace with your Discord application ID
-const CLIENT_SECRET = '';
 
 interface RpcMessage {
     op: number;
@@ -19,17 +17,23 @@ class DiscordRPC extends EventEmitter {
     private connectionAttempts: number = 0;
     private readonly maxRetries: number = 3;
     private readonly connectionTimeout: number = 10000; // 10 seconds
-    
+    private readonly CLIENT_ID: string
+    private readonly CLIENT_SECRET: string
 
-    constructor() {
+
+    constructor(CLIENT_ID: string, CLIENT_SECRET: string) {
         super();
         this.socket = new net.Socket();
         this.buffer = Buffer.alloc(0);
 
         this.setupSocket();
 
+        this.CLIENT_ID = CLIENT_ID
+        this.CLIENT_SECRET = CLIENT_SECRET
+        console.log(`RPC: ${this.CLIENT_ID}, ${this.CLIENT_SECRET}`)
+        
     }
-
+    
     private generateNonce(): string {
         return Date.now().toString(36) + Math.random().toString(36).substring(2);
     }
@@ -88,14 +92,14 @@ class DiscordRPC extends EventEmitter {
         // First send the handshake
         const handshakePayload = {
             v: 1,
-            client_id: CLIENT_ID,
+            client_id: this.CLIENT_ID,
             op: 0 // HANDSHAKE opcode
         };
 
         console.log('Sending initial handshake');
         this.sendFrame(handshakePayload);
 
-        this.authorize()
+        await this.authorize()
     }
 
     private async authorize() {
@@ -105,20 +109,25 @@ class DiscordRPC extends EventEmitter {
             this.getToken(code)
         });
 
+        this.once('ready', () => {
+            this.sendFrame(identifyPayload);
+        });
+
         const identifyPayload = {
             op: 1, // FRAME opcode
             cmd: 'AUTHORIZE',
             nonce: this.generateNonce(),
             args: {
-                client_id: CLIENT_ID,
+                client_id: this.CLIENT_ID,
+                client_secret: this.CLIENT_SECRET,
                 scopes: ['rpc', 'messages.read', 'rpc.notifications.read'],
                 v: 1
             }
         };
 
         console.log('Sending identify payload');
-        this.sendFrame(identifyPayload);
-        // Handlemessage Takes it from here to get the code
+        
+        // Handlemessage Takes it from here to get the code by codeReceived
 
     }
 
@@ -129,8 +138,8 @@ class DiscordRPC extends EventEmitter {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
+                client_id: this.CLIENT_ID,
+                client_secret: this.CLIENT_SECRET,
                 grant_type: 'authorization_code',
                 code: code,
                 redirect_uri: 'http://localhost',
@@ -153,6 +162,11 @@ class DiscordRPC extends EventEmitter {
 
 
     private async authenticate(code: string) {
+
+        this.once('authenticated', () => {
+            this.subscribeToNotifications();
+        });
+
         const authenticatePayload = {
             op: 1, // FRAME opcode
             cmd: 'AUTHENTICATE',
@@ -164,10 +178,8 @@ class DiscordRPC extends EventEmitter {
 
         console.log('Sending authenticate payload')
         this.sendFrame(authenticatePayload);
-        this.emit('authenticated');
 
-        this.subscribeToNotifications()
-
+        
     }
 
 
@@ -202,7 +214,6 @@ class DiscordRPC extends EventEmitter {
     private async handleMessage(opcode: number, data: any) {
         switch (opcode) {
             case 1: // Event
-                console.log(data)
                 if (data.cmd === 'AUTHORIZE' && data.data.code) {
                     if (data.data && data.data.code) {
                         console.log('Emitting code:', data.data.code);
@@ -210,7 +221,12 @@ class DiscordRPC extends EventEmitter {
                     } else {
                         console.log('Authorization data received but no code:', data);
                     }
-                } else if (data.evt === 'NOTIFICATION_CREATE') {
+                } else if (data.evt == 'READY' && data.cmd == 'DISPATCH') {
+                    this.emit('ready');
+                } else if (data.evt === 'AUTHENTICATE') {
+                    this.emit('authenticated');
+                }
+                else if (data.evt === 'NOTIFICATION_CREATE') {
                     this.emit('notification', data.data);
                 } else if (data.cmd === 'AUTHENTICATE') {
                     console.log('Authenticated successfully');
@@ -240,7 +256,7 @@ class DiscordRPC extends EventEmitter {
         const payload = {
             op: 1, // Command opcode
             cmd: 'SUBSCRIBE',
-            client_id: CLIENT_ID,
+            client_id: this.CLIENT_ID,
             evt: 'NOTIFICATION_CREATE',
             nonce: this.generateNonce(),
         };
@@ -253,7 +269,7 @@ class DiscordRPC extends EventEmitter {
         const payload = {
             op: 1, // Command opcode
             cmd: 'SUBSCRIBE',
-            client_id: CLIENT_ID,
+            client_id: this.CLIENT_ID,
             evt: 'MESSAGE_DELETE',
             nonce: this.generateNonce(),
         };
@@ -266,7 +282,7 @@ class DiscordRPC extends EventEmitter {
         const payload = {
             op: 1, // Command opcode
             cmd: 'SUBSCRIBE',
-            client_id: CLIENT_ID,
+            client_id: this.CLIENT_ID,
             evt: 'MESSAGE_UPDATE',
             nonce: this.generateNonce()
         };

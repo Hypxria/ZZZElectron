@@ -8,7 +8,7 @@ declare global {
     interface Window {
         electron: ElectronAPI;
         discord: {
-            connect: () => Promise<{ success: boolean; error?: string }>;
+            connect: (id, secret) => Promise<{ success: boolean; error?: string }>;
             disconnect: () => Promise<void>;
             onNotification: (callback: (notification: any) => void) => void;
             removeNotificationListener: () => void;
@@ -18,4 +18,4 @@ declare global {
     }
 }
 
-export {};
+export { };

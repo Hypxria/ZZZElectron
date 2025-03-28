@@ -22,7 +22,7 @@ contextBridge.exposeInMainWorld('electron', {
 });
 
 contextBridge.exposeInMainWorld('discord', {
-  connect: () => ipcRenderer.invoke('discord:connect'),
+  connect: (id:string, secret:string) => ipcRenderer.invoke('discord:connect', id, secret),
   disconnect: () => ipcRenderer.invoke('discord:disconnect'),
   onNotification: (callback: (notification: any) => void) => {
       ipcRenderer.on('discord:notification', (_, notification) => callback(notification));
