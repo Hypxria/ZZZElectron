@@ -211,10 +211,29 @@ ipcMain.handle('discord:revoke', async () => {
   }
 }) 
 
-ipcMain.handle('restart-app', () => {
-  app.relaunch(); // Relaunch the application
-  app.exit(); // Quit the current instance
-})
+ipcMain.handle('restart-app', async () => {
+  // Perform cleanup
+  if (callbackServer) {
+    console.log('Closing callback server...');
+    callbackServer.close();
+    callbackServer = null;
+  }
+  if (wss) {
+    console.log('Closing WebSocket server...');
+    wss.close(() => {
+      console.log('WebSocket server closed');
+      wss = null;
+    });
+  }
+  if (discordRPC) {
+    await discordRPC.disconnect();
+    discordRPC = null;
+  }
+
+  // Then restart
+  app.relaunch();
+  app.exit(0);
+});
 
 
 

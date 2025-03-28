@@ -31,6 +31,6 @@ contextBridge.exposeInMainWorld('discord', {
   removeNotificationListener: () => {
       ipcRenderer.removeAllListeners('discord:notification');
   },
-  revokeAllTokens: () => ipcRenderer.invoke('discord:revokeAllTokens')
+  revokeAllTokens: () => ipcRenderer.invoke('discord:revoke')
 });
 
