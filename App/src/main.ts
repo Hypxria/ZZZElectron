@@ -1,10 +1,8 @@
 // src/main.ts
 import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
 import * as http from 'http';
-import { URL } from 'url';
 import WebSocket, { WebSocketServer } from 'ws';
 import SpotifyService from './services/spotifyServices/SpotifyService';
-import secureLocalStorage from 'react-secure-storage';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;

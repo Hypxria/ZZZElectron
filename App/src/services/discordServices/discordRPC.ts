@@ -1,6 +1,15 @@
 import net from 'net';
 import { EventEmitter } from 'events';
+let Store: any;
+let store: any;
 
+async function initializeStore() {
+    if (!Store) {
+        Store = (await import("electron-store")).default;
+        store = new Store();
+    }
+    return store;
+}
 
 interface RpcMessage {
     op: number;
@@ -19,6 +28,7 @@ class DiscordRPC extends EventEmitter {
     private readonly connectionTimeout: number = 10000; // 10 seconds
     private readonly CLIENT_ID: string
     private readonly CLIENT_SECRET: string
+    private store: any;
 
 
     constructor(CLIENT_ID: string, CLIENT_SECRET: string) {
@@ -28,12 +38,25 @@ class DiscordRPC extends EventEmitter {
 
         this.setupSocket();
 
+
         this.CLIENT_ID = CLIENT_ID
         this.CLIENT_SECRET = CLIENT_SECRET
         console.log(`RPC: ${this.CLIENT_ID}, ${this.CLIENT_SECRET}`)
-        
+
+        this.initializeStoreAndSetup();
+
     }
-    
+
+    private async initializeStoreAndSetup() {
+        try {
+            this.store = await initializeStore();
+            console.log(this.store.get('unicorn'));
+            console.log(`RPC: ${this.CLIENT_ID}, ${this.CLIENT_SECRET}`);
+        } catch (error) {
+            console.error('Failed to initialize store:', error);
+        }
+    }
+
     private generateNonce(): string {
         return Date.now().toString(36) + Math.random().toString(36).substring(2);
     }
@@ -102,7 +125,70 @@ class DiscordRPC extends EventEmitter {
         await this.authorize()
     }
 
+    public async revokeAllTokens() {
+        const tokens = {
+            access_token: this.store.get('access_token'),
+            refresh_token: this.store.get('refresh_token'),
+            expires_at: this.store.get('expires_at')
+        }
+
+        // Revoke acccess token
+        await fetch("https://discord.com/api/v10/oauth2/token", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                token: tokens.access_token
+            })
+        });
+
+        // Revoke Refresh Token =
+        await fetch("https://discord.com/api/v10/oauth2/token", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                token: tokens.refresh_token
+            })
+        });
+
+        this.store.delete('access_token');
+        this.store.delete('refresh_token');
+        this.store.delete('expires_at');
+    }
+
     private async authorize() {
+        const tokens = {
+            access_token: this.store.get('access_token'),
+            refresh_token: this.store.get('refresh_token'),
+            expires_at: this.store.get('expires_at')
+        }
+
+        if (tokens.access_token && tokens.expires_at > Date.now() && tokens.refresh_token) {
+            this.authenticate(tokens.access_token);
+            return;
+        } else if (tokens.refresh_token && tokens.expires_at < Date.now()) {
+            const response = await fetch("https://discord.com/api/v10//oauth2/token", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'refresh_token',
+                    refresh_token: tokens.refresh_token,
+                    client_id: this.CLIENT_ID,
+                    client_secret: this.CLIENT_SECRET,
+                })
+            });
+            const data = await response.json();
+            this.store.set('access_token', data.access_token);
+            this.store.set('refresh_token', data.refresh_token);
+            this.store.set('expires_at', Date.now() + data.expires_in);
+            this.authenticate(data.access_token);
+            return;
+        }
         // After handshake is successful, you'll receive a READY event
         // Then you should send IDENTIFY
         this.once('codeReceived', (code) => {
@@ -126,7 +212,7 @@ class DiscordRPC extends EventEmitter {
         };
 
         console.log('Sending identify payload');
-        
+
         // Handlemessage Takes it from here to get the code by codeReceived
 
     }
@@ -157,6 +243,11 @@ class DiscordRPC extends EventEmitter {
         "scope": "messages.read rpc rpc.notifications.read"
         }
         */
+        this.store.set('access_token', data.access_token);
+        this.store.set('refresh_token', data.refresh_token);
+
+        // I prefer doing this, because it just makes things easier in the long run
+        this.store.set('expires_at', Date.now() + data.expires_in);
         data.access_token && this.authenticate(data.access_token);
     }
 
@@ -179,7 +270,7 @@ class DiscordRPC extends EventEmitter {
         console.log('Sending authenticate payload')
         this.sendFrame(authenticatePayload);
 
-        
+
     }
 
 
@@ -204,7 +295,7 @@ class DiscordRPC extends EventEmitter {
             if (this.buffer.length < totalLength) break;
 
             const payload = JSON.parse(this.buffer.subarray(8, totalLength).toString());
-            console.log('Received payload:', payload);
+            console.log('Received payload:', JSON.stringify(payload, null, 2));
             this.handleMessage(opcode, payload);
 
             this.buffer = this.buffer.subarray(totalLength);
