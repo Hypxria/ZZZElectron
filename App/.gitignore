@@ -98,3 +98,5 @@ out/
 .vscode/
 
 *.pyc
+
+.discord-tokens.json
