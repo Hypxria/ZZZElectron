@@ -98,13 +98,10 @@ class ZZZElectron {
   }
 
   private startProgressTracking() {
-    if (Spicetify.Player.isPlaying()) {
-      if (!this.progressWorker) {
-        this.setupProgressWorker();
-      }
-    } else {
-      this.stopProgressTracking();
+    if (!this.progressWorker) {
+      this.setupProgressWorker();
     }
+
   }
 
   private stopProgressTracking() {
@@ -560,7 +557,7 @@ class ZZZElectron {
   private async establishListeners() {
 
     this.startProgressTracking();
-    
+
     /*
     Deprecated- Short lived due to electron's background tab throttling, slowing the messages
 

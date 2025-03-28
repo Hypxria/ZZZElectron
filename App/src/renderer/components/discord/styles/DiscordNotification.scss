@@ -80,9 +80,15 @@
 }
 
 .author {
+  width: 70%;
   color: var(--notification-text);
   font-size: 1rem;
   font-weight: 600;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 .timestamp {
@@ -98,7 +104,7 @@
   // Text truncation
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2; 
   overflow: hidden;
   word-wrap: break-word;
 }

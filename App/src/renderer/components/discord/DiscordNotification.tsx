@@ -22,6 +22,48 @@ declare global {
   }
 }
 
+const parseDiscordFormatting = (text: string) => {
+  // First handle double escapes - replace \\ with a temporary marker
+  text = text.replace(/\\\\/g, '{{DOUBLE_ESCAPE}}');
+
+  // Handle escaped formatting characters
+  text = text
+    .replace(/\\\*\*\*/g, '{{ESCAPED_BOLD_ITALIC}}')
+    .replace(/\\\*\*/g, '{{ESCAPED_BOLD}}')
+    .replace(/\\\*/g, '{{ESCAPED_ITALIC}}')
+    .replace(/\\__/g, '{{ESCAPED_UNDERLINE}}')
+    .replace(/\\~~/g, '{{ESCAPED_STRIKETHROUGH}}')
+    .replace(/\\`/g, '{{ESCAPED_CODE}}');
+
+  // Replace Discord markdown with HTML/React elements
+  text = text
+    // Bold and Italic (***text***)
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    // Bold (**text**)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Italic (*text*)
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Underline (__text__)
+    .replace(/__(.*?)__/g, '<u>$1</u>')
+    // Strikethrough (~~text~~)
+    .replace(/~~(.*?)~~/g, '<s>$1</s>')
+    // Code blocks (```text```)
+    .replace(/```(.*?)```/g, '<code>$1</code>')
+    // Inline code (`text`)
+    .replace(/`(.*?)`/g, '<code>$1</code>');
+
+  // Restore escaped characters
+  text = text
+    .replace(/{{DOUBLE_ESCAPE}}/g, '\\')
+    .replace(/{{ESCAPED_BOLD_ITALIC}}/g, '***')
+    .replace(/{{ESCAPED_BOLD}}/g, '**')
+    .replace(/{{ESCAPED_ITALIC}}/g, '*')
+    .replace(/{{ESCAPED_UNDERLINE}}/g, '__')
+    .replace(/{{ESCAPED_STRIKETHROUGH}}/g, '~~')
+    .replace(/{{ESCAPED_CODE}}/g, '`');
+
+  return text;
+};
 
 const DiscordNotification: React.FC = ({
 
@@ -74,7 +116,7 @@ const DiscordNotification: React.FC = ({
           // Getting values that we need
           console.log('Notification received:', notification);
           setAvatarUrl(notification.icon_url);
-          setAuthor(notification.message.author.global_name);
+          setAuthor(notification.title);
           
           const date = new Date(notification.message.timestamp);
           setMessageTime(date)
@@ -158,9 +200,12 @@ const DiscordNotification: React.FC = ({
           <span className="timestamp">{timestamp}</span>
         </div>
 
-        <div className="notification-message">
-          {message}
-        </div>
+        <div 
+          className="notification-message"
+          dangerouslySetInnerHTML={{ 
+            __html: parseDiscordFormatting(message) 
+          }}
+        />
       </div>
     </div>
   );
