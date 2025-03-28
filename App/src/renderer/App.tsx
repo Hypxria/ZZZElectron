@@ -7,13 +7,7 @@ import '../index.scss';
 import { ViewState } from '../types/viewState';
 
 
-declare global {
-  interface Window {
-    discord: {
-      onNotification: (callback: (notification: any) => void) => void;
-    }
-  }
-}
+
 
 interface AppProps {
 }

@@ -26,8 +26,8 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   
   // Animation
-  opacity: 1;
-  transform: translateY(10px);
+  opacity: 0;
+  transform: translateY(-20px);
   transition: all 0.3s ease;
   
   &.visible {

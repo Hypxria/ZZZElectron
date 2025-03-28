@@ -7,6 +7,14 @@ interface ElectronAPI {
 declare global {
     interface Window {
         electron: ElectronAPI;
+        discord: {
+            connect: () => Promise<{ success: boolean; error?: string }>;
+            disconnect: () => Promise<void>;
+            onNotification: (callback: (notification: any) => void) => void;
+            removeNotificationListener: () => void;
+        }
+        saveDiscordTokens: (tokens: any) => void;
+        loadDiscordTokens: () => any;
     }
 }
 

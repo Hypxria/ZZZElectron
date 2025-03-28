@@ -13,6 +13,51 @@ let callbackServer: http.Server | null = null;
 let isServerRunning = false;
 let wss: WebSocketServer | null = null;
 
+let mainWindow: BrowserWindow | null = null;
+let discordRPC: DiscordRPC | null = null;
+
+const createWindow = async (): Promise<void> => {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    height: 600,
+    width: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      sandbox: true,
+    },
+  });
+
+  
+
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "font-src 'self';",
+          "default-src 'self';",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
+          "style-src 'self' 'unsafe-inline';",
+          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com ws://127.0.0.1:5000 ws://127.0.0.1:5001 ws://localhost:5000 ws://localhost:5001;",
+          "img-src 'self' data: https:;"
+        ].join(' ')
+      }
+    });
+  });
+
+
+  // and load the index.html of the app.
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  // Open the DevTools.
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
+};
+
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -100,8 +145,6 @@ function createWebSocketServer() {
   });
 }
 
-
-
 ipcMain.handle('spotify-link', async () => {
   await createWebSocketServer()
 })
@@ -115,52 +158,43 @@ ipcMain.handle('open-external', async (_, url: string) => {
   }
 });
 
-const createWindow = async (): Promise<void> => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      sandbox: true,
-    },
-  });
-
-  const discordWindow = new BrowserWindow({
-    show: false, // Hide if not needed
-    webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true, // Allow Node.js APIs
-    },
-  });
-
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': [
-          "font-src 'self';",
-          "default-src 'self';",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
-          "style-src 'self' 'unsafe-inline';",
-          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com ws://127.0.0.1:5000 ws://127.0.0.1:5001 ws://localhost:5000 ws://localhost:5001;",
-          "img-src 'self' data: https:;"
-        ].join(' ')
-      }
-    });
-  });
+import DiscordRPC from './services/discordServices/discordRPC';
 
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  // Open the DevTools.
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
+ipcMain.handle('discord:connect', async () => {
+  try {
+      discordRPC = new DiscordRPC();
+      await discordRPC.connect();
+      
+      // Forward notifications to renderer
+      discordRPC.on('notification', (notification) => {
+          console.log('Notification received:', notification);
+          mainWindow?.webContents.send('discord:notification', notification);
+      });
+      
+      return { success: true };
+  } catch (error) {
+      console.error('Failed to connect to Discord:', error);
+      return { success: false, error: error.message };
   }
-};
+});
+
+
+ipcMain.handle('discord:disconnect', async () => {
+  try {
+    if (discordRPC) {
+      // Assuming your DiscordRPC class has these methods
+      discordRPC.removeAllListeners('notification');
+      await discordRPC.disconnect();
+      discordRPC = null;
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to disconnect from Discord:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 
 
 
