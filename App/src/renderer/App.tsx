@@ -64,7 +64,6 @@ const App: React.FC<AppProps> = () => {
         <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : ''}`}>
           {/* Right side content will go here */}
           <HoyoMain />
-          <div style={{ color: 'white' }}>Right Side Content (Coming Soon)</div>
         </div>
       </div>
     </div>

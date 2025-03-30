@@ -69,7 +69,7 @@ export class HoyoManager {
   private async getBaseDetails(): Promise<void> {
     try {
       const response = await this.makeRequest(this.userInfoUrl, { uid: this.uid });
-      console.log(`Test: ${JSON.stringify(response, null, 2)}`)
+      console.log(`Test: ${JSON.stringify(response.data, null, 2)}`)
       if (response?.data?.list) {
         response.data.list.forEach((entry: GameRecord) => {
           switch (entry.game_id) {
@@ -187,7 +187,7 @@ class GenshinManager {
     );
 
     console.log("\nGenshin Info Response:");
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
   }
 
   async getSpiralAbyss(scheduleType: number = 1): Promise<void> {
@@ -228,7 +228,7 @@ class StarrailManager {
     );
 
     console.log("\nStarrail Info Response:");
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
   }
 
   async getStamina(): Promise<void> {
@@ -286,7 +286,7 @@ class ZenlessManager {
     );
 
     console.log("\nZenless Info Response:");
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
   }
 
   async getBatteryInfo(): Promise<void> {
