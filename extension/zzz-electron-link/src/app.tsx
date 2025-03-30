@@ -103,7 +103,6 @@ class ZZZElectron {
     if (!this.progressWorker) {
       this.setupProgressWorker();
     }
-
   }
 
   private stopProgressTracking() {

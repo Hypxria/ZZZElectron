@@ -1,5 +1,6 @@
-import { randomBytes } from 'crypto';
+import { DSGenerator } from './dsTypes';
 import { Region, Game, DSHeaders } from './types';
+const nodeCrypto = require('crypto')
 
 const CN_TIMEZONE = 8 * 60 * 60 * 1000; // UTC+8 in milliseconds
 
@@ -26,12 +27,19 @@ const APP_KEYS = {
   // Add other game keys as needed
 };
 
-// Stolen from TukanDev (https://github.com/TukanDev/qingyi/) 
+let dsGenerator: DSGenerator | null = null;
+
+// Borrowed from TukanDev (https://github.com/TukanDev/qingyi/) 
 export function generateDynamicSecret(salt: string = DS_SALT[Region.OVERSEAS]): string {
+
+  // Try to use it
+  console.log('Process type:', process.type)  // Should log 'browser' if in main process, 'renderer' if in renderer
+
+
   const t = Math.floor(Date.now() / 1000);
-  const r = randomBytes(6).toString('hex').slice(0, 6);
+  const r = nodeCrypto.randomBytes(6).toString('hex').slice(0, 6);
   const message = `salt=${salt}&t=${t}&r=${r}`;
-  const hash = require('crypto').createHash('md5').update(message).digest('hex');
+  const hash = nodeCrypto.createHash('md5').update(message).digest('hex');
   return `${t},${r},${hash}`;
 }
 

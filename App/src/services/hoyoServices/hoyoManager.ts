@@ -25,6 +25,8 @@ export class HoyoManager {
   public readonly starrailBatteryUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note";
   public readonly starrailShiyuUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge";
 
+  [key: string]: any; // Add this line to allow string indexing
+
   // Nested class recreation (in practice) from an old version of this in python (Commit d587ea4c491d9c776be3eb35162b65f804e66297)
   public readonly zenless: ZenlessManager;
   public readonly starrail: StarrailManager;
@@ -32,10 +34,10 @@ export class HoyoManager {
 
   // Explained in file
   private cookieManager: CookieManager;
-  
+
   // I needed it throughout the entire class I think
   private uid: string;
-  
+
   // Game properties
   public _genshinUid?: string;
   public _genshinRegion?: string;
@@ -50,7 +52,7 @@ export class HoyoManager {
     this.cookieManager = new CookieManager();
     this.cookieManager.setCookies(cookieString);
     this.uid = uid;
-  
+
     // Initialize managers after base details load
     this.zenless = new ZenlessManager(this);
     this.starrail = new StarrailManager(this);
@@ -59,7 +61,7 @@ export class HoyoManager {
 
   public async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     await this.getBaseDetails();
     this.isInitialized = true;
   }
@@ -67,6 +69,7 @@ export class HoyoManager {
   private async getBaseDetails(): Promise<void> {
     try {
       const response = await this.makeRequest(this.userInfoUrl, { uid: this.uid });
+      console.log(`Test: ${JSON.stringify(response, null, 2)}`)
       if (response?.data?.list) {
         response.data.list.forEach((entry: GameRecord) => {
           switch (entry.game_id) {
@@ -104,6 +107,8 @@ export class HoyoManager {
       ? generateCnDynamicSecret(params, params, DS_SALT[Region.CHINESE])
       : generateDynamicSecret();
 
+    console.log(`ds= ${ds}`)
+
     const baseHeaders = {
       Cookie: this.cookieManager.formatForHeader(),
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0',
@@ -111,7 +116,7 @@ export class HoyoManager {
       'x-rcp-platform': '4',
       'Accept-language': 'en-US,en;q=0.5',
     };
-  
+
     // Create DS headers with proper typing
     /*
     Now. See the DS creation in all its idiocy.
@@ -126,7 +131,7 @@ export class HoyoManager {
         'x-rpc-lang': 'en-us'
       })
     };
-  
+
     // Combine headers
     const headers = {
       ...baseHeaders,
@@ -163,7 +168,7 @@ export class HoyoManager {
 
 // Helper/Game Classes
 class GenshinManager {
-  constructor(private mainApi: HoyoManager) {}
+  constructor(private mainApi: HoyoManager) { }
 
   async getInfo(): Promise<void> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) {
@@ -204,9 +209,10 @@ class GenshinManager {
 }
 
 class StarrailManager {
-  constructor(private mainApi: HoyoManager) {}
+  constructor(private mainApi: HoyoManager) { }
 
   async getInfo(): Promise<void> {
+    console.log("Starrail UID:", this.mainApi.starrailUid);
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) {
       console.log("No Starrail account found");
       return;
@@ -261,7 +267,7 @@ class StarrailManager {
 }
 
 class ZenlessManager {
-  constructor(private mainApi: HoyoManager) {}
+  constructor(private mainApi: HoyoManager) { }
 
   async getInfo(): Promise<void> {
     console.log("Zenless UID:", this.mainApi.zenlessUid);

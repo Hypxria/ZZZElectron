@@ -43,7 +43,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
       setError(null);
       
       try {
-        const lrcLibApi = new LrcLibApi();
+        
         
         // Log the search parameters
         console.log('Fetching lyrics for:', {
@@ -52,7 +52,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
           album: currentSong.album
         });
 
-        const lyricsData = await lrcLibApi.searchLyrics({
+        const lyricsData = await window.lrc.searchLyrics({
           artist: currentSong.artist,
           track: currentSong.name,
           album: currentSong.album
@@ -61,12 +61,12 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
         console.log('Lyrics data received:', lyricsData);
 
         if (lyricsData.syncedLyrics) {
-          const parsedLyrics = lrcLibApi.parseSyncedLyrics(lyricsData.syncedLyrics);
+          const parsedLyrics = window.lrc.parseSyncedLyrics(lyricsData.syncedLyrics);
           console.log('Parsed synced lyrics:', parsedLyrics);
-          setLyrics(parsedLyrics);
+          setLyrics(await parsedLyrics);
         } else if (lyricsData.plaintext) {
           // Fallback to plain text if no synced lyrics
-          const plainLyrics = lyricsData.plaintext.split('\n').map((text, index) => ({
+          const plainLyrics = lyricsData.plaintext.split('\n').map((text:any, index:any) => ({
             time: index * 5000, // Space lines 5 seconds apart
             text: text.trim()
           }));

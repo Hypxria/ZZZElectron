@@ -34,3 +34,27 @@ contextBridge.exposeInMainWorld('discord', {
   revokeAllTokens: () => ipcRenderer.invoke('discord:revoke')
 });
 
+
+contextBridge.exposeInMainWorld('hoyoAPI', {
+  login: async (username: string, password: string) => {
+      return await ipcRenderer.invoke('hoyo:login', username, password);
+  },
+  getSToken: async (username: string, password: string) => {
+      return await ipcRenderer.invoke('hoyo:getSToken', username, password);
+  },
+  callMethod: async (className: string, methodName: string, ...args: any[]) => {
+    return await ipcRenderer.invoke('hoyo:callMethod', className, methodName, ...args);
+  },
+  initialize: async (cookie: string, user_id: string) => {
+    return await ipcRenderer.invoke('hoyo:initialize', cookie, user_id);
+  },
+});
+// In preload.ts
+
+
+
+contextBridge.exposeInMainWorld('lrc', {
+  parseSyncedLyrics: (lyrics: string) => ipcRenderer.invoke('lrc:parse-lyrics', lyrics),
+  searchLyrics: (params: any) => ipcRenderer.invoke('lrc:search', params)
+})
+

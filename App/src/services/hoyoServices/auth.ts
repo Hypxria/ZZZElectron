@@ -2,7 +2,6 @@
 import axios from 'axios';
 import * as tough from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
-import { config } from 'dotenv';
 import crypto from 'crypto'
 import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds';
 
@@ -11,7 +10,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 
-config();
 
 interface cookies {
     cookie_token_v2: string
@@ -57,6 +55,16 @@ CgGs52bFoYMtyi+xEQIDAQAB
 export class HoyolabAuth {
     private client: axios.AxiosInstance;
 
+    private debug = true;
+
+    private log(...args: any[]) {
+        if (this.debug) console.log('[HoyolabAuth]', ...args);
+    }
+
+    private logError(...args: any[]) {
+        if (this.debug) console.error('[HoyolabAuth]', ...args);
+    }
+
     constructor() {
         const cookieJar = new tough.CookieJar();
         this.client = wrapper(axios.create({
@@ -68,24 +76,24 @@ export class HoyolabAuth {
         }));
     }
 
-    encryptCredentials(text: string, keyType: number): string {
-        /*
-        Good god this one pissed me off.
-        So. Hoyoverse decided to do CLIENTSIDE RSA key encryption on what you put into the page.
-        I found this key from... *checks notes*... DevTools debugger?
-        I mean- I found this url (https://account.hoyolab.com/login-platform/chunk-common.93dbfffd.js) from debugger, of which this file contains the RSA key.
-        I'll be honest again and say that I stole the code from a repo (https://github.com/TukanDev/qingyi)(Thanks Tukan!!!) and I don't completely understand everything.
-        */
+    async encryptCredentials(text: string, keyType: number): Promise<string> {
+        try {
+            const publicKey = keyType === 1 ? LOGIN_KEY_TYPE_1 : LOGIN_KEY_TYPE_2;
 
-        // Determining what key to use. Redundant, as it always gets "1", but it's here anyway
-        const publicKey = keyType === 1 ? LOGIN_KEY_TYPE_1 : LOGIN_KEY_TYPE_2;
+            // Use Node.js crypto for encryption
+            const encrypted = crypto.publicEncrypt(
+                {
+                    key: publicKey,
+                    padding: crypto.constants.RSA_PKCS1_PADDING
+                },
+                Buffer.from(text, 'utf8')
+            );
 
-        const encrypted = crypto.publicEncrypt({
-            key: publicKey,
-            padding: crypto.constants.RSA_PKCS1_PADDING
-        }, Buffer.from(text, 'utf8'));
-
-        return encrypted.toString('base64');
+            return encrypted.toString('base64');
+        } catch (error) {
+            this.logError('Encryption error:', error);
+            throw new Error(`Encryption failed: ${error.message}`);
+        }
     }
 
     private async getLoginPage(): Promise<string> {
@@ -103,7 +111,7 @@ export class HoyolabAuth {
         This ones... really weird.
         I'm... not quite sure why there are multiple logins and I'm not quite keen on finding out
         Just know that sToken is in this endpoint for some reason and we need it for code redemption.
-        */ 
+        */
 
 
         const url = `https://sg-public-api.hoyoverse.com/account/ma-passport/api/appLoginByPassword`;
@@ -127,17 +135,19 @@ export class HoyolabAuth {
                     'x-rpc-client_type': '2',
                     'x-rpc-referrer': 'https://account.hoyolab.com/',
                     'Origin': 'https://account.hoyolab.com',
-                    'Referer': 'https://account.hoyolab.com/',
                     'Accept': '*/*',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'Referer': 'https://account.hoyoverse.com/',
                 }
             });
-            
-            
+
+
         }
         catch (error) {
             console.error('Error during login:', error);
         }
         // This is the path of the stoken. Yeah- it looks stupid.
+        console.log(response?.data)
         return response?.data.data.token.token
     }
 
@@ -156,57 +166,81 @@ export class HoyolabAuth {
             password: string;
             token_type: number;
         }
+        this.log('Starting sendLoginRequest');
 
-        const url = `https://sg-public-api.hoyolab.com/account/ma-passport/api/webLoginByPassword`;
-        const requestData: LoginRequest = {
-            account: this.encryptCredentials(account, 1),
-            password: this.encryptCredentials(password, 1),
-            token_type: 6
-        };
-        
-        const response = await this.client.post<any>(url, requestData, {
-            headers: {
-                'x-rpc-source': 'v2.webLogin',
-                'x-rpc-device_fp': '38d7ee588249d',
-                'x-rpc-sdk_version': '2.16.1',
-                'x-rpc-app_id': "c9oqaq3s3gu8",
-                'x-rpc-game_biz': 'bbs_oversea',
-                'x-rpc-language': 'en-us',
-                'x-rpc-client_type': '4',
-                'x-rpc-referrer': 'https://account.hoyolab.com/',
-                'Origin': 'https://account.hoyolab.com',
-                'Referer': 'https://account.hoyolab.com/',
-                'Accept': '*/*',
+        try {
+            // Log encryption attempt
+            this.log('Attempting to encrypt credentials');
+            let encryptedAccount, encryptedPassword;
+            try {
+                encryptedAccount = await this.encryptCredentials(account, 1);
+                encryptedPassword = await this.encryptCredentials(password, 1);
+                this.log('Credentials encrypted successfully');
+            } catch (encryptError) {
+                this.logError('Encryption failed:', encryptError);
+                throw new Error(`Encryption failed: ${encryptError.message}`);
             }
-        });
 
-        if (response.status !== 200) {
-            throw new Error(`Login failed with status: ${response.status}`);
+            const url = `https://sg-public-api.hoyolab.com/account/ma-passport/api/webLoginByPassword`;
+            const requestData: LoginRequest = {
+                account: encryptedAccount,
+                password: encryptedPassword,
+                token_type: 6
+            };
+
+            this.log('Sending POST request to:', url);
+            this.log('Request data:', { ...requestData, password: '[REDACTED]' });
+
+            const response = await this.client.post<any>(url, requestData, {
+                headers: {
+                    'x-rpc-source': 'v2.webLogin',
+                    'x-rpc-device_fp': '38d7ee588249d',
+                    'x-rpc-sdk_version': '2.16.1',
+                    'x-rpc-app_id': "c9oqaq3s3gu8",
+                    'x-rpc-game_biz': 'bbs_oversea',
+                    'x-rpc-language': 'en-us',
+                    'x-rpc-client_type': '4',
+                    'Accept': '*/*',
+                }
+            });
+
+            this.log('Response received:', {
+                status: response.status,
+                statusText: response.statusText,
+                data: response.data,
+                headers: response.headers
+            });
+
+            if (!response.data) {
+                throw new Error('No data received in response');
+            }
+
+            if (response.data.retcode !== 0) {
+                throw new Error(`API Error: ${response.data.message || 'Unknown error'}`);
+            }
+
+            const cookies = this.parseCookies(response.headers['set-cookie'] ?? []);
+            this.log('Parsed cookies:', cookies);
+
+            if (!response.data.data?.user_info?.aid) {
+                throw new Error('User info not found in response');
+            }
+
+            return {
+                uid: response.data.data.user_info.aid,
+                cookies: cookies as any
+            };
+        } catch (error) {
+            this.logError('sendLoginRequest failed:', error);
+            if (error.response) {
+                this.logError('Error response:', {
+                    status: error.response.status,
+                    data: error.response.data,
+                    headers: error.response.headers
+                });
+            }
+            throw new Error(error.message || 'Login request failed');
         }
-
-        
-        const cookies = this.parseCookies(response.headers['set-cookie'] ?? []);
-
-
-        const uid = response.data.data.user_info.aid;
-        if (!uid) {
-            throw new Error('UID not found in response');
-        }
-
-        const sortedCookies: cookies = {
-            cookie_token_v2: cookies['cookie_token_v2'],
-            account_mid_v2: cookies['account_mid_v2'],
-            account_id_v2: cookies['account_id_v2'],
-            ltoken_v2: cookies['ltoken_v2'],
-            ltmid_v2: cookies['ltmid_v2'],
-            ltuid_v2: cookies['ltuid_v2'],
-        }
-
-        return {
-            uid: uid,
-            cookies: sortedCookies
-        };
-
     }
 
     private parseCookies(setCookieHeaders: string[]): Record<string, string> {
@@ -235,6 +269,8 @@ export class HoyolabAuth {
             // Initialize session
             await this.getLoginPage();
             console.log('Login page loaded successfully');
+            console.log('Process type:', process.type)  // Should log 'browser' if in main process, 'renderer' if in renderer
+
 
             // Perform login
             const loginResponse: AuthResponse = await this.sendLoginRequest(account, password);
@@ -242,48 +278,17 @@ export class HoyolabAuth {
             const uid = loginResponse.uid
             const cookies = loginResponse.cookies
 
-            
-
             return { cookies, uid };
         } catch (error) {
             throw new Error(`${error.response}`);
         }
     }
 
-    
+
 }
 
 
 // Usage (isolated in separate file)
 // Example
 // src/main.ts
-
-
-async function main() {
-    const auth = new HoyolabAuth();
-
-    try {
-        const result = await auth.login(
-            process.env.HOYOLAB_EMAIL!,
-            process.env.HOYOLAB_PASSWORD!
-        );
-
-        const stoken = await auth.getSToken(
-            process.env.HOYOLAB_EMAIL!,
-            process.env.HOYOLAB_PASSWORD!
-        );
-
-        console.log(stoken)
-
-        console.log('Login successful!');
-        console.log('UID:', result.uid);
-        console.log('Cookies:', result.cookies);
-
-        console.log(result.cookies.account_id_v2)
-
-    } catch (error) {
-        console.error('Login failed:', error.message);
-    }
-}
-
 

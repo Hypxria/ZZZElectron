@@ -14,7 +14,17 @@ declare global {
             disconnect: () => Promise<void>;
             onNotification: (callback: (notification: any) => void) => void;
             removeNotificationListener: () => void;
-        }
+        };
+        lrc: {
+            parseSyncedLyrics: (lyrics: string) => Promise<any>;
+            searchLyrics: (params: any) => Promise<any>;
+        };
+        hoyoAPI: {
+            login: (username: string, password: string) => Promise<any>;
+            getSToken: (username: string, password: string) => Promise<string>;
+            initialize: (cookies:any, uid:string) => Promise<void>;
+            callMethod: ( className: string, methodName: string, ...args: any[] ) => Promise<any>;
+        };
         saveDiscordTokens: (tokens: any) => void;
         loadDiscordTokens: () => any;
     }

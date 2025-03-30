@@ -137,7 +137,7 @@ class SpotifyService {
         try {
             const data = message;
 
-            console.log(data)
+            // console.log(data)
             return data
 
         } catch (error) {

@@ -5,6 +5,7 @@ import Settings from './components/Settings';
 import DiscordNotification from './components/discord/DiscordNotification';
 import '../index.scss';
 import { ViewState } from '../types/viewState';
+import HoyoMain from './components/hoyo/HoyoMain';
 
 
 
@@ -62,6 +63,7 @@ const App: React.FC<AppProps> = () => {
         </div>
         <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : ''}`}>
           {/* Right side content will go here */}
+          <HoyoMain />
           <div style={{ color: 'white' }}>Right Side Content (Coming Soon)</div>
         </div>
       </div>

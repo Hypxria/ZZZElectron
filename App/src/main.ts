@@ -3,17 +3,47 @@ import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
 import * as http from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import SpotifyService from './services/spotifyServices/SpotifyService';
+import { HoyolabAuth } from './services/hoyoServices/auth';
+import { HoyoManager } from './services/hoyoServices/hoyoManager';
+import { LrcLibApi } from './services/spotifyServices/LrcLibService';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 const clients = new Set<WebSocket>();
-let callbackServer: http.Server | null = null;
 let isServerRunning = false;
 let wss: WebSocketServer | null = null;
 
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
+
+
+const cspDirectives = {
+  'font-src': ["'self'"],
+  'default-src': ["'self'"],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+  'style-src': ["'self'", "'unsafe-inline'"],
+  'connect-src': [
+    "'self'",
+    'https://lrclib.net',
+    'http://localhost:8080',
+    'https://accounts.spotify.com',
+    'https://account.hoyoverse.com/',
+    'https://sg-public-api.hoyoverse.com',
+    'https://sg-public-api.hoyolab.com',
+    'ws://127.0.0.1:5000',
+    'ws://127.0.0.1:5001',
+    'ws://localhost:5000',
+    'ws://localhost:5001',
+  ],
+  'img-src': ["'self'", 'data:', 'https:']
+};
+
+const buildCsp = (directives: Record<string, string[]>) => {
+  return Object.entries(directives)
+    .map(([key, values]) => `${key} ${values.join(' ')};`)
+    .join(' ');
+};
 
 const createWindow = async (): Promise<void> => {
   // Create the browser window.
@@ -21,27 +51,18 @@ const createWindow = async (): Promise<void> => {
     height: 600,
     width: 800,
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
     },
   });
 
-  
-
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': [
-          "font-src 'self';",
-          "default-src 'self';",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval';", // Make sure this line is present
-          "style-src 'self' 'unsafe-inline';",
-          "connect-src 'self' https://lrclib.net http://localhost:8080 https://accounts.spotify.com ws://127.0.0.1:5000 ws://127.0.0.1:5001 ws://localhost:5000 ws://localhost:5001;",
-          "img-src 'self' data: https:;"
-        ].join(' ')
+        'Content-Security-Policy': [buildCsp(cspDirectives)]
       }
     });
   });
@@ -144,9 +165,7 @@ function createWebSocketServer() {
   });
 }
 
-ipcMain.handle('spotify-link', async () => {
-  await createWebSocketServer()
-})
+// Utility IPC (just in case)
 
 ipcMain.handle('open-external', async (_, url: string) => {
   try {
@@ -157,27 +176,70 @@ ipcMain.handle('open-external', async (_, url: string) => {
   }
 });
 
-import DiscordRPC from './services/discordServices/discordRPC';
+// Service IPCs
 
+
+// Creating Spicetify websocket server
+ipcMain.handle('spotify-link', async () => {
+  await createWebSocketServer()
+})
+
+ipcMain.handle('spotify:start-link', async () => {
+  try {
+    await SpotifyService.startLinkWs();
+    return true;
+  } catch (error) {
+    console.error('Failed to start Spotify link:', error);
+    throw error;
+  }
+})
+
+ipcMain.handle('lrc:search', async (_, params: { artist: string, track: string, album: string }) => {
+  try {
+    const lrcLibApi = new LrcLibApi();
+    const response = await lrcLibApi.searchLyrics({
+      artist: params.artist,
+      track: params.track,
+      album: params.album
+    });
+    return response;
+  } catch (error) {
+    console.error('Error searching lyrics:', error);
+    throw error;
+  }
+})
+
+ipcMain.handle('lrc:parse-lyrics', async (_, syncedLyrics: string) => {
+  try {
+    const lrcLibApi = new LrcLibApi();
+    const response = await lrcLibApi.parseSyncedLyrics(syncedLyrics);
+    return response;
+  } catch (error) {
+    console.error('Error parsing lyrics:', error);
+    throw error;
+  }
+})
+
+
+import DiscordRPC from './services/discordServices/discordRPC';
 
 ipcMain.handle('discord:connect', async (_, id, secret) => {
   try {
-      const client_id = id
-      const client_secret = secret
-      console.log(client_id, client_secret)
-      discordRPC = new DiscordRPC(String(client_id), String(client_secret));
-      await discordRPC.connect();
-      
-      // Forward notifications to renderer
-      discordRPC.on('notification', (notification) => {
-          console.log('Notification received:', notification);
-          mainWindow?.webContents.send('discord:notification', notification);
-      });
-      
-      return { success: true };
+    const client_id = id
+    const client_secret = secret
+    console.log(client_id, client_secret)
+    discordRPC = new DiscordRPC(String(client_id), String(client_secret));
+    await discordRPC.connect();
+
+    // Forward notifications to renderer
+    discordRPC.on('notification', (notification) => {
+      mainWindow?.webContents.send('discord:notification', notification);
+    });
+
+    return { success: true };
   } catch (error) {
-      console.error('Failed to connect to Discord:', error);
-      return { success: false, error: error.message };
+    console.error('Failed to connect to Discord:', error);
+    return { success: false, error: error.message };
   }
 });
 
@@ -209,15 +271,10 @@ ipcMain.handle('discord:revoke', async () => {
     console.error('Failed to revoke tokens:', error);
     return { success: false, error: error.message };
   }
-}) 
+})
 
 ipcMain.handle('restart-app', async () => {
   // Perform cleanup
-  if (callbackServer) {
-    console.log('Closing callback server...');
-    callbackServer.close();
-    callbackServer = null;
-  }
   if (wss) {
     console.log('Closing WebSocket server...');
     wss.close(() => {
@@ -234,6 +291,66 @@ ipcMain.handle('restart-app', async () => {
   app.relaunch();
   app.exit(0);
 });
+
+// Hoyo IPC
+ipcMain.handle('hoyo:login', async (event, username, password) => {
+  try {
+    const auth = new HoyolabAuth();
+    const result = await auth.login(username, password);
+    return result;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('hoyo:getSToken', async (event, username, password) => {
+  try {
+    const auth = new HoyolabAuth();
+    const result = await auth.getSToken(username, password);
+    return result;
+  } catch (error) {
+    console.error('getSToken error:', error);
+    throw error;
+  }
+});
+
+let hoyoManager: HoyoManager | null = null;
+
+let cookieString:string
+let uid:string
+
+ipcMain.handle('hoyo:initialize', async (_, cookie, user_id) => {
+  cookieString = cookie
+  uid = user_id
+  hoyoManager = new HoyoManager(cookieString, uid);
+  await hoyoManager.initialize();
+  return true;
+});
+
+ipcMain.handle('hoyo:callMethod', async (_, className: string, methodName: string, ...args: any[]) => {
+    try {
+        if (!hoyoManager) {
+            // Initialize if not exists
+            console.log('Init first please')
+            return;
+        }
+
+        // Handle nested class calls (like starrail.getInfo())
+        if (className.includes('.')) {
+            const [parentClass, childMethod] = className.split('.');
+            return await hoyoManager[parentClass][childMethod](...args);
+        }
+
+        // Direct method calls
+        return await hoyoManager[methodName](...args);
+    } catch (error) {
+        console.error('Error calling HoyoManager method:', error);
+        throw error;
+    }
+});
+
+
 
 
 
@@ -252,11 +369,6 @@ app.whenReady().then(async () => {
 });
 
 app.on('before-quit', async () => {
-  if (callbackServer) {
-    console.log('Closing callback server...');
-    callbackServer.close();
-    callbackServer = null;
-  }
   if (wss) {
     console.log('Closing WebSocket server...');
     wss.close(() => {
