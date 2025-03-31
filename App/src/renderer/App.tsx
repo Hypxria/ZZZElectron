@@ -61,9 +61,11 @@ const App: React.FC<AppProps> = () => {
             ViewState={viewState}
           />
         </div>
-        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : ''}`}>
+        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
           {/* Right side content will go here */}
-          <HoyoMain />
+          <HoyoMain 
+          ViewState={viewState}
+          />
         </div>
       </div>
     </div>
