@@ -1,0 +1,14 @@
+.zenless-container {
+    height: 30vh;
+    position: fixed;
+    width: 98%;
+    left: 50%;
+    translate: -50% 0%;
+    top: 10%;
+    z-index: 1;
+
+    &.RGHT_FULL {
+        width: 98%;
+        left: 50%
+    }
+}
