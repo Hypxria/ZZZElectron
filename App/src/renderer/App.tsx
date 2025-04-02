@@ -56,16 +56,11 @@ const App: React.FC<AppProps> = () => {
 
 
       <div className={`content-wrapper ${viewState}`}>
-        <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
-          <SpotifyMain
-            ViewState={viewState}
-          />
-        </div>
         <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-          {/* Right side content will go here */}
-          <HoyoMain 
-          ViewState={viewState}
-          />
+          <HoyoMain ViewState={viewState} />
+        </div>
+        <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+          <SpotifyMain ViewState={viewState} />
         </div>
       </div>
     </div>

@@ -141,17 +141,10 @@ body {
   right: 0;
   bottom: 0;
   overflow: hidden;
+  isolation: isolate;
+
 }
 
-.spotify-section, .right-section {
-  position: absolute;
-  top: 0;
-  width: 0.000001%;
-
-  /* Initial width */
-  height: 100%;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
 .spotify-section {
   left: 0;
@@ -170,70 +163,99 @@ body {
 }
 
 /* Neutral state */
+.spotify-section,
+.right-section {
+  position: absolute;
+  top: 0;
+  width: 0.000001%;
+  height: 100%;
+  isolation: isolate;
+  // Base transition timing
+  transition:
+    width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    z-index 0s 0.5s; // Default delayed z-index
+  transform-style: preserve-3d; // Create proper stacking context
+}
+
 
 .content-wrapper {
-  &.NEUTRAL {
-    .spotify-section {
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s linear 0.5s;
-
-      /* Delay z-index change until width transition completes */
-      width: 50%;
-      z-index: 11;
-
-      /* Explicitly reset z-index */
-    }
-
-    .right-section {
-      width: 50%;
-      z-index: 10;
-
-      /* Explicitly reset z-index */
-    }
-  }
-
   &.SPOTIFY_FULL {
     .spotify-section {
       width: 100%;
-      z-index: 100;
-
-      /* Bring to front when expanding */
+      transform: translateZ(10px);
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0s; // Immediate z-index increase
     }
 
+
+
     .right-section {
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s linear 0.5s;
-
-      /* Delay z-index change until width transition completes */
-      z-index: 1;
-
-      /* Reset to lower z-index */
+      width: 0.000001%;
+      transform: translateZ(-10px);
+      // First reduce width, then change z-index
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0s 0.5s;
     }
   }
 
   &.RIGHT_FULL {
     .spotify-section {
+      width: 0.000001%;
       z-index: 1;
-
-      /* Reset to lower z-index */
+      transform: translateZ(-10px);
+      // First reduce width, then change z-index
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0s 0.5s;
     }
+
 
     .right-section {
       width: 100%;
-      z-index: 3;
+      z-index: 1000;
+      transform: translateZ(10px);
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0s; // Immediate z-index increase
+    }
+  }
 
-      /* Bring to front when expanding */
+  &.NEUTRAL {
+    .spotify-section {
+      width: 50%;
+      z-index: 11;
+      transform: translateZ(0px);
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0.5s;
+    }
+
+    .right-section {
+      width: 50%;
+      z-index: 10;
+      transform: translateZ(0px);
+      transition:
+        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        z-index 0.5s;
     }
   }
 
   &.NEUTRAL .song-background-wrapper {
-    width: 50%;
-  }
-
-  &.SPOTIFY_FULL .song-background-wrapper {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
   }
 
+  &.SPOTIFY_FULL .song-background-wrapper {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+
+  }
+
   &.RIGHT_FULL .song-background-wrapper {
-    width: 0.000001%;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
 
     /* Initial width */
   }

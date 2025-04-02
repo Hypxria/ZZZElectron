@@ -247,113 +247,115 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
   return (
     <div className="spotify">
       <SongBackground coverUrl={currentTrackData.album_cover || ""} />
-      <div className="song-info">
-        <SongInfo
-          currentSong={{
-            name: currentTrackData.name || "No track playing",
-            artist: currentTrackData.artist || "No artist",
-            album_cover: currentTrackData.album_cover || "sex",
-            year: currentTrackData.year || "N/A",
-          }}
-          colors={colors}
-        />
-        <SongControls
-          isPlaying={currentTrackData.is_playing || false}
-          currentTime={
-            Date.now() - manualStateUpdateRef.current < 200
-              ? localProgress
-              : (spotifyService.currentProgress?.progress_ms ?? 0)
-          }
-          duration={currentTrackData.duration_ms || 0}
-          onPlay={() => {
-            manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-            spotifyService.resumePlayback();
-          }}
-          onPause={() => {
-            manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData((prev) => ({ ...prev, is_playing: false }));
-            spotifyService.pausePlayback();
-          }}
-          onBack={async () => {
-            try {
-              setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-              await spotifyService.playPreviousSong();
-              // Add delay and fetch
-              const track = await spotifyService.getCurrentTrack();
-              if (track) {
-                setCurrentTrackData(track);
-                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-              }
-            } catch (error) {
-              console.error("Error during back operation:", error);
-            }
-          }}
-
-          onNext={async () => {
-            try {
-              setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-              await spotifyService.playNextSong();
-              // Add delay and fetch
-              const track = await spotifyService.getCurrentTrack();
-              if (track) {
-                setCurrentTrackData(track);
-                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
-              }
-            } catch (error) {
-              console.error("Error during back operation:", error);
-            }
-          }}
-          onShuffle={async () => {
-            manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData((prev) => ({ ...prev, shuffle_state: (!prev.shuffle_state) }));
-            await spotifyService.toggleShuffle()
-          }}
-          onLoop={async () => {
-            manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData((prev) => ({ ...prev, repeat_state: ((prev.repeat_state ?? 0) + 1) % 3 }));
-            await spotifyService.toggleRepeatMode()
-          }}
-          onSeek={handleSeek} 
-          volume={currentTrackData.volume || 0}
-          onVolumeChange={async (volume: number) => {
-            manualStateUpdateRef.current = Date.now();
-            setCurrentTrackData((prev) => ({ ...prev, volume }));
-            await spotifyService.setVolume(volume);
-          }}
-          albumCover={currentTrackData.album_cover || "sex"}
-          colors={colors}
-          shuffle={currentTrackData.shuffle_state || false}
-          loop={currentTrackData.repeat_state || 0}
-        />
-      </div>
-      <SongUpcoming
-        nextSong={{
-          id: "1",
-          title: nextTrackData.name || "No upcoming track",
-          artist: nextTrackData.artist || "None",
-          albumCover: nextTrackData.album_cover || "sex",
-        }}
-      />
-      {hasInitialData && (
-        <div className="song-lyrics">
-          <SongLyrics
+      <div className="section-content">
+        <div className="song-info">
+          <SongInfo
             currentSong={{
-              name: currentTrackData.name || "",
-              artist: currentTrackData.artist || "",
-              album: currentTrackData.album || "",
+              name: currentTrackData.name || "No track playing",
+              artist: currentTrackData.artist || "No artist",
+              album_cover: currentTrackData.album_cover || "sex",
+              year: currentTrackData.year || "N/A",
             }}
+            colors={colors}
+          />
+          <SongControls
+            isPlaying={currentTrackData.is_playing || false}
             currentTime={
               Date.now() - manualStateUpdateRef.current < 200
                 ? localProgress
                 : (spotifyService.currentProgress?.progress_ms ?? 0)
             }
-            viewState={viewState.ViewState}
-            colors={colors}
+            duration={currentTrackData.duration_ms || 0}
+            onPlay={() => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+              spotifyService.resumePlayback();
+            }}
+            onPause={() => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, is_playing: false }));
+              spotifyService.pausePlayback();
+            }}
+            onBack={async () => {
+              try {
+                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                await spotifyService.playPreviousSong();
+                // Add delay and fetch
+                const track = await spotifyService.getCurrentTrack();
+                if (track) {
+                  setCurrentTrackData(track);
+                  setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                }
+              } catch (error) {
+                console.error("Error during back operation:", error);
+              }
+            }}
+
+            onNext={async () => {
+              try {
+                setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                await spotifyService.playNextSong();
+                // Add delay and fetch
+                const track = await spotifyService.getCurrentTrack();
+                if (track) {
+                  setCurrentTrackData(track);
+                  setCurrentTrackData((prev) => ({ ...prev, is_playing: true }));
+                }
+              } catch (error) {
+                console.error("Error during back operation:", error);
+              }
+            }}
+            onShuffle={async () => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, shuffle_state: (!prev.shuffle_state) }));
+              await spotifyService.toggleShuffle()
+            }}
+            onLoop={async () => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, repeat_state: ((prev.repeat_state ?? 0) + 1) % 3 }));
+              await spotifyService.toggleRepeatMode()
+            }}
             onSeek={handleSeek}
+            volume={currentTrackData.volume || 0}
+            onVolumeChange={async (volume: number) => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, volume }));
+              await spotifyService.setVolume(volume);
+            }}
+            albumCover={currentTrackData.album_cover || "sex"}
+            colors={colors}
+            shuffle={currentTrackData.shuffle_state || false}
+            loop={currentTrackData.repeat_state || 0}
           />
         </div>
-      )}
+        <SongUpcoming
+          nextSong={{
+            id: "1",
+            title: nextTrackData.name || "No upcoming track",
+            artist: nextTrackData.artist || "None",
+            albumCover: nextTrackData.album_cover || "sex",
+          }}
+        />
+        {hasInitialData && (
+          <div className="song-lyrics">
+            <SongLyrics
+              currentSong={{
+                name: currentTrackData.name || "",
+                artist: currentTrackData.artist || "",
+                album: currentTrackData.album || "",
+              }}
+              currentTime={
+                Date.now() - manualStateUpdateRef.current < 200
+                  ? localProgress
+                  : (spotifyService.currentProgress?.progress_ms ?? 0)
+              }
+              viewState={viewState.ViewState}
+              colors={colors}
+              onSeek={handleSeek}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
