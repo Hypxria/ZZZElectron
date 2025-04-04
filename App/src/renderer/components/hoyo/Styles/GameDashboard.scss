@@ -10,7 +10,8 @@
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
     &.RIGHT_FULL {
-        width: 96vw;
+        width: 98.5vw;
+        height: 30vh;
         right: 25vw;
         translate: 50% 0%;  // Adjust transform to account for right-side anchoring
     }
