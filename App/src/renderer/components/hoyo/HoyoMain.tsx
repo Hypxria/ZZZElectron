@@ -54,11 +54,13 @@ const HoyoMain: React.FC<AppProps> = (viewState) => {
 
     return (
         <div>
-            <div className="background" color='white'></div>
+            <div className="background" color='white'>
+
+            </div>
             <GameDashboard
                 viewState={viewState.ViewState}
             />
-            
+
         </div>
     );
 };

@@ -17,6 +17,20 @@ const App: React.FC<AppProps> = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const [viewState, setViewState] = useState<ViewState>(ViewState.NEUTRAL);
 
+  const sections = [
+    <div key="spotify" className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+      <SpotifyMain ViewState={viewState} />
+    </div>,
+    <div key="right" className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
+      <HoyoMain ViewState={viewState} />
+    </div>
+  ];
+
+  // Just change the order without restructuring the DOM
+  const orderedSections = viewState === ViewState.SPOTIFY_FULL ? 
+    [...sections].reverse() : 
+    sections;
+
 
   const handleOutsideClick = (e: React.MouseEvent) => {
     // Only close if clicking the container itself, not its children
@@ -26,7 +40,6 @@ const App: React.FC<AppProps> = () => {
   };
 
   window.electron.log(`ViewState: ${viewState}`)
-  var isEnabled = true
   return (
     <div
       className='App'
@@ -39,10 +52,10 @@ const App: React.FC<AppProps> = () => {
         setViewState={setViewState}
       />
 
-      
+
 
       <DiscordNotification
-      
+
       />
 
       {isSettings && (
@@ -54,13 +67,21 @@ const App: React.FC<AppProps> = () => {
         </div>
       )}
 
+      {isSettings && (
+        <div
+          className="settings-backdrop"
+          onClick={handleOutsideClick}
+        >
+          <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
+        </div>
+      )}
 
       <div className={`content-wrapper ${viewState}`}>
-        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-          <HoyoMain ViewState={viewState} />
-        </div>
         <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
           <SpotifyMain ViewState={viewState} />
+        </div>
+        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
+          <HoyoMain ViewState={viewState} />
         </div>
       </div>
     </div>

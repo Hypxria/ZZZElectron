@@ -141,25 +141,34 @@ body {
   right: 0;
   bottom: 0;
   overflow: hidden;
-  isolation: isolate;
-
+  perspective: 100%;
+  display: flex;
+  transform-style: preserve-3d;
 }
-
 
 .spotify-section {
   left: 0;
-  z-index: 1;
 
   /* Base z-index */
   background: black;
+  z-index: 1;
+
+  &.full {
+    z-index: 2; // stays in front when full
+  }
 }
 
 .right-section {
   right: 0;
-  z-index: 2;
+  order: 1;
 
   /* Slightly higher than spotify section */
   background: #1a1a1a;
+  z-index: 1;
+
+  &.full {
+    z-index: 2; // stays in front when full
+  }
 }
 
 /* Neutral state */
@@ -169,12 +178,14 @@ body {
   top: 0;
   width: 0.000001%;
   height: 100%;
-  isolation: isolate;
+  overflow: hidden;
   // Base transition timing
+  
   transition:
     width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
     z-index 0s 0.5s; // Default delayed z-index
   transform-style: preserve-3d; // Create proper stacking context
+  backface-visibility: hidden; // This can help with rendering issues
 }
 
 
@@ -203,18 +214,16 @@ body {
   &.RIGHT_FULL {
     .spotify-section {
       width: 0.000001%;
-      z-index: 1;
       transform: translateZ(-10px);
       // First reduce width, then change z-index
       transition:
         width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0s 0.5s;
+        transform 0s 0.5s;
     }
 
 
     .right-section {
       width: 100%;
-      z-index: 1000;
       transform: translateZ(10px);
       transition:
         width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -225,7 +234,6 @@ body {
   &.NEUTRAL {
     .spotify-section {
       width: 50%;
-      z-index: 11;
       transform: translateZ(0px);
       transition:
         width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -234,7 +242,6 @@ body {
 
     .right-section {
       width: 50%;
-      z-index: 10;
       transform: translateZ(0px);
       transition:
         width 0.5s cubic-bezier(0.4, 0, 0.2, 1),

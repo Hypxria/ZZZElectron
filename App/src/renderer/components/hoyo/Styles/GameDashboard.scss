@@ -1,14 +1,17 @@
 .zenless-container {
     height: 30vh;
     position: fixed;
-    width: 98%;
-    left: 50%;
-    translate: -50% 0%;
+    width: 48vw;
+    right: 0%;
+    margin-right: 25vw;  // Position from right edge
+    translate: 50% 0%;  // Adjust transform to account for right-side anchoring
     top: 10%;
     z-index: 1;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-    &.RGHT_FULL {
-        width: 98%;
-        left: 50%
+    &.RIGHT_FULL {
+        width: 96vw;
+        right: 25vw;
+        translate: 50% 0%;  // Adjust transform to account for right-side anchoring
     }
 }
