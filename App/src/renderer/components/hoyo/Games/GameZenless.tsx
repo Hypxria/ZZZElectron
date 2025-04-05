@@ -17,6 +17,8 @@ const MissionItem: React.FC<MissionItemProps> = ({ name, value, status, isHighli
     </div>
 );
 
+
+
 const BatterySection: React.FC = () => (
     <div className="battery-section">
         <div className="battery-icon-container">

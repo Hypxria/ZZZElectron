@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import secureLocalStorage from 'react-secure-storage';
-import GameDashboard from './GameDashboard';
+import GameAccountDashboard from './GameDashboard';
 import { ViewState } from "../../../types/viewState";
 import './Styles/Main.scss';
 
@@ -11,7 +11,7 @@ interface AppProps {
 
 type GameType = 'genshin' | 'starrail' | 'zenless';
 
-const HoyoMain: React.FC<AppProps> = (viewState) => {
+const HoyoMain: React.FC<AppProps> = () => {
     const [gameData, setGameData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
@@ -54,13 +54,8 @@ const HoyoMain: React.FC<AppProps> = (viewState) => {
 
     return (
         <div>
-            <div className="background" color='white'>
-
-            </div>
-            <GameDashboard
-                viewState={viewState.ViewState}
-            />
-
+            <GameAccountDashboard />
+            <div className="background" color='white'/>
         </div>
     );
 };

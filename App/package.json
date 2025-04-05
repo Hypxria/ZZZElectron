@@ -59,6 +59,7 @@
     "cryptojs": "^2.5.3",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
+    "lucide-react": "^0.487.0",
     "net": "^1.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
