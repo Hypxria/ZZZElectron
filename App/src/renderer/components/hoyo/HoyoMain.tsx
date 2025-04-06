@@ -11,7 +11,7 @@ interface AppProps {
 
 type GameType = 'genshin' | 'starrail' | 'zenless';
 
-const HoyoMain: React.FC<AppProps> = () => {
+const HoyoMain: React.FC<AppProps> = ({ ViewState }) => {
     const [gameData, setGameData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
@@ -54,7 +54,9 @@ const HoyoMain: React.FC<AppProps> = () => {
 
     return (
         <div>
-            <GameAccountDashboard />
+            <GameAccountDashboard
+                viewState={ViewState}
+            />
             <div className="background" color='white'/>
         </div>
     );
