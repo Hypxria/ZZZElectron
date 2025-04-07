@@ -56,9 +56,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   ];
 
   return (
-    <div className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : 'neutral'}`}>
+    <div className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
       <div className="dashboard-header">
-        <h1 className="dashboard-title">Game Account Status</h1>
+        <h1 className={`dashboard-title ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>Game Account Status</h1>
         <button className="refresh-button">
           <RefreshCw size={14} />
           Refresh
@@ -69,7 +69,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         {games.map((game) => (
           <div
             key={game.title}
-            className={`game-card ${viewState === ViewState.NEUTRAL && selectedGame !== game.title ? 'hidden-card' : ''}`}
+            className={`game-card ${viewState === ViewState.NEUTRAL && selectedGame !== game.title ? 'hidden-card' : viewState === ViewState.SPOTIFY_FULL && selectedGame !== game.title ? 'hidden-card': '' }`}
             style={{
               '--accent-color': game.accent,
               '--accent-color-light': `${game.accent}20`

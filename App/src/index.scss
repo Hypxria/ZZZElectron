@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* TODO-
 urbanist font and you know the rest */
 @font-face {
@@ -184,10 +180,7 @@ body {
   height: 100%;
   overflow: hidden;
   // Base transition timing
-  
-  transition:
-    width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    z-index 0s 0.5s; // Default delayed z-index
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d; // Create proper stacking context
   backface-visibility: hidden; // This can help with rendering issues
 }
@@ -198,20 +191,16 @@ body {
     .spotify-section {
       width: 100%;
       transform: translateZ(10px);
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0s; // Immediate z-index increase
     }
 
 
 
     .right-section {
-      width: 0.000001%;
+      width: 50%;
       transform: translateZ(-10px);
+      translate: 100% 0%;
       // First reduce width, then change z-index
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0s 0.5s;
+
     }
   }
 
@@ -220,18 +209,14 @@ body {
       width: 0.000001%;
       transform: translateZ(-10px);
       // First reduce width, then change z-index
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        transform 0s 0.5s;
+
     }
 
 
     .right-section {
       width: 100%;
       transform: translateZ(10px);
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0s; // Immediate z-index increase
+
     }
   }
 
@@ -239,17 +224,13 @@ body {
     .spotify-section {
       width: 50%;
       transform: translateZ(0px);
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0.5s;
+
     }
 
     .right-section {
       width: 50%;
       transform: translateZ(0px);
-      transition:
-        width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-        z-index 0.5s;
+
     }
   }
 

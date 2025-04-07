@@ -57,7 +57,7 @@ const HoyoMain: React.FC<AppProps> = ({ ViewState }) => {
             <GameAccountDashboard
                 viewState={ViewState}
             />
-            <div className="background" color='white'/>
+            {/* <div className="background" color='white'/> */}
         </div>
     );
 };

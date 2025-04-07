@@ -2,12 +2,8 @@
 import axios from 'axios';
 import * as tough from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
-import crypto from 'crypto'
-import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds';
+import crypto from 'crypto';
 
-import * as fs from 'fs';
-
-import * as path from 'path';
 
 
 
