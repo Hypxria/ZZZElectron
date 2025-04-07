@@ -164,7 +164,7 @@ body {
 
   /* Slightly higher than spotify section */
   background: #1a1a1a;
-  z-index: 1;
+  z-index: -1;
 
   &.full {
     z-index: 2; // stays in front when full
@@ -198,7 +198,6 @@ body {
     .right-section {
       width: 50%;
       transform: translateZ(-10px);
-      translate: 100% 0%;
       // First reduce width, then change z-index
 
     }
@@ -216,7 +215,7 @@ body {
     .right-section {
       width: 100%;
       transform: translateZ(10px);
-
+      translate: 0% 0%;
     }
   }
 
@@ -230,23 +229,26 @@ body {
     .right-section {
       width: 50%;
       transform: translateZ(0px);
-
+      translate: 0% 0%;
     }
   }
 
   &.NEUTRAL .song-background-wrapper {
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0px);
     width: 100%;
   }
 
   &.SPOTIFY_FULL .song-background-wrapper {
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(10px);
     width: 100%;
 
   }
 
   &.RIGHT_FULL .song-background-wrapper {
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(-10px);
     width: 100%;
 
     /* Initial width */
