@@ -28,6 +28,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         { label: "Currency", value: "8,450", icon: <Coins size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+      ],
+      events: [
+        
       ]
     },
     {
@@ -40,6 +43,10 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         { label: "Stellar Jade", value: "15,620", icon: <Coins size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+      ],
+      events: [
+        { name: "Video Store Management", status: "Currently Open" },
+        { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
       ]
     },
     {
@@ -51,6 +58,10 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         { label: "Resin", value: "120/160", icon: <Battery size={18} /> },
         { label: "Primogems", value: "12,350", icon: <Coins size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+      ],
+      events: [
+        { name: "Video Store Management", status: "Currently Open" },
+        { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
       ]
     }
   ];
@@ -69,19 +80,19 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         {games.map((game) => (
           <div
             key={game.title}
-            className={`game-card ${viewState === ViewState.NEUTRAL && selectedGame !== game.title ? 'hidden-card' : viewState === ViewState.SPOTIFY_FULL && selectedGame !== game.title ? 'hidden-card': '' }`}
+            className={`game-card ${viewState === ViewState.NEUTRAL && selectedGame !== game.title ? 'hidden-card' : viewState === ViewState.SPOTIFY_FULL && selectedGame !== game.title ? 'hidden-card' : ''}`}
             style={{
               '--accent-color': game.accent,
               '--accent-color-light': `${game.accent}20`
             } as CustomCSS}
           >
             {/* Game title section */}
-            <div 
+            <div
               className="game-info-section"
               onClick={() => viewState === ViewState.NEUTRAL && setSelectedGame(game.title)}
               role="button"
               tabIndex={0}
-            > 
+            >
               <img src={game.logo} alt={`${game.title} logo`} className="game-logo" />
               <h2 className="game-title">{game.title}</h2>
               <span className="update-time">Updated: 10m ago</span>
@@ -107,15 +118,17 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
                 </div>
 
                 {/* Action section */}
-                <div className="action-section">
-                  <div className="missions-indicator">
-                    <Award size={16} />
-                    <span className="missions-count">Active Missions: 3</span>
+                {(game.events[0]) && (
+                  <div className="action-section">
+                    <div className="missions-indicator">
+                      <Award size={16} color='white' />
+                      <span className="missions-count">Active Events: 3</span>
+                    </div>
+                    <button className="details-button">
+                      View Details
+                    </button>
                   </div>
-                  <button className="details-button">
-                    View Details
-                  </button>
-                </div>
+                )}
               </>
             )}
           </div>

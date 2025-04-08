@@ -1,3 +1,9 @@
+interface genshinInfo {
+    retcode: number;
+    message: string;
+    data: GameData;
+}
+
 interface Equip {
     id: number;
     level: number;
@@ -48,8 +54,3 @@ interface GameData {
     phone_background_image_url: string;
 }
 
-interface genshinInfo {
-    retcode: number;
-    message: string;
-    data: GameData;
-}

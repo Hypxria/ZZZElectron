@@ -41,7 +41,7 @@ const HoyoMain: React.FC<AppProps> = ({ ViewState }) => {
 
                 await window.hoyoAPI.initialize(cookieString, uid);
 
-
+                
 
             } catch (err) {
                 console.error('Login failed:', err);

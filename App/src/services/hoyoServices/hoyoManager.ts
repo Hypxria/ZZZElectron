@@ -16,14 +16,19 @@ export class HoyoManager {
   public readonly shiyuUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/challenge";
   public readonly hollowUrl = "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/abyss_abstract";
 
+  public readonly zzzCalendarUrl = 'https://game8.co/api/calendars/59.json'
+  // I'm not happy about using this URL, but there's no official ZZZ calendar API endpoint.
+
   // GI
   public readonly giInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index";
   public readonly giSpiralUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/spiralAbyss";
+  public readonly giEventCalendarUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/act_calendar"; // Post???
 
   // HSR
   public readonly starrailInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index";
   public readonly starrailBatteryUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/note";
   public readonly starrailShiyuUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/challenge";
+  public readonly starrailEventUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/get_act_calender";
 
   [key: string]: any; // Add this line to allow string indexing
 
@@ -99,7 +104,8 @@ export class HoyoManager {
   public async makeRequest<T = any>(
     endpoint: string,
     params?: Record<string, any>,
-    region?: string
+    region?: string,
+    method: 'GET' | 'POST' = 'GET'  // Add method parameter with GET as default
   ): Promise<T | null> {
 
     // Check ds.ts for what's going on here/ why I'm doing it.
@@ -146,10 +152,15 @@ export class HoyoManager {
     }
 
     try {
-      const response: AxiosResponse<T> = await axios.get(endpoint, {
+      const config = {
         headers,
-        params
-      });
+        ...(method === 'GET' ? { params } : {}), // Use params for GET
+      };
+
+      const response = method === 'GET'
+        ? await axios.get(endpoint, config)
+        : await axios.post(endpoint, params, config); // Use params as body for POST
+
       return response.data;
     } catch (error) {
       console.error(`Request to ${endpoint} failed:`, error);
@@ -170,7 +181,26 @@ export class HoyoManager {
 class GenshinManager {
   constructor(private mainApi: HoyoManager) { }
 
-  async getInfo(): Promise<void> {
+  async getEvents(): Promise<void | string> {
+    if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
+
+    const response = await this.mainApi.makeRequest(
+      this.mainApi.giEventCalendarUrl,
+      {
+        server: this.mainApi.genshinRegion,
+        role_id: this.mainApi.genshinUid
+      },
+      this.mainApi.genshinRegion,
+      'POST'
+    );
+
+    console.log("\nGenshin Events Response:");
+    console.log(JSON.stringify(response, null, 2))
+
+    return
+  }
+
+  async getInfo(): Promise<void | string> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) {
       console.log("No Genshin account found");
       return;
@@ -188,9 +218,11 @@ class GenshinManager {
 
     console.log("\nGenshin Info Response:");
     console.log(JSON.stringify(data, null, 2));
+    
+    return data
   }
 
-  async getSpiralAbyss(scheduleType: number = 1): Promise<void> {
+  async getSpiralAbyss(scheduleType: number = 1): Promise<void | string> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -205,13 +237,32 @@ class GenshinManager {
 
     console.log("\nSpiral Abyss Response:");
     console.log(data);
+    return data;
   }
 }
 
 class StarrailManager {
   constructor(private mainApi: HoyoManager) { }
 
-  async getInfo(): Promise<void> {
+  async getEvents(): Promise<string | void> {
+    if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) return;
+
+    const response = await this.mainApi.makeRequest(
+      this.mainApi.starrailEventUrl,
+      {
+        server: this.mainApi.starrailRegion,
+        role_id: this.mainApi.starrailUid
+      },
+      this.mainApi.starrailRegion
+    );
+
+    console.log("\nStarrail Events Response:");
+    console.log(JSON.stringify(response.data.act_list, null, 2))
+
+    return response.data.act_list
+  }
+
+  async getInfo(): Promise<string | void> {
     console.log("Starrail UID:", this.mainApi.starrailUid);
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) {
       console.log("No Starrail account found");
@@ -229,9 +280,10 @@ class StarrailManager {
 
     console.log("\nStarrail Info Response:");
     console.log(JSON.stringify(data, null, 2));
+    return data
   }
 
-  async getStamina(): Promise<void> {
+  async getStamina(): Promise<void | string> {
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -244,10 +296,11 @@ class StarrailManager {
     );
 
     console.log("\nStamina Response:");
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
+    return data;
   }
 
-  async getForgottenHall(needAll: boolean = true, scheduleType: number = 1): Promise<void> {
+  async getForgottenHall(needAll: boolean = true, scheduleType: number = 1): Promise<void | string> {
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -263,6 +316,7 @@ class StarrailManager {
 
     console.log("\nForgotten Hall Response:");
     console.log(data);
+    return data
   }
 }
 
@@ -289,7 +343,7 @@ class ZenlessManager {
     console.log(JSON.stringify(data, null, 2));
   }
 
-  async getBatteryInfo(): Promise<void> {
+  async getBattery(): Promise<void | string> {
     if (!this.mainApi.zenlessUid || !this.mainApi.zenlessRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -302,10 +356,12 @@ class ZenlessManager {
     );
 
     console.log("\nBattery Info Response:");
-    console.log(data);
+    console.log(JSON.stringify(data, null, 2));
+    
+    return data;
   }
 
-  async getDeadlyAssault(scheduleType: number = 1): Promise<void> {
+  async getDeadlyAssault(scheduleType: number = 1): Promise<void | string> {
     if (!this.mainApi.zenlessUid || !this.mainApi.zenlessRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -320,9 +376,10 @@ class ZenlessManager {
 
     console.log("\nDeadly Assault Response:");
     console.log(data);
+    return data
   }
 
-  async getHollowZero(): Promise<void> {
+  async getHollowZero(): Promise<void | string> {
     if (!this.mainApi.zenlessUid || !this.mainApi.zenlessRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -336,5 +393,7 @@ class ZenlessManager {
 
     console.log("\nHollow Zero Response:");
     console.log(data);
+    
+    return data;
   }
 }

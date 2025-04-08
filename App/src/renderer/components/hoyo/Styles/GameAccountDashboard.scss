@@ -1,0 +1,303 @@
+/* Main container */
+
+
+.dashboard-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box; // Add this line
+    padding: 16px;
+    background-color: #121214; // Changed to dark base color
+    font-family: Urbanist; // -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    /* Game cards container */
+    .game-cards-container {
+        translate: 0% 0%;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        flex: 1;
+    }
+
+    &.neutral,
+    &.hidden {
+        .game-card {
+            &:not(.hidden-card) {
+                height: auto;
+                flex: 1;
+                flex-direction: column;
+
+                .game-info-section,
+                .action-section {
+                    width: 100%;
+                    border-right: none;
+                    border-left: none;
+                    border-bottom: 1px solid #27272a;
+                    border-top: 1px solid #27272a;
+                    padding: 16px;
+                    align-items: center;
+                }
+
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    grid-template-rows: repeat(2, 1fr);
+                }
+            }
+        }
+    }
+}
+
+/* Header styles */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.dashboard-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    translate: 70px 0%;
+
+    &.full {
+        translate: none;
+    }
+}
+
+.refresh-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    background-color: #18181b;  // Slightly lighter than base
+    color: #ffffff;  // White text
+    padding: 7px 10px;
+    border-radius: 4px;
+    border: 1px solid #27272a;  // Darker border
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    &:hover {
+        background-color: #1e1e20;  // Slightly lighter on hover
+    }
+}
+
+/* Individual game card */
+.game-card {
+    background-color: #18181b;  // Slightly lighter than base
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border-left: 4px solid var(--accent-color);
+    display: flex;
+    flex-direction: row;
+    height: 33%;
+    transition: all 0.3s ease; // Add smooth transition
+
+    // Make game info section clickable in neutral mode
+    .game-info-section {
+        padding: 16px;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #333336;
+        }
+    }
+
+    &.hidden-card {
+        height: 80px; // Smaller height when not selected
+        flex-shrink: 0; // Add this to prevent shrinking
+
+        .game-info-section {
+            padding: 16px;
+            align-items: center;
+            width: 100%;
+            border-right: none;
+        }
+
+        .stats-section,
+        .action-section {
+            display: none;
+        }
+    }
+}
+
+/* Game info section styles */
+.game-info-section {
+    justify-content: center;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #27272a;  // Darker border
+    background-color: #1e1e20;  // Slightly elevated background
+    width: 100%;
+}
+
+.game-logo {
+    height: 32px;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.game-title {
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    font-size: 16px;
+    color: #ffffff;  // White text
+    /* Fixed game title font size */
+}
+
+.update-time {
+    font-size: 12px;
+    color: #a1a1aa;  // Muted text color
+    margin-top: 4px;
+}
+
+/* Stats section styles */
+.stats-section {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: #18181b;  // Slightly lighter than base
+}
+
+.stats-grid {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    align-items: stretch;
+    grid-auto-flow: dense;
+    grid-auto-rows: 1fr; // Make rows share available space equally
+
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #1e1e20;  // Elevated background
+    padding: 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    min-height: 0; // Allow card to shrink below its content size
+
+    &:last-child:nth-child(odd):nth-last-child(1) {
+        grid-column: 1 / -1;
+    }
+}
+
+.stat-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    /* Fixed width for perfect circle */
+    height: 36px;
+    /* Fixed height for perfect circle */
+    border-radius: 50%;
+    background-color: var(--accent-color-light);
+}
+
+.stat-icon {
+    color: var(--accent-color);
+    display: flex;
+    /* Center icon properly */
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #a1a1aa;  // Muted text color
+    margin: 0;
+    line-height: 1.2;
+    /* Better line height for text */
+}
+
+.stat-value {
+    font-weight: 600;
+    margin: 0;
+    font-size: 14px;
+    /* Consistent font size */
+    color: #ffffff;  // White text
+}
+
+/* Action section styles */
+.action-section {
+    padding: 16px;
+    background-color: #1e1e20;  // Elevated background
+    border-left: 1px solid #27272a;  // Darker border
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 192px;
+    box-sizing: border-box;
+}
+
+.missions-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.missions-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;  // White text
+}
+
+.details-button {
+    font-size: 14px;
+    padding: 8px 0px;
+    /* Slightly taller button */
+    border-radius: 4px;
+    margin: 0 auto; // Add auto margins horizontally to center
+    width: 95%;
+    text-align: center;
+    background-color: var(--accent-color-light);
+    color: var(--accent-color);
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* Add some responsive adjustments for smaller screens */
+@media (max-width: 1024px) {}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #121214;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 4px;
+
+    &:hover {
+        background: #323232;
+    }
+}
