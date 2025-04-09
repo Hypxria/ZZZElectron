@@ -219,11 +219,137 @@ class GenshinManager {
 
     console.log("\nGenshin Info Response:");
     console.log(JSON.stringify(data, null, 2));
-    
+
     return data
   }
 
   async getNotes(): Promise<void | string> {
+
+    /*
+    {
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "current_resin": 200,
+    "max_resin": 200,
+    "resin_recovery_time": "0",
+    "finished_task_num": 0,
+    "total_task_num": 4,
+    "is_extra_task_reward_received": false,
+    "remain_resin_discount_num": 3,
+    "resin_discount_num_limit": 3,
+    "current_expedition_num": 5,
+    "max_expedition_num": 5,
+    "expeditions": [
+      {
+        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/51a3736103e0bb8fae3dbb5197257f36.png",
+        "status": "Finished",
+        "remained_time": "0"
+      },
+      {
+        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/2781c4fee00e263195f4c1f8cc7aa337.png",
+        "status": "Finished",
+        "remained_time": "0"
+      },
+      {
+        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/2ad457efe47f31a54bd683286fd03144.png",
+        "status": "Finished",
+        "remained_time": "0"
+      },
+      {
+        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/29021fd200fb4074bcb857668b406307.png",
+        "status": "Finished",
+        "remained_time": "0"
+      },
+      {
+        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/455ee1e4da29c15282faba8243bccdcc.png",
+        "status": "Finished",
+        "remained_time": "0"
+      }
+    ],
+    "current_home_coin": 600,
+    "max_home_coin": 600,
+    "home_coin_recovery_time": "0",
+    "calendar_url": "",
+    "transformer": {
+      "obtained": true,
+      "recovery_time": {
+        "Day": 0,
+        "Hour": 0,
+        "Minute": 0,
+        "Second": 0,
+        "reached": true
+      },
+      "wiki": "",
+      "noticed": false,
+      "latest_job_id": "0"
+    },
+    "daily_task": {
+      "total_num": 4,
+      "finished_num": 0,
+      "is_extra_task_reward_received": false,
+      "task_rewards": [
+        {
+          "status": "TaskRewardStatusUnfinished"
+        },
+        {
+          "status": "TaskRewardStatusUnfinished"
+        },
+        {
+          "status": "TaskRewardStatusUnfinished"
+        },
+        {
+          "status": "TaskRewardStatusUnfinished"
+        }
+      ],
+      "attendance_rewards": [
+        {
+          "status": "AttendanceRewardStatusUnfinished",
+          "progress": 0
+        },
+        {
+          "status": "AttendanceRewardStatusUnfinished",
+          "progress": 0
+        },
+        {
+          "status": "AttendanceRewardStatusUnfinished",
+          "progress": 0
+        },
+        {
+          "status": "AttendanceRewardStatusUnfinished",
+          "progress": 0
+        }
+      ],
+      "attendance_visible": true,
+      "stored_attendance": "186.7",
+      "stored_attendance_refresh_countdown": 13285624
+    },
+    "archon_quest_progress": {
+      "list": [
+        {
+          "status": "StatusOngoing",
+          "chapter_num": "Chapter III: Act III",
+          "chapter_title": "Dreams, Emptiness, Deception",
+          "id": 1303,
+          "chapter_type": 1
+        },
+        {
+          "status": "StatusNotOpen",
+          "chapter_num": "Chapter V: Act I",
+          "chapter_title": "Flowers Resplendent on the Sun-Scorched Sojourn",
+          "id": 1500,
+          "chapter_type": 1
+        }
+      ],
+      "is_open_archon_quest": true,
+      "is_finish_all_mainline": false,
+      "is_finish_all_interchapter": false,
+      "wiki_url": ""
+    }
+  }
+}
+    */
+
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
 
     const data = await this.mainApi.makeRequest(
@@ -377,7 +503,7 @@ class ZenlessManager {
 
     console.log("\nBattery Info Response:");
     console.log(JSON.stringify(data, null, 2));
-    
+
     return data;
   }
 
@@ -413,7 +539,7 @@ class ZenlessManager {
 
     console.log("\nHollow Zero Response:");
     console.log(data);
-    
+
     return data;
   }
 }
