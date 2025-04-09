@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   packagerConfig: {},
   rebuildConfig: {},
@@ -40,8 +42,8 @@ module.exports = {
               {
                 test: /\.(ts|js)$/,
                 include: [
-                  /src\/services/,  // Include the services directory
-                  /src\/main\.ts$/  // Include main.ts
+                  path.resolve(__dirname, 'src/services'),
+                  path.resolve(__dirname, 'src/main.ts')
                 ],
                 use: {
                   loader: 'ts-loader',
@@ -49,7 +51,14 @@ module.exports = {
                     transpileOnly: true
                   }
                 }
-              }
+              },
+              {
+                test: /\.(svg|png|jpg|gif|jpeg)$/,
+                include: [
+                  path.resolve(__dirname, "src/assets/icons")
+                ],
+                type: "asset/inline"
+              },
             ],
           },
           resolve: {

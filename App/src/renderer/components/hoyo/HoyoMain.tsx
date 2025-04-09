@@ -41,6 +41,7 @@ const HoyoMain: React.FC<AppProps> = ({ ViewState }) => {
 
                 await window.hoyoAPI.initialize(cookieString, uid);
 
+                console.log(await window.hoyoAPI.callMethod('genshin.getInfo', ''))
                 
 
             } catch (err) {

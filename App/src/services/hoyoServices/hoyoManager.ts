@@ -23,6 +23,7 @@ export class HoyoManager {
   public readonly giInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index";
   public readonly giSpiralUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/spiralAbyss";
   public readonly giEventCalendarUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/act_calendar"; // Post???
+  public readonly giNotesUrl = 'https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index'
 
   // HSR
   public readonly starrailInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index";
@@ -219,6 +220,25 @@ class GenshinManager {
     console.log("\nGenshin Info Response:");
     console.log(JSON.stringify(data, null, 2));
     
+    return data
+  }
+
+  async getNotes(): Promise<void | string> {
+    if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
+
+    const data = await this.mainApi.makeRequest(
+      this.mainApi.giSpiralUrl,
+      {
+        server: this.mainApi.genshinRegion,
+        role_id: this.mainApi.genshinUid,
+        schedule_type: 1
+      },
+      this.mainApi.genshinRegion
+    );
+
+    console.log("\nGenshin Notes Response:");
+    console.log(JSON.stringify(data, null, 2));
+
     return data
   }
 

@@ -1,8 +1,11 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useState, useRef, useEffect } from 'react';
 import { Clock, Battery, Star, Coins, Award, RefreshCw } from 'lucide-react';
 import './Styles/GameAccountDashboard.scss';
 import { ViewState } from "../../../types/viewState";
 
+import zzzIcon from "../../../assets/icons/Zenless_Zone_Zero_logo.png"
+import genshinIcon from "../../../assets/icons/Genshin-Impact-Logo.png"
+import honkaiIcon from "../../../assets/icons/Honkai_Star-Rail_Logo.png"
 
 interface CustomCSS extends CSSProperties {
   '--accent-color'?: string;
@@ -15,27 +18,78 @@ interface GameAccountDashboardProps {
 
 const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>("Zenless Zone Zero");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const calculateHeights = () => {
+      if (!containerRef.current || !cardsContainerRef.current) return;
+
+      const containerHeight = containerRef.current.clientHeight;
+      const headerHeight = containerRef.current.querySelector('.dashboard-header')?.clientHeight || 0;
+      const containerPadding = 32; // 16px top + 16px bottom
+      const gapBetweenCards = 16;
+
+      // Get number of visible (non-hidden) cards
+      const visibleCards = cardsContainerRef.current.querySelectorAll('.game-card:not(.hidden-card)').length;
+
+      // Calculate total gaps (number of gaps = number of cards - 1)
+      const totalGaps = (visibleCards - 1) * gapBetweenCards;
+
+      // Calculate available height for cards
+      const availableHeight = containerHeight - headerHeight - containerPadding - totalGaps;
+
+      // Calculate height per card
+      const heightPerCard = Math.floor(availableHeight / visibleCards);
+
+      // Set the CSS variables
+      containerRef.current.style.setProperty('--available-height', `${availableHeight}px`);
+      containerRef.current.style.setProperty('--card-height', `${heightPerCard}px`);
+    };
+
+    // Initial calculation
+    calculateHeights();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateHeights);
+
+    // Recalculate when cards are shown/hidden
+    const observer = new MutationObserver(calculateHeights);
+    if (cardsContainerRef.current) {
+      observer.observe(cardsContainerRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    }
+
+    return () => {
+      window.removeEventListener('resize', calculateHeights);
+      observer.disconnect();
+    };
+  }, [viewState]);
 
   // Sample game data
   const games = [
     {
       title: "Zenless Zone Zero",
-      logo: "/api/placeholder/100/50",
+      logo: zzzIcon,
       accent: "#6B46C1",
       stats: [
         { label: "Master Level", value: "45", icon: <Star size={18} /> },
         { label: "Energy", value: "120/150", icon: <Battery size={18} /> },
         { label: "Currency", value: "8,450", icon: <Coins size={18} /> },
         { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
       ],
       events: [
-        
+
       ]
     },
     {
       title: "Honkai Star Rail",
-      logo: "/api/placeholder/100/50",
+      logo: honkaiIcon,
       accent: "#3182CE",
       stats: [
         { label: "Trailblaze Level", value: "62", icon: <Star size={18} /> },
@@ -51,7 +105,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     },
     {
       title: "Genshin Impact",
-      logo: "/api/placeholder/100/50",
+      logo: genshinIcon,
       accent: "#48BB78",
       stats: [
         { label: "Adventure Rank", value: "58", icon: <Star size={18} /> },
@@ -67,7 +121,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   ];
 
   return (
-    <div className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
+    <div ref={containerRef} className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
       <div className="dashboard-header">
         <h1 className={`dashboard-title ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>Game Account Status</h1>
         <button className="refresh-button">
@@ -76,7 +130,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         </button>
       </div>
 
-      <div className="game-cards-container">
+      <div ref={cardsContainerRef} className="game-cards-container">
         {games.map((game) => (
           <div
             key={game.title}
@@ -93,7 +147,13 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               role="button"
               tabIndex={0}
             >
-              <img src={game.logo} alt={`${game.title} logo`} className="game-logo" />
+              <img src={game.logo} alt={`${game.title} logo`} className={`game-logo ${
+                game.title === "Zenless Zone Zero" ? "zzz" :
+                game.title === "Honkai Star Rail" ? "honkai" :
+                game.title === "Genshin Impact" ? "genshin" :
+                "zzz"
+                }`}
+              />
               <h2 className="game-title">{game.title}</h2>
               <span className="update-time">Updated: 10m ago</span>
             </div>

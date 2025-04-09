@@ -67,8 +67,8 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
     };
 
     const handleCredentialsHoyo = () => {
-        const idInput = document.querySelector('.hoyolab-input') as HTMLInputElement;
-        const secretInput = document.querySelector('.hoyolab-input-secret') as HTMLInputElement;
+        const idInput = document.querySelector('.hoyo-input') as HTMLInputElement;
+        const secretInput = document.querySelector('.hoyo-input-secret') as HTMLInputElement;
 
         const account = idInput.value;
         const password = secretInput.value;

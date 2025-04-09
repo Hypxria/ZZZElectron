@@ -24,8 +24,22 @@
         flex: 1;
     }
 
+    &.full {
+        .game-cards-container{
+            height: var(--available-height, auto); // Add this line
+        }
+    }
+
     &.neutral,
     &.hidden {
+        .stat-card {
+            &:last-child:nth-child(odd):nth-last-child(1) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        
+
         .game-card {
             &:not(.hidden-card) {
                 height: auto;
@@ -57,7 +71,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 1px;
     color: #ffffff;
 }
 
@@ -65,7 +79,7 @@
     font-size: 20px;
     font-weight: bold;
     margin: 0;
-    translate: 70px 0%;
+    translate: 70px -5%;
 
     &.full {
         translate: none;
@@ -77,47 +91,42 @@
     align-items: center;
     gap: 4px;
     font-size: 14px;
-    background-color: #18181b;  // Slightly lighter than base
-    color: #ffffff;  // White text
+    background-color: #18181b; // Slightly lighter than base
+    color: #ffffff; // White text
     padding: 7px 10px;
     border-radius: 4px;
-    border: 1px solid #27272a;  // Darker border
+    border: 1px solid #27272a; // Darker border
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
     cursor: pointer;
+    translate: 0% -10%;
+
     &:hover {
-        background-color: #1e1e20;  // Slightly lighter on hover
+        background-color: #1e1e20; // Slightly lighter on hover
     }
 }
 
 /* Individual game card */
 .game-card {
-    background-color: #18181b;  // Slightly lighter than base
+    background-color: #18181b; // Slightly lighter than base
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     border-left: 4px solid var(--accent-color);
     display: flex;
     flex-direction: row;
-    height: 33%;
     transition: all 0.3s ease; // Add smooth transition
+    height: var(--card-height, auto); // Change fixed height to variable
+    min-height: 0; // Allow shrinking
+    flex-shrink: 0; // Prevent unwanted shrinking
+
 
     // Make game info section clickable in neutral mode
-    .game-info-section {
-        padding: 16px;
-        align-items: center;
-        cursor: pointer;
-
-        &:hover {
-            background-color: #333336;
-        }
-    }
 
     &.hidden-card {
-        height: 80px; // Smaller height when not selected
+        height: 100px; // Smaller height when not selected
         flex-shrink: 0; // Add this to prevent shrinking
 
         .game-info-section {
-            padding: 16px;
             align-items: center;
             width: 100%;
             border-right: none;
@@ -133,20 +142,31 @@
 /* Game info section styles */
 .game-info-section {
     justify-content: center;
-    padding: 16px;
+    padding: 4vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid #27272a;  // Darker border
-    background-color: #1e1e20;  // Slightly elevated background
-    width: 100%;
+    border-right: 1px solid #27272a; // Darker border
+    background-color: #1e1e20; // Slightly elevated background
+    width: 10%;
+    box-sizing: border-box;
+
+    &:hover{
+        background-color: #28282b;
+        cursor: pointer;
+    }
 }
 
 .game-logo {
     height: 32px;
-    margin-bottom: 8px;
+    margin-bottom: 0.5vh;
     color: white;
+
+    &.genshin {
+        filter: invert(1);
+        scale: 1.3;
+    }
 }
 
 .game-title {
@@ -154,13 +174,13 @@
     text-align: center;
     margin: 0;
     font-size: 16px;
-    color: #ffffff;  // White text
+    color: #ffffff; // White text
     /* Fixed game title font size */
 }
 
 .update-time {
     font-size: 12px;
-    color: #a1a1aa;  // Muted text color
+    color: #a1a1aa; // Muted text color
     margin-top: 4px;
 }
 
@@ -169,8 +189,8 @@
     padding: 16px;
     flex: 1;
     display: flex;
-    align-items: center;
-    background-color: #18181b;  // Slightly lighter than base
+    align-items: stretch;
+    background-color: #18181b; // Slightly lighter than base
 }
 
 .stats-grid {
@@ -178,7 +198,7 @@
     gap: 16px;
     width: 100%;
     height: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
     align-items: stretch;
     grid-auto-flow: dense;
     grid-auto-rows: 1fr; // Make rows share available space equally
@@ -189,15 +209,12 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background-color: #1e1e20;  // Elevated background
+    background-color: #1e1e20; // Elevated background
     padding: 12px;
     box-sizing: border-box;
     border-radius: 6px;
     min-height: 0; // Allow card to shrink below its content size
-
-    &:last-child:nth-child(odd):nth-last-child(1) {
-        grid-column: 1 / -1;
-    }
+    width: 100%;
 }
 
 .stat-icon-container {
@@ -227,7 +244,7 @@
 
 .stat-label {
     font-size: 12px;
-    color: #a1a1aa;  // Muted text color
+    color: #a1a1aa; // Muted text color
     margin: 0;
     line-height: 1.2;
     /* Better line height for text */
@@ -238,14 +255,14 @@
     margin: 0;
     font-size: 14px;
     /* Consistent font size */
-    color: #ffffff;  // White text
+    color: #ffffff; // White text
 }
 
 /* Action section styles */
 .action-section {
     padding: 16px;
-    background-color: #1e1e20;  // Elevated background
-    border-left: 1px solid #27272a;  // Darker border
+    background-color: #1e1e20; // Elevated background
+    border-left: 1px solid #27272a; // Darker border
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -264,7 +281,7 @@
 .missions-count {
     font-size: 14px;
     font-weight: 500;
-    color: #ffffff;  // White text
+    color: #ffffff; // White text
 }
 
 .details-button {
@@ -280,6 +297,7 @@
     border: none;
     cursor: pointer;
     box-sizing: border-box;
+    font-family: Urbanist;
 }
 
 /* Add some responsive adjustments for smaller screens */
