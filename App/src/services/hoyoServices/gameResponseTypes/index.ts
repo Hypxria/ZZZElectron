@@ -1,6 +1,7 @@
 export * as baseInfo from './baseInfo'
 
 export * as genshinInfo from './genshinInfo'
+export * as genshinNotes from './genshinNotes'
 export * as genshinEvents from './genshinEvents'
 
 export * as starrailInfo from './starrailInfo'

@@ -1,4 +1,4 @@
-export interface Welcome {
+export interface starrailBattery {
     retcode: number;
     message: string;
     data:    Data;

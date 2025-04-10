@@ -7,6 +7,8 @@ import zzzIcon from "../../../assets/icons/Zenless_Zone_Zero_logo.png"
 import genshinIcon from "../../../assets/icons/Genshin-Impact-Logo.png"
 import honkaiIcon from "../../../assets/icons/Honkai_Star-Rail_Logo.png"
 
+import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes } from 'src/services/hoyoServices/gameResponseTypes';
+
 interface CustomCSS extends CSSProperties {
   '--accent-color'?: string;
   '--accent-color-light'?: string;
@@ -16,10 +18,33 @@ interface GameAccountDashboardProps {
   viewState: ViewState;
 }
 
+interface GameStats {
+  label: string;
+  value: string;
+  icon: React.ReactElement;
+}
+
+interface GameEvent {
+  name: string;
+  status?: string;
+  value?: string;
+  isHighlight?: boolean;
+}
+
+interface Game {
+  title: string;
+  logo: string;
+  accent: string;
+  stats: GameStats[];
+  events: GameEvent[];
+}
+
 const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>("Zenless Zone Zero");
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const [game, setGame] = useState<Game[] | null>(null)
+  const [zzzBatteryData, setZzzBatteryData] = useState<zenlessBattery.zenlessBattery | null>(null);
 
   useEffect(() => {
     const calculateHeights = () => {
@@ -70,55 +95,84 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     };
   }, [viewState]);
 
-  // Sample game data
-  const games = [
-    {
-      title: "Zenless Zone Zero",
-      logo: zzzIcon,
-      accent: "#6B46C1",
-      stats: [
-        { label: "Master Level", value: "45", icon: <Star size={18} /> },
-        { label: "Energy", value: "120/150", icon: <Battery size={18} /> },
-        { label: "Currency", value: "8,450", icon: <Coins size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-      ],
-      events: [
 
-      ]
-    },
-    {
-      title: "Honkai Star Rail",
-      logo: honkaiIcon,
-      accent: "#3182CE",
-      stats: [
-        { label: "Trailblaze Level", value: "62", icon: <Star size={18} /> },
-        { label: "Trailblaze Power", value: "180/240", icon: <Battery size={18} /> },
-        { label: "Stellar Jade", value: "15,620", icon: <Coins size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
-      ],
-      events: [
-        { name: "Video Store Management", status: "Currently Open" },
-        { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
-      ]
-    },
-    {
-      title: "Genshin Impact",
-      logo: genshinIcon,
-      accent: "#48BB78",
-      stats: [
-        { label: "Adventure Rank", value: "58", icon: <Star size={18} /> },
-        { label: "Resin", value: "120/160", icon: <Battery size={18} /> },
-        { label: "Primogems", value: "12,350", icon: <Coins size={18} /> },
-        { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
-      ],
-      events: [
-        { name: "Video Store Management", status: "Currently Open" },
-        { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
-      ]
+
+  // Sample game data
+  
+  useEffect(() => {
+    const refreshStats = async () => {
+      
+      // const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
+      // const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '')
+
+      // const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '')
+      // const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '')
+
+      // const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '')
+      const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '')
+
+      console.log(`GenshinNotes: ${genshinNotes?.data?.max_resin}`)
+
+      const games: Game[] = [
+        {
+          title: "Zenless Zone Zero",
+          logo: zzzIcon,
+          accent: "#6B46C1",
+          stats: [
+            { label: "Master Level", value: "45", icon: <Star size={18} /> },
+            { label: "Energy", value: "120/150", icon: <Battery size={18} /> },
+            { label: "Currency", value: "8,450", icon: <Coins size={18} /> },
+            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
+            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
+          ],
+          events: [
+    
+          ]
+        },
+        {
+          title: "Honkai Star Rail",
+          logo: honkaiIcon,
+          accent: "#3182CE",
+          stats: [
+            { label: "Trailblaze Level", value: "62", icon: <Star size={18} /> },
+            { label: "Trailblaze Power", value: "180/240", icon: <Battery size={18} /> },
+            { label: "Stellar Jade", value: "15,620", icon: <Coins size={18} /> },
+            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
+            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+          ],
+          events: [
+            { name: "Video Store Management", status: "Currently Open" },
+            { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
+          ]
+        },
+        {
+          title: "Genshin Impact",
+          logo: genshinIcon,
+          accent: "#48BB78",
+          stats: [
+            { label: "Adventure Rank", value: "58", icon: <Star size={18} /> },
+            { label: "Resin", value: "120/160", icon: <Battery size={18} /> },
+            { label: "Primogems", value: "12,350", icon: <Coins size={18} /> },
+            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+          ],
+          events: [
+            { name: "Video Store Management", status: "Currently Open" },
+            { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
+          ]
+        }
+      ];
+
+      return games
     }
-  ];
+    
+
+    
+    setInterval(() => {
+      refreshStats();
+    }, 1000);
+  }, [])
+
+  
 
   return (
     <div ref={containerRef} className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
@@ -131,7 +185,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       </div>
 
       <div ref={cardsContainerRef} className="game-cards-container">
-        {games.map((game) => (
+        {game?.map((game) => (
           <div
             key={game.title}
             className={`game-card ${viewState === ViewState.NEUTRAL && selectedGame !== game.title ? 'hidden-card' : viewState === ViewState.SPOTIFY_FULL && selectedGame !== game.title ? 'hidden-card' : ''}`}

@@ -1,4 +1,4 @@
-interface genshinInfo {
+export interface genshinInfo {
     retcode: number;
     message: string;
     data: GameData;

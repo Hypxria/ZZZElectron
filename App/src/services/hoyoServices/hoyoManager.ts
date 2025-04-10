@@ -1,5 +1,6 @@
 import { CookieManager } from './CookieManager';
 import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds';
+import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo } from './gameResponseTypes';
 import { Region, Game, GameRecord, DSHeaders } from './types';
 import axios, { AxiosResponse } from 'axios';
 
@@ -23,7 +24,7 @@ export class HoyoManager {
   public readonly giInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index";
   public readonly giSpiralUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/spiralAbyss";
   public readonly giEventCalendarUrl = "https://sg-public-api.hoyolab.com/event/game_record/genshin/api/act_calendar"; // Post???
-  public readonly giNotesUrl = 'https://sg-public-api.hoyolab.com/event/game_record/genshin/api/index'
+  public readonly giNotesUrl = 'https://bbs-api-os.hoyolab.com/game_record/genshin/api/dailyNote'
 
   // HSR
   public readonly starrailInfoUrl = "https://sg-public-api.hoyolab.com/event/game_record/hkrpg/api/index";
@@ -182,10 +183,10 @@ export class HoyoManager {
 class GenshinManager {
   constructor(private mainApi: HoyoManager) { }
 
-  async getEvents(): Promise<void | string> {
+  async getEvents(): Promise<void | null | genshinEvents.genshinEvents> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
 
-    const response = await this.mainApi.makeRequest(
+    const response = await this.mainApi.makeRequest<genshinEvents.genshinEvents>(
       this.mainApi.giEventCalendarUrl,
       {
         server: this.mainApi.genshinRegion,
@@ -198,16 +199,16 @@ class GenshinManager {
     console.log("\nGenshin Events Response:");
     console.log(JSON.stringify(response, null, 2))
 
-    return
+    return response
   }
 
-  async getInfo(): Promise<void | string> {
+  async getInfo(): Promise<void | null | genshinInfo.genshinInfo> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) {
       console.log("No Genshin account found");
       return;
     }
 
-    const data = await this.mainApi.makeRequest(
+    const data = await this.mainApi.makeRequest<genshinInfo.genshinInfo>(
       this.mainApi.giInfoUrl,
       {
         server: this.mainApi.genshinRegion,
@@ -223,137 +224,11 @@ class GenshinManager {
     return data
   }
 
-  async getNotes(): Promise<void | string> {
-
-    /*
-    {
-  "retcode": 0,
-  "message": "OK",
-  "data": {
-    "current_resin": 200,
-    "max_resin": 200,
-    "resin_recovery_time": "0",
-    "finished_task_num": 0,
-    "total_task_num": 4,
-    "is_extra_task_reward_received": false,
-    "remain_resin_discount_num": 3,
-    "resin_discount_num_limit": 3,
-    "current_expedition_num": 5,
-    "max_expedition_num": 5,
-    "expeditions": [
-      {
-        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/51a3736103e0bb8fae3dbb5197257f36.png",
-        "status": "Finished",
-        "remained_time": "0"
-      },
-      {
-        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/2781c4fee00e263195f4c1f8cc7aa337.png",
-        "status": "Finished",
-        "remained_time": "0"
-      },
-      {
-        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/2ad457efe47f31a54bd683286fd03144.png",
-        "status": "Finished",
-        "remained_time": "0"
-      },
-      {
-        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/29021fd200fb4074bcb857668b406307.png",
-        "status": "Finished",
-        "remained_time": "0"
-      },
-      {
-        "avatar_side_icon": "https://act-webstatic.hoyoverse.com/hk4e/e20200928calculate/item_icon/67c7f727/455ee1e4da29c15282faba8243bccdcc.png",
-        "status": "Finished",
-        "remained_time": "0"
-      }
-    ],
-    "current_home_coin": 600,
-    "max_home_coin": 600,
-    "home_coin_recovery_time": "0",
-    "calendar_url": "",
-    "transformer": {
-      "obtained": true,
-      "recovery_time": {
-        "Day": 0,
-        "Hour": 0,
-        "Minute": 0,
-        "Second": 0,
-        "reached": true
-      },
-      "wiki": "",
-      "noticed": false,
-      "latest_job_id": "0"
-    },
-    "daily_task": {
-      "total_num": 4,
-      "finished_num": 0,
-      "is_extra_task_reward_received": false,
-      "task_rewards": [
-        {
-          "status": "TaskRewardStatusUnfinished"
-        },
-        {
-          "status": "TaskRewardStatusUnfinished"
-        },
-        {
-          "status": "TaskRewardStatusUnfinished"
-        },
-        {
-          "status": "TaskRewardStatusUnfinished"
-        }
-      ],
-      "attendance_rewards": [
-        {
-          "status": "AttendanceRewardStatusUnfinished",
-          "progress": 0
-        },
-        {
-          "status": "AttendanceRewardStatusUnfinished",
-          "progress": 0
-        },
-        {
-          "status": "AttendanceRewardStatusUnfinished",
-          "progress": 0
-        },
-        {
-          "status": "AttendanceRewardStatusUnfinished",
-          "progress": 0
-        }
-      ],
-      "attendance_visible": true,
-      "stored_attendance": "186.7",
-      "stored_attendance_refresh_countdown": 13285624
-    },
-    "archon_quest_progress": {
-      "list": [
-        {
-          "status": "StatusOngoing",
-          "chapter_num": "Chapter III: Act III",
-          "chapter_title": "Dreams, Emptiness, Deception",
-          "id": 1303,
-          "chapter_type": 1
-        },
-        {
-          "status": "StatusNotOpen",
-          "chapter_num": "Chapter V: Act I",
-          "chapter_title": "Flowers Resplendent on the Sun-Scorched Sojourn",
-          "id": 1500,
-          "chapter_type": 1
-        }
-      ],
-      "is_open_archon_quest": true,
-      "is_finish_all_mainline": false,
-      "is_finish_all_interchapter": false,
-      "wiki_url": ""
-    }
-  }
-}
-    */
-
+  async getNotes(): Promise<void | null | genshinNotes.genshinNotes> {
     if (!this.mainApi.genshinUid || !this.mainApi.genshinRegion) return;
 
-    const data = await this.mainApi.makeRequest(
-      this.mainApi.giSpiralUrl,
+    const data = await this.mainApi.makeRequest<genshinNotes.genshinNotes>(
+      this.mainApi.giNotesUrl,
       {
         server: this.mainApi.genshinRegion,
         role_id: this.mainApi.genshinUid,
@@ -390,7 +265,7 @@ class GenshinManager {
 class StarrailManager {
   constructor(private mainApi: HoyoManager) { }
 
-  async getEvents(): Promise<string | void> {
+  async getEvents(): Promise<null | void | starrailEvents.starrailEvents> {
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) return;
 
     const response = await this.mainApi.makeRequest(
@@ -405,17 +280,17 @@ class StarrailManager {
     console.log("\nStarrail Events Response:");
     console.log(JSON.stringify(response.data.act_list, null, 2))
 
-    return response.data.act_list
+    return response.data.act_list as starrailEvents.starrailEvents
   }
 
-  async getInfo(): Promise<string | void> {
+  async getInfo(): Promise<null | void | starrailInfo.starrailInfo> {
     console.log("Starrail UID:", this.mainApi.starrailUid);
     if (!this.mainApi.starrailUid || !this.mainApi.starrailRegion) {
       console.log("No Starrail account found");
       return;
     }
 
-    const data = await this.mainApi.makeRequest(
+    const data = await this.mainApi.makeRequest<starrailInfo.starrailInfo>(
       this.mainApi.starrailInfoUrl,
       {
         server: this.mainApi.starrailRegion,
@@ -426,6 +301,7 @@ class StarrailManager {
 
     console.log("\nStarrail Info Response:");
     console.log(JSON.stringify(data, null, 2));
+
     return data
   }
 
@@ -489,10 +365,10 @@ class ZenlessManager {
     console.log(JSON.stringify(data, null, 2));
   }
 
-  async getBattery(): Promise<void | string> {
+  async getBattery(): Promise<void | null | zenlessBattery.zenlessBattery> {
     if (!this.mainApi.zenlessUid || !this.mainApi.zenlessRegion) return;
 
-    const data = await this.mainApi.makeRequest(
+    const data = await this.mainApi.makeRequest<zenlessBattery.zenlessBattery>(
       this.mainApi.zzzBatteryUrl,
       {
         server: this.mainApi.zenlessRegion,
@@ -503,7 +379,7 @@ class ZenlessManager {
 
     console.log("\nBattery Info Response:");
     console.log(JSON.stringify(data, null, 2));
-
+    console.log(data?.data.energy.progress)
     return data;
   }
 
