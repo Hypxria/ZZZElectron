@@ -1,42 +1,47 @@
 interface GameDataPoint {
-    name: string;
-    type: number;
-    value: string;
+  name: string;
+  type: number;
+  value: string;
 }
 
 // Data switch (privacy settings)
 interface DataSwitch {
-    switch_id: number;
-    is_public: boolean;
-    switch_name: string;
+  switch_id: number;
+  is_public: boolean;
+  switch_name: string;
 }
 
 // Individual game record
-interface GameRecordDetail {
-    has_role: boolean;
-    game_id: number;
-    game_role_id: string;
-    nickname: string;
-    region: string;
-    level: number;
-    background_image: string;
-    is_public: boolean;
-    data: GameDataPoint[];
-    region_name: string;
-    url: string;
-    data_switches: DataSwitch[];
-    h5_data_switches: any[]; // Appears to be empty array in the data
-    background_color: string;
-    background_image_v2: string;
-    logo: string;
-    game_name: string;
+export interface GameRecordDetail {
+  has_role: boolean;
+  game_id: number;
+  game_role_id: string;
+  nickname: string;
+  region: string;
+  level: number;
+  background_image: string;
+  is_public: boolean;
+  data: GameDataPoint[];
+  region_name: string;
+  url: string;
+  data_switches: DataSwitch[];
+  h5_data_switches: any[]; // Appears to be empty array in the data
+  background_color: string;
+  background_image_v2: string;
+  logo: string;
+  game_name: string;
 }
 
 // Main response interface
 interface GameRecordResponse {
-    list: GameRecordDetail[];
+  list: GameRecordDetail[];
 }
 
+export interface baseInfo {
+  data: GameRecordResponse;
+  message: string;
+  retcode: number;
+}
 
 
 /*

@@ -7,7 +7,7 @@ import zzzIcon from "../../../assets/icons/Zenless_Zone_Zero_logo.png"
 import genshinIcon from "../../../assets/icons/Genshin-Impact-Logo.png"
 import honkaiIcon from "../../../assets/icons/Honkai_Star-Rail_Logo.png"
 
-import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes } from 'src/services/hoyoServices/gameResponseTypes';
+import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes, baseInfo } from 'src/services/hoyoServices/gameResponseTypes';
 
 interface CustomCSS extends CSSProperties {
   '--accent-color'?: string;
@@ -36,7 +36,14 @@ interface Game {
   logo: string;
   accent: string;
   stats: GameStats[];
-  events: GameEvent[];
+  events?: GameEvent[];
+}
+
+export interface GameRecord {
+  game_id: number;
+  game_role_id: string;
+  region: string;
+  // Add other properties as needed
 }
 
 const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }) => {
@@ -44,7 +51,6 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [game, setGame] = useState<Game[] | null>(null)
-  const [zzzBatteryData, setZzzBatteryData] = useState<zenlessBattery.zenlessBattery | null>(null);
 
   useEffect(() => {
     const calculateHeights = () => {
@@ -98,20 +104,171 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
 
 
   // Sample game data
-  
+
+
   useEffect(() => {
+    var baseInfo: baseInfo.baseInfo
+
+    var zzzName: string, zzzLevel: number, starrailName: string, starrailLevel: number, genshinName: string, genshinLevel: number, genshinRg: string, zzzRg: string, starrailRg: string;
+
+    const fetchBaseInfo = async () => {
+      baseInfo = await window.hoyoAPI.callMethod('HoyoManager', 'getBaseDetails');
+      baseInfo.data.list.forEach((game: baseInfo.GameRecordDetail) => {
+        switch (game.game_id) {
+          case 2: // Genshin
+            genshinName = game.nickname
+            genshinLevel = game.level
+            genshinRg = game.region
+            break;
+          case 6: // Starrail
+            starrailName = game.nickname;
+            starrailLevel = game.level;
+            starrailRg = game.region
+            break;
+          case 8: // Zenless
+            zzzName = game.nickname;
+            zzzLevel = game.level;
+            zzzRg = game.region
+            console.log(`ZZZ REG = ${zzzRg}`)
+            break;
+        }
+      })
+    }
+
+    fetchBaseInfo()
+    const calculateTimeUntilReset = (region: string) => {
+      // Get current time in user's timezone
+      const now = new Date();
+
+      // Create reset time based on region
+      let resetTime: Date;
+
+      switch (region) {
+        // Asia regions (UTC+8)
+        case 'prod_official_asia':
+        case 'os_asia':
+        case 'prod_gf_jp':
+          // JST/KST: 5:00 AM
+          resetTime = getResetTimeInTimezone('Asia/Tokyo', 5); // Using Tokyo for JST
+          break;
+
+        case 'os_cht':
+        case 'prod_official_cht':
+        case 'prod_gf_sg':
+          // HKT/CST: 4:00 AM (HK, TW, MO)
+          resetTime = getResetTimeInTimezone('Asia/Shanghai', 4);
+          break;
+
+        // America regions (UTC-5)
+
+        case 'prod_official_usa':
+        case 'prod_gf_us':
+        case 'os_usa':
+          // Using America/New_York for EST/EDT: 4:00 AM/5:00 AM
+          resetTime = getResetTimeInTimezone('America/New_York', 4);
+          break;
+
+        // Europe regions (UTC+1)
+        case 'prod_gf_eu':
+        case 'prod_official_eur':
+        case 'os_euro':
+          // CET: 5:00 AM, BST: 4:00 AM - Using Europe/London for BST
+          resetTime = getResetTimeInTimezone('Europe/London', 4);
+          break;
+
+        default:
+          // Default to Asia/Shanghai 4:00 AM if region not recognized
+          console.log(`Region not recognized: ${region}`);
+          resetTime = getResetTimeInTimezone('Asia/Shanghai', 4);
+      }
+
+      // If we're past reset time, add a day
+      if (now > resetTime) {
+        resetTime.setDate(resetTime.getDate() + 1);
+      }
+
+      // Get difference in milliseconds
+      const diff = resetTime.getTime() - now.getTime();
+
+      // Convert to hours
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+
+      // Return just hours as string
+      return `${hours}`;
+    };
+
+    // Helper function to create a reset time in specified timezone
+    const getResetTimeInTimezone = (timezone: string, resetHour: number): Date => {
+      // Create formatter for the target timezone
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false
+      });
+
+      // Create a date object for now
+      const now = new Date();
+
+      // Format the current time in target timezone
+      const parts = formatter.formatToParts(now);
+      const timeParts: Record<string, string> = {};
+      parts.forEach(part => {
+        if (part.type !== 'literal') {
+          timeParts[part.type] = part.value;
+        }
+      });
+
+      // Create reset time in target timezone
+      const resetTime = new Date();
+      resetTime.setFullYear(
+        parseInt(timeParts.year),
+        parseInt(timeParts.month) - 1, // months are 0-indexed
+        parseInt(timeParts.day)
+      );
+      resetTime.setHours(resetHour, 0, 0, 0);
+
+      // Convert to local time
+      const resetTimeStr = formatter.format(resetTime);
+      const resetParts = formatter.formatToParts(resetTime);
+      const resetTimeParts: Record<string, string> = {};
+      resetParts.forEach(part => {
+        if (part.type !== 'literal') {
+          resetTimeParts[part.type] = part.value;
+        }
+      });
+
+      // Set the local time equivalent
+      const localResetTime = new Date();
+      localResetTime.setFullYear(
+        parseInt(resetTimeParts.year),
+        parseInt(resetTimeParts.month) - 1,
+        parseInt(resetTimeParts.day)
+      );
+      localResetTime.setHours(
+        parseInt(resetTimeParts.hour),
+        parseInt(resetTimeParts.minute),
+        0,
+        0
+      );
+
+      return localResetTime;
+    };
+
     const refreshStats = async () => {
-      
-      // const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
-      // const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '')
 
-      // const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '')
-      // const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '')
+      const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
+      const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
 
-      // const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '')
-      const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '')
+      const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
+      const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '');
 
-      console.log(`GenshinNotes: ${genshinNotes?.data?.max_resin}`)
+      const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
+      const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
+
 
       const games: Game[] = [
         {
@@ -119,14 +276,14 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           logo: zzzIcon,
           accent: "#6B46C1",
           stats: [
-            { label: "Master Level", value: "45", icon: <Star size={18} /> },
-            { label: "Energy", value: "120/150", icon: <Battery size={18} /> },
-            { label: "Currency", value: "8,450", icon: <Coins size={18} /> },
-            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
+            { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
+            { label: "Battery", value: `${zzzBattery.data.energy?.progress.current}/240`, icon: <Battery size={18} /> },
+            { label: "Engagement", value: `${zzzBattery.data.vitality?.current}/${zzzBattery.data.vitality?.max}`, icon: <Coins size={18} /> },
+            { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point}/${zzzBattery.data.weekly_task?.max_point}`, icon: <Clock size={18} /> },
+            { label: "Daily Reset", value: `${calculateTimeUntilReset(zzzRg)} hours`, icon: <Clock size={18} /> },
           ],
           events: [
-    
+
           ]
         },
         {
@@ -134,15 +291,11 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           logo: honkaiIcon,
           accent: "#3182CE",
           stats: [
-            { label: "Trailblaze Level", value: "62", icon: <Star size={18} /> },
-            { label: "Trailblaze Power", value: "180/240", icon: <Battery size={18} /> },
-            { label: "Stellar Jade", value: "15,620", icon: <Coins size={18} /> },
-            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> },
-            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
-          ],
-          events: [
-            { name: "Video Store Management", status: "Currently Open" },
-            { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
+            { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
+            { label: "Stamina", value: `${starrailBattery?.data?.current_stamina}/${starrailBattery?.data?.max_stamina}`, icon: <Battery size={18} /> },
+            { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina}/${starrailBattery?.data?.current_reserve_stamina}`, icon: <Coins size={18} /> },
+            { label: "Echo Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
+            { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
           ]
         },
         {
@@ -150,29 +303,25 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           logo: genshinIcon,
           accent: "#48BB78",
           stats: [
-            { label: "Adventure Rank", value: "58", icon: <Star size={18} /> },
-            { label: "Resin", value: "120/160", icon: <Battery size={18} /> },
-            { label: "Primogems", value: "12,350", icon: <Coins size={18} /> },
-            { label: "Daily Reset", value: "3h 24m", icon: <Clock size={18} /> }
+            { label: "Adventure Rank", value: `${genshinLevel}`, icon: <Star size={18} /> },
+            { label: "Resin", value: `${genshinNotes.data.current_resin}/${genshinNotes.data.max_resin}`, icon: <Battery size={18} /> },
+            { label: "Commisions", value: `${genshinNotes.data.daily_task.finished_num}/${genshinNotes.data.daily_task.total_num}`, icon: <Coins size={18} /> },
+            { label: "Daily Reset", value: `${calculateTimeUntilReset(genshinRg)} hours`, icon: <Clock size={18} /> },
           ],
-          events: [
-            { name: "Video Store Management", status: "Currently Open" },
-            { name: "Ridu Weekly Points", value: "900/1300", isHighlight: true }
-          ]
         }
       ];
 
       return games
     }
-    
 
-    
-    setInterval(() => {
-      refreshStats();
-    }, 1000);
+
+
+    setInterval(async () => {
+      setGame(await refreshStats());
+    }, 4000);
   }, [])
 
-  
+
 
   return (
     <div ref={containerRef} className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
@@ -201,11 +350,10 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               role="button"
               tabIndex={0}
             >
-              <img src={game.logo} alt={`${game.title} logo`} className={`game-logo ${
-                game.title === "Zenless Zone Zero" ? "zzz" :
+              <img src={game.logo} alt={`${game.title} logo`} className={`game-logo ${game.title === "Zenless Zone Zero" ? "zzz" :
                 game.title === "Honkai Star Rail" ? "honkai" :
-                game.title === "Genshin Impact" ? "genshin" :
-                "zzz"
+                  game.title === "Genshin Impact" ? "genshin" :
+                    "zzz"
                 }`}
               />
               <h2 className="game-title">{game.title}</h2>
@@ -232,7 +380,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
                 </div>
 
                 {/* Action section */}
-                {(game.events[0]) && (
+                {(game?.events?.[0]) && (
                   <div className="action-section">
                     <div className="missions-indicator">
                       <Award size={16} color='white' />

@@ -1,6 +1,6 @@
 import { CookieManager } from './CookieManager';
 import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds';
-import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo } from './gameResponseTypes';
+import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes';
 import { Region, Game, GameRecord, DSHeaders } from './types';
 import axios, { AxiosResponse } from 'axios';
 
@@ -73,10 +73,10 @@ export class HoyoManager {
     this.isInitialized = true;
   }
 
-  private async getBaseDetails(): Promise<void> {
+  public async getBaseDetails(): Promise<void | null | baseInfo.baseInfo > {
     try {
-      const response = await this.makeRequest(this.userInfoUrl, { uid: this.uid });
-      console.log(`Test: ${JSON.stringify(response.data, null, 2)}`)
+      const response = await this.makeRequest<baseInfo.baseInfo>(this.userInfoUrl, { uid: this.uid });
+      console.log(`Test: ${JSON.stringify(response?.data, null, 2)}`)
       if (response?.data?.list) {
         response.data.list.forEach((entry: GameRecord) => {
           switch (entry.game_id) {
@@ -98,6 +98,7 @@ export class HoyoManager {
           }
         });
       }
+      return response;
     } catch (error) {
       console.error('Failed to get base details:', error);
     }
@@ -345,14 +346,14 @@ class StarrailManager {
 class ZenlessManager {
   constructor(private mainApi: HoyoManager) { }
 
-  async getInfo(): Promise<void> {
+  async getInfo(): Promise<void | null | zenlessInfo.zenlessInfo> {
     console.log("Zenless UID:", this.mainApi.zenlessUid);
     if (!this.mainApi.zenlessUid || !this.mainApi.zenlessRegion) {
       console.log("No Zenless account found");
       return;
     }
 
-    const data = await this.mainApi.makeRequest(
+    const data = await this.mainApi.makeRequest<zenlessInfo.zenlessInfo>(
       this.mainApi.zzzInfoUrl,
       {
         server: this.mainApi.zenlessRegion,
@@ -363,6 +364,8 @@ class ZenlessManager {
 
     console.log("\nZenless Info Response:");
     console.log(JSON.stringify(data, null, 2));
+
+    return data
   }
 
   async getBattery(): Promise<void | null | zenlessBattery.zenlessBattery> {

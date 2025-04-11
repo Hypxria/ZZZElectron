@@ -345,7 +345,7 @@ ipcMain.handle('hoyo:callMethod', async (_, className: string, methodName: strin
         
         // Direct method calls
         console.log(`${className}.${methodName}, args`)
-        return await hoyoManager[className][methodName](...args);
+        return await hoyoManager[methodName](...args);
     } catch (error) {
         console.error('Error calling HoyoManager method:', error);
         throw error;

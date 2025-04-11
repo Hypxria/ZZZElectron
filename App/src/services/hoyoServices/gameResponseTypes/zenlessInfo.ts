@@ -5,111 +5,111 @@ export interface zenlessInfo {
 }
 
 interface Data {
-    stats:          Stats;
-    avatarList:     AvatarList[];
-    curHeadIconURL: string;
-    buddyList:      BuddyList[];
-    catNotesList:   CatNotesList[];
-    awardState:     string;
-    gameDataShow:   GameDataShow;
+    stats:             Stats;
+    avatar_list:       AvatarList[];
+    cur_head_icon_url: string;
+    buddy_list:        BuddyList[];
+    cat_notes_list:    CatNotesList[];
+    award_state:       string;
+    game_data_show:    GameDataShow;
 }
 
 interface AvatarList {
-    id:               number;
-    level:            number;
-    nameMi18N:        string;
-    fullNameMi18N:    string;
-    elementType:      number;
-    campNameMi18N:    string;
-    avatarProfession: number;
+    id:                number;
+    level:             number;
+    name_mi18n:        string;
+    full_name_mi18n:   string;
+    element_type:      number;
+    camp_name_mi18n:   string;
+    avatar_profession: number;
     rarity:           string;
-    groupIconPath:    string;
-    hollowIconPath:   string;
+    group_icon_path:  string;
+    hollow_icon_path: string;
     rank:             number;
-    isChosen:         boolean;
-    roleSquareURL:    string;
-    subElementType:   number;
+    is_chosen:        boolean;
+    role_square_url:  string;
+    sub_element_type: number;
 }
 
 interface BuddyList {
-    id:                  number;
-    name:                string;
-    rarity:              string;
-    level:               number;
-    star:                number;
-    bangbooRectangleURL: string;
+    id:                    number;
+    name:                  string;
+    rarity:                string;
+    level:                 number;
+    star:                  number;
+    bangboo_rectangle_url: string;
 }
 
 interface CatNotesList {
-    name:      string;
-    icon:      string;
-    num:       number;
-    total:     number;
-    isLock:    boolean;
-    id:        number;
-    medalList: MedalList[];
-    wikiURL:   string;
+    name:       string;
+    icon:       string;
+    num:        number;
+    total:      number;
+    is_lock:    boolean;
+    id:         number;
+    medal_list: MedalList[];
+    wiki_url:   string;
 }
 
 interface MedalList {
-    questID:  number;
-    name:     string;
-    desc:     string;
-    icon:     string;
-    isFinish: boolean;
+    quest_id:  number;
+    name:      string;
+    desc:      string;
+    icon:      string;
+    is_finish: boolean;
 }
 
 interface GameDataShow {
-    personalTitle:    string;
-    titleMainColor:   string;
-    titleBottomColor: string;
-    titleBgURL:       string;
-    medalList:        string[];
-    cardURL:          string;
-    medalItemList:    List[];
-    allMedalList:     List[];
+    personal_title:     string;
+    title_main_color:   string;
+    title_bottom_color: string;
+    title_bg_url:       string;
+    medal_list:         string[];
+    card_url:           string;
+    medal_item_list:    List[];
+    all_medal_list:     List[];
 }
 
 interface List {
-    medalIcon: string;
-    number:    number;
-    medalType: string;
-    name:      string;
-    isShow:    boolean;
-    medalID:   number;
+    medal_icon: string;
+    number:     number;
+    medal_type: string;
+    name:       string;
+    is_show:    boolean;
+    medal_id:   number;
 }
 
 interface Stats {
-    activeDays:              number;
-    avatarNum:               number;
-    worldLevelName:          string;
-    curPeriodZoneLayerCount: number;
-    buddyNum:                number;
-    commemorativeCoinsList:  CommemorativeCoinsList[];
-    achievementCount:        number;
-    climbingTowerLayer:      number;
-    nextHundredLayer:        string;
-    memoryBattlefield:       MemoryBattlefield;
-    stableZoneLayerCount:    number;
-    allChangeZoneLayerCount: number;
-    climbingTowerS2:         ClimbingTowerS2;
+    active_days:                 number;
+    avatar_num:                  number;
+    world_level_name:           string;
+    cur_period_zone_layer_count: number;
+    buddy_num:                   number;
+    commemorative_coins_list:    CommemorativeCoinsList[];
+    achievement_count:           number;
+    climbing_tower_layer:        number;
+    next_hundred_layer:         string;
+    memory_battlefield:         MemoryBattlefield;
+    stable_zone_layer_count:    number;
+    all_change_zone_layer_count: number;
+    climbing_tower_s2:          ClimbingTowerS2;
 }
 
 interface ClimbingTowerS2 {
-    climbingTowerLayer: number;
-    floorMVPNum:        number;
+    climbing_tower_layer: number;
+    floor_mvp_num:        number;
 }
 
 interface CommemorativeCoinsList {
-    num:     number;
-    name:    string;
-    sort:    number;
-    url:     string;
-    wikiURL: string;
+    num:      number;
+    name:     string;
+    sort:     number;
+    url:      string;
+    wiki_url: string;
 }
 
 interface MemoryBattlefield {
-    rankPercent: number;
-    totalScore:  number;
-    totalStar:   number;
+    rank_percent: number;
+    total_score:  number;
+    total_star:   number;
 }
