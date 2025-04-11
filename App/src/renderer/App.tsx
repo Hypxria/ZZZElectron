@@ -45,14 +45,6 @@ const App: React.FC<AppProps> = () => {
       className='App'
       onClick={isSettings ? handleOutsideClick : undefined}
     >
-      <Titlebar
-        isSettings={isSettings}
-        setIsSettings={setIsSettings}
-        viewState={viewState}
-        setViewState={setViewState}
-      />
-
-
 
       <DiscordNotification
 
@@ -84,6 +76,12 @@ const App: React.FC<AppProps> = () => {
           <HoyoMain ViewState={viewState} />
         </div>
       </div>
+      <Titlebar
+        isSettings={isSettings}
+        setIsSettings={setIsSettings}
+        viewState={viewState}
+        setViewState={setViewState}
+      />
     </div>
   );
 };
