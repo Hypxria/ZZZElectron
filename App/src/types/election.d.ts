@@ -3,12 +3,6 @@ interface ElectronAPI {
     log: (message: any) => void;
     spotifyLink: () => Promise<any>;
     restart: () => Promise<void>;
-    window: {
-        minimize: () => Promise<void>;
-        maximize: () => Promise<void>;
-        unmaximize: () => Promise<void>;
-        close: () => Promise<void>;
-    };
 }
 
 declare global {

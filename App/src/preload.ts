@@ -19,13 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.on('discord-notification', (_, notification) => {
       callback(notification);
     });
-  },
-  window: {
-    minimize: () => ipcRenderer.invoke('window-minimize'),
-    maximize: () => ipcRenderer.invoke('window-maximize'),
-    unmaximize: () => ipcRenderer.invoke('window-unmaximize'),
-    close: () => ipcRenderer.invoke('window-close'),
-  },
+  }
 });
 
 contextBridge.exposeInMainWorld('discord', {
