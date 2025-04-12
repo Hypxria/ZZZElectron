@@ -19,8 +19,7 @@
     "outDir": "dist",
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node", "tough-cookie"],
-    "useUnknownInCatchVariables": false,
+    "useUnknownInCatchVariables": false
   },
   "exclude": ["node_modules"]
-  
 }

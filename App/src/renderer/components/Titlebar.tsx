@@ -63,7 +63,7 @@ const Titlebar: React.FC<TitlebarProps> = ({
     return (
         <>
             {!isFullScreen && (
-                <div className="titlebar">
+                <div className={`titlebar`}>
                     <div className="titlename">
                         <div className="window-title">{title}</div>
                     </div>

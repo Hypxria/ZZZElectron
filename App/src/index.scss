@@ -106,6 +106,12 @@ urbanist font and you know the rest */
   height: 100vh;
   overflow: hidden;
   position: relative;
+
+  &.fullscreen {
+    .content-wrapper{
+      height: 100%;
+    }
+  }
 }
 
 body {
@@ -139,10 +145,12 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(100%);
+  height: calc(100% - 32px);
   overflow: hidden;
   display: flex;
   transform-style: preserve-3d;
+  
+  flex: 1;
 }
 
 .spotify-section {

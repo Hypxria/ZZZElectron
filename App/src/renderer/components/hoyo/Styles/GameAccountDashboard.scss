@@ -1,20 +1,51 @@
 /* Main container */
+.loading-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    position: absolute;
+    left: 0%;
+    bottom: 50%;
+    translate: 0% -50%;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--accent-color-light, #ffffff20);
+    border-top: 3px solid var(--accent-color, #ffffff);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 
 .dashboard-container {
     position: absolute;
     right: 0;
-    bottom: 0;
+    top: 0;
     width: 100%;
     height: 100%;
-    box-sizing: border-box; // Add this line
+    box-sizing: border-box; 
     padding: 16px;
     background-color: #121214; // Changed to dark base color
     font-family: Urbanist; // -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
 
     /* Game cards container */
     .game-cards-container {
@@ -26,7 +57,7 @@
     }
 
     &.full {
-        .game-cards-container{
+        .game-cards-container {
             height: var(--available-height, auto); // Add this line
         }
     }
@@ -39,7 +70,7 @@
             }
         }
 
-        
+
 
         .game-card {
             &:not(.hidden-card) {
@@ -144,7 +175,7 @@
 /* Game info section styles */
 .game-info-section {
     justify-content: center;
-    padding: 4vh;
+    padding: 4%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -154,7 +185,7 @@
     width: 15%;
     box-sizing: border-box;
 
-    &:hover{
+    &:hover {
         background-color: #28282b;
         cursor: pointer;
     }
@@ -162,7 +193,7 @@
 
 .game-logo {
     height: 32px;
-    margin-bottom: 0.5vh;
+    margin-bottom: 0.5%;
     color: white;
 
     &.genshin {

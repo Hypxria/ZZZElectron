@@ -46,6 +46,12 @@ export interface GameRecord {
   // Add other properties as needed
 }
 
+const LoadingSpinner: React.FC = () => (
+  <div className="loading-spinner-container">
+    <div className="loading-spinner"></div>
+  </div>
+);
+
 const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }) => {
   const [selectedGame, setSelectedGame] = useState<string | null>("Zenless Zone Zero");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,6 +73,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       const headerHeight = containerRef.current.querySelector('.dashboard-header')?.clientHeight || 0;
       const containerPadding = 32; // 16px top + 16px bottom
       const gapBetweenCards = 16;
+      
 
       // Get number of visible (non-hidden) cards
       const visibleCards = cardsContainerRef.current.querySelectorAll('.game-card:not(.hidden-card)').length;
@@ -403,7 +410,10 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         </button>
       </div>
 
+      
+
       <div ref={cardsContainerRef} className="game-cards-container">
+        {!game && <LoadingSpinner />}
         {game?.map((game) => (
           <div
             key={game.title}
@@ -466,6 +476,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           </div>
         ))}
       </div>
+
+      
+
     </div>
   );
 };

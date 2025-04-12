@@ -91,8 +91,14 @@ class SpotifyService {
                 try {
                     // This is for the progress update thingies)
                     
-
-                    const response = JSON.parse(event.data);
+                    // Use a try-catch block to handle potential JSON parsing errors
+                    let response;
+                    try {
+                        response = JSON.parse(event.data);
+                    } catch (parseError) {
+                        console.error('Error parsing WebSocket message:', parseError);
+                        return; // Exit the function if parsing fails
+                    }
 
                     console.log(`response: ${response.type}`)
 
@@ -100,11 +106,12 @@ class SpotifyService {
                     console.log('Received message in SpotifyService:', response);
                     // Handle any responses from app.tsx here if needed
                 } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
+                    console.error('Error processing WebSocket message:', error);
                 }
             };
             console.log('SpotifyService WebSocket created:', this.ws)
         } catch (error) {
+
             console.error('Failed to create WebSocket:', error);
         }
     }
@@ -162,10 +169,19 @@ class SpotifyService {
                 const messageHandler = (event: MessageEvent) => {
                     try {
                         console.log(`event: ${event.data}`)
-                        const response = JSON.parse(event.data);
+                        // Use a try-catch block to handle potential JSON parsing errors
+                        let response;
+                        try {
+                            response = JSON.parse(event.data);
+                        } catch (parseError) {
+                            console.error('Error parsing JSON:', parseError);
+                            reject(new Error('Invalid JSON data received'));
+                            return;
+                        }
 
                         // Check if this is the response we're waiting for
                         if (response.type === 'response' && response.action === 'current') {
+
                             // Remove the message handler
                             this.ws?.removeEventListener('message', messageHandler);
                             console.log(`response: ${JSON.stringify(response, null, 10)}`)
@@ -180,7 +196,7 @@ class SpotifyService {
                                 duration_ms: response.data.duration_ms?.milliseconds,
                                 progress_ms: response.data.progress_ms,
                                 is_playing: response.data.is_playing, 
-                                volume: response.data.volume*109,
+                                volume: response.data.volume*100,
                                 repeat_state: response.data.repeat_state,
                                 shuffle_state: response.data.shuffle_state,
                             };
@@ -222,10 +238,17 @@ class SpotifyService {
             return new Promise((resolve, reject) => {
                 const messageHandler = (event: MessageEvent) => {
                     try {
-                        const response = JSON.parse(event.data);
+                        let response;
+                        try {
+                            response = JSON.parse(event.data);
+                        } catch (parseError) {
+                            console.error('Error parsing JSON:', parseError);
+                            return; // Skip this message if it's not valid JSON
+                        }
 
                         // Check if this is the response we're waiting for
                         if (response.type === 'response' && response.action === 'next') {
+
                             // Remove the message handler
                             this.ws?.removeEventListener('message', messageHandler);
 

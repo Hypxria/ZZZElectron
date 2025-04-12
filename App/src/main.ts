@@ -58,7 +58,7 @@ const createWindow = async (): Promise<void> => {
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,

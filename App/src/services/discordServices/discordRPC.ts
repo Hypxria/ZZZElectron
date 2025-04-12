@@ -67,6 +67,7 @@ class DiscordRPC extends EventEmitter {
     }
 
     async connect() {
+        if (this.CLIENT_ID === '' || this.CLIENT_SECRET === '') return
         return new Promise((resolve, reject) => {
             const ipcPath = process.platform === 'win32'
                 ? '\\\\?\\pipe\\discord-ipc-0'
@@ -325,6 +326,7 @@ class DiscordRPC extends EventEmitter {
     }
 
     private async handleMessage(opcode: number, data: any) {
+        // amazonq-ignore-next-line
         switch (opcode) {
             case 1: // Event
                 if (data.cmd === 'AUTHORIZE' && data.data.code) {

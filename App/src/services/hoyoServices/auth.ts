@@ -143,7 +143,6 @@ export class HoyolabAuth {
             console.error('Error during login:', error);
         }
         // This is the path of the stoken. Yeah- it looks stupid.
-        console.log(response?.data)
         return response?.data.data.token.token
     }
 
@@ -185,6 +184,7 @@ export class HoyolabAuth {
             };
 
             this.log('Sending POST request to:', url);
+            // amazonq-ignore-next-line
             this.log('Request data:', { ...requestData, password: '[REDACTED]' });
 
             const response = await this.client.post<any>(url, requestData, {

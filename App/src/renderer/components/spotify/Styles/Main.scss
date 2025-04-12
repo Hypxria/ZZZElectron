@@ -1,6 +1,6 @@
 .spotify {
   width: 50vw;
-  height: 100vh;
+  height: 100%;
 
   /* Add this to ensure full height */
   left: 0;
@@ -24,7 +24,7 @@
 
 .undercover {
   position: fixed;
-  height: 100vh;
+  height: 100%;
   width: inherit;
   background-color: #555;
   left: 0%;
@@ -33,9 +33,10 @@
 }
 
 .song-info {
+  
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 48%;
   translate: -50% -50%;
   z-index: auto;
 }

@@ -116,7 +116,7 @@ class ZZZElectron {
   private async checkServerAvailable(): Promise<boolean> {
     try {
       // Checking if the server is actually alive before attempting connection
-      const response = await fetch('http://127.0.0.1:5001/health', {
+      await fetch('http://127.0.0.1:5001/health', {
         method: 'HEAD',
         mode: 'no-cors'
       });
