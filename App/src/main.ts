@@ -50,6 +50,8 @@ const createWindow = async (): Promise<void> => {
   mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    frame: false, // This removes the default window frame
+    titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -352,9 +354,26 @@ ipcMain.handle('hoyo:callMethod', async (_, className: string, methodName: strin
     }
 });
 
+// Custom Titlebar handlers
+ipcMain.handle('window-minimize', () => {
+  mainWindow?.minimize();
+});
 
+ipcMain.handle('window-maximize', () => {
+  if (mainWindow?.isMaximized()) {
+      mainWindow.unmaximize();
+  } else {
+      mainWindow?.maximize();
+  }
+});
 
+ipcMain.handle('window-unmaximize', () => {
+  mainWindow?.unmaximize();
+});
 
+ipcMain.handle('window-close', () => {
+  mainWindow?.close();
+});
 
 
 ipcMain.on('console-log', (_, message) => {

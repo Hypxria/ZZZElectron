@@ -33,6 +33,9 @@
 }
 
 .song-info {
-  transform: translateY(-2vh);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
   z-index: auto;
 }

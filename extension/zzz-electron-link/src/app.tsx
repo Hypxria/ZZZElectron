@@ -595,11 +595,6 @@ const zzzElectron = new ZZZElectron();
 export default zzzElectron;
 
 const currentTrack = Spicetify.Player.data.item;
-const accessToken = Spicetify.Platform.Session.accessToken;
 
-// Get album ID from the current track
-const trackId = currentTrack?.uri?.split(':')[2];
-
-console.log(JSON.stringify(currentTrack, null, 2))
 
 
