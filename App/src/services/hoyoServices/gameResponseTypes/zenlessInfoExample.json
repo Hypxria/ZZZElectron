@@ -1,0 +1,1379 @@
+{
+  "retcode": 0,
+  "message": "OK",
+  "data": {
+    "stats": {
+      "active_days": 215,
+      "avatar_num": 26,
+      "world_level_name": "Legendary Proxy",
+      "cur_period_zone_layer_count": 7,
+      "buddy_num": 25,
+      "commemorative_coins_list": [
+        {
+          "num": 28,
+          "name": "HIA Commemorative Coin",
+          "sort": 304005,
+          "url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/8dbaac83ad314dc8e5d84f8d0877ec6f.png",
+          "wiki_url": ""
+        },
+        {
+          "num": 35,
+          "name": "HIA Commemorative Coin - Lumina",
+          "sort": 304017,
+          "url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/466988e26e0d24ceb3ef37c72475e08e.png",
+          "wiki_url": ""
+        },
+        {
+          "num": 10,
+          "name": "HIA Commemorative Coin - Blazewood",
+          "sort": 304018,
+          "url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/2a1ce3b7aa5a1efcf6e54049307e45b0.png",
+          "wiki_url": ""
+        },
+        {
+          "num": 10,
+          "name": "HIA Commemorative Coin: Harbor",
+          "sort": 304019,
+          "url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/8d3f1c9e2dded12902abcb0e2ea9fb6f.png",
+          "wiki_url": ""
+        }
+      ],
+      "achievement_count": 295,
+      "climbing_tower_layer": 26,
+      "next_hundred_layer": "Laboratory RuinsRuin Depths",
+      "memory_battlefield": null,
+      "stable_zone_layer_count": 10,
+      "all_change_zone_layer_count": 7,
+      "climbing_tower_s2": {
+        "climbing_tower_layer": 42,
+        "floor_mvp_num": 0
+      }
+    },
+    "avatar_list": [
+      {
+        "id": 1261,
+        "level": 60,
+        "name_mi18n": "Jane",
+        "full_name_mi18n": "Jane Doe",
+        "element_type": 200,
+        "camp_name_mi18n": "Criminal Investigation Special Response Team",
+        "avatar_profession": 3,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/61459a52a2bebebf7522dc52a8f443ba.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3edbc8a987c23c191e90090db54035b1.png",
+        "rank": 0,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1261.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1251,
+        "level": 60,
+        "name_mi18n": "Qingyi",
+        "full_name_mi18n": "Qingyi",
+        "element_type": 203,
+        "camp_name_mi18n": "Criminal Investigation Special Response Team",
+        "avatar_profession": 2,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/fc4fa9844d9ae2475c3bb724b36b210a.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/9becb3826e566596cd8e3c600acd6b8c.png",
+        "rank": 0,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1251.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1241,
+        "level": 60,
+        "name_mi18n": "Zhu Yuan",
+        "full_name_mi18n": "Zhu Yuan",
+        "element_type": 205,
+        "camp_name_mi18n": "Criminal Investigation Special Response Team",
+        "avatar_profession": 1,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/fc4fa9844d9ae2475c3bb724b36b210a.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/350bc791a82f77b16d417cf7855ebe85.png",
+        "rank": 0,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1241.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1191,
+        "level": 60,
+        "name_mi18n": "Ellen",
+        "full_name_mi18n": "Ellen Joe",
+        "element_type": 202,
+        "camp_name_mi18n": "Victoria Housekeeping Co.",
+        "avatar_profession": 1,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a5c0976ece651951d08ce9a81808f03b.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a2e64744266cb2266f2de9f38d09aa76.png",
+        "rank": 0,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1191.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1141,
+        "level": 60,
+        "name_mi18n": "Lycaon",
+        "full_name_mi18n": "Von Lycaon",
+        "element_type": 202,
+        "camp_name_mi18n": "Victoria Housekeeping Co.",
+        "avatar_profession": 2,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a5c0976ece651951d08ce9a81808f03b.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/8a5960730e057761eca147a791cc93df.png",
+        "rank": 1,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1141.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1211,
+        "level": 60,
+        "name_mi18n": "Rina",
+        "full_name_mi18n": "Alexandrina Sebastiane",
+        "element_type": 203,
+        "camp_name_mi18n": "Victoria Housekeeping Co.",
+        "avatar_profession": 4,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a5c0976ece651951d08ce9a81808f03b.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/d926079003b2c49e1044d068e7fbe1d7.png",
+        "rank": 3,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1211.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1171,
+        "level": 60,
+        "name_mi18n": "Burnice",
+        "full_name_mi18n": "Burnice White",
+        "element_type": 201,
+        "camp_name_mi18n": "Sons of Calydon",
+        "avatar_profession": 3,
+        "rarity": "S",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/86eb8e6ba34c0a1743d55cf4087d2dbb.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/fdfccaf42989a82f93743b75845f071f.png",
+        "rank": 0,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1171.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1131,
+        "level": 60,
+        "name_mi18n": "Soukaku",
+        "full_name_mi18n": "Soukaku",
+        "element_type": 202,
+        "camp_name_mi18n": "Hollow Special Operations Section 6",
+        "avatar_profession": 4,
+        "rarity": "A",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/6df206a33f5b68f0d7df009180bfeb51.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/7626240735ec88300c221fc3bee69a20.png",
+        "rank": 6,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1131.png",
+        "sub_element_type": 0
+      },
+      {
+        "id": 1271,
+        "level": 60,
+        "name_mi18n": "Seth",
+        "full_name_mi18n": "Seth Lowell",
+        "element_type": 203,
+        "camp_name_mi18n": "Criminal Investigation Special Response Team",
+        "avatar_profession": 5,
+        "rarity": "A",
+        "group_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/fc4fa9844d9ae2475c3bb724b36b210a.png",
+        "hollow_icon_path": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/cabda553e7de675927dcf6f305c9856b.png",
+        "rank": 6,
+        "is_chosen": true,
+        "role_square_url": "https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_square_avatar/role_square_avatar_1271.png",
+        "sub_element_type": 0
+      }
+    ],
+    "cur_head_icon_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/2c8b37ac44a4e017e2e63ec0c12198c0.png",
+    "buddy_list": [
+      {
+        "id": 54014,
+        "name": "Agent Gulliver",
+        "rarity": "S",
+        "level": 60,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/bd77b8727fe5d740ecdac607b7e9d460.png"
+      },
+      {
+        "id": 54012,
+        "name": "Officer Cui",
+        "rarity": "S",
+        "level": 60,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/262935c9933dffc633111a0b95ebaafd.png"
+      },
+      {
+        "id": 54011,
+        "name": "Red Moccus",
+        "rarity": "S",
+        "level": 60,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3a87b70793e442fcda24422a7335fe28.png"
+      },
+      {
+        "id": 54009,
+        "name": "Resonaboo",
+        "rarity": "S",
+        "level": 60,
+        "star": 2,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/31c1dc4f1a04553a174d3bc989f082fd.png"
+      },
+      {
+        "id": 54008,
+        "name": "Plugboo",
+        "rarity": "S",
+        "level": 60,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/417484bff2f96b97ffae8d261fe97244.png"
+      },
+      {
+        "id": 54001,
+        "name": "Sharkboo",
+        "rarity": "S",
+        "level": 60,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/0ecd617e29f32969a896c97f443edbb8.png"
+      },
+      {
+        "id": 54003,
+        "name": "Devilboo",
+        "rarity": "A",
+        "level": 50,
+        "star": 5,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/7094fe66c57b838661276d0fab6442eb.png"
+      },
+      {
+        "id": 53007,
+        "name": "Cryboo",
+        "rarity": "A",
+        "level": 50,
+        "star": 5,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/7e4bf2ede5a63543bcb952424cbc9456.png"
+      },
+      {
+        "id": 54004,
+        "name": "Butler",
+        "rarity": "S",
+        "level": 40,
+        "star": 1,
+        "bangboo_rectangle_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/e2596aad13214ef09908ec5c7b2528e5.png"
+      }
+    ],
+    "cat_notes_list": [
+      {
+        "name": "Port Elpis",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3d5036f99fd1edd7c796ddc6b90a5ecc.png",
+        "num": 16,
+        "total": 16,
+        "is_lock": true,
+        "id": 47009,
+        "medal_list": [
+          {
+            "quest_id": 47001121,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks in Port Elpis.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001122,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect half of the HIA Commemorative Coins in this region to earn this medal. The Sage in a Barrel must be waiting anxiously!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001123,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect all of the HIA Commemorative Coins in this region to earn this medal. Will the Sage in a Barrel make another appearance?",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001124,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>Strategist Bangboo and Bodyguard Bangboo</color> solve their trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001125,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>Sniper Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001126,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Greedy Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001127,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Hungery Bangboo and Fishgazer Bangboo.</color> solve their trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001128,
+            "name": "Timely Assistance Medal I",
+            "desc": "Help <color=#FFAF2C>Crimson Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001129,
+            "name": "Timely Assistance Medal II",
+            "desc": "Help <color=#FFAF2C>Bright-Eyed Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001130,
+            "name": "Timely Assistance Medal III",
+            "desc": "Help <color=#FFAF2C>Entrepreneur Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001131,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Help <color=#FFAF2C>Captain Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001132,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>Connecting with the Star (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001133,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>Connecting with the Star (III)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001134,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>As Promised, Drowned in the Harbor (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001135,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>As Promised, Drowned in the Harbor (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001136,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>As Promised, Drowned in the Harbor (III)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Blazewood",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/38cf6a829ab7e95547fb4103858ee651.png",
+        "num": 16,
+        "total": 16,
+        "is_lock": true,
+        "id": 47008,
+        "medal_list": [
+          {
+            "quest_id": 47001105,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks in Blazewood.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001106,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect half of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely leave the Sage in a Barrel wanting more!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001107,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect all of HIA Commemorative Coins in this region to earn this medal. This achievement will surely move the Sage in a Barrel... Anyway, the Sage will be happy, yeah!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001108,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>Mourning Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001109,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>Tumbleweed Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001110,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Perfume Merchant Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001111,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Anxietyboo and Passionate Bangboo</color> solve their trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001112,
+            "name": "Timely Assistance Medal I",
+            "desc": "Fix <color=#FFAF2C>Captain Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001113,
+            "name": "Timely Assistance Medal II",
+            "desc": "Fix <color=#FFAF2C>Avenger Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001114,
+            "name": "Timely Assistance Medal III",
+            "desc": "Fix <color=#FFAF2C>Grateful Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001115,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Fix <color=#FFAF2C>Bangboo Wanderer</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001116,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>Beginning of the Journey</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001117,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>Silent Poto</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001118,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>God-Speed Drift</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001119,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>Here Comes a Criminal With a Flute</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001120,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>Replacement Bounty Hunter</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Rebuild Ridu!",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a7263b1d26e37e448dab0729bf13e574.png",
+        "num": 8,
+        "total": 8,
+        "is_lock": true,
+        "id": 47007,
+        "medal_list": [
+          {
+            "quest_id": 47001097,
+            "name": "Eager Competitor Medal",
+            "desc": "Participate in <color=#FFAF2C>Officer Mewmew's community-building</color> event to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001098,
+            "name": "Eager Competitor Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>Pure Talent Acting</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001099,
+            "name": "Kind Soul Medal",
+            "desc": "Complete the mission <color=#FFAF2C>Rainy Night's Cupid</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001100,
+            "name": "Kind Soul Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>The Art or the Dennies</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001101,
+            "name": "Benevolent Heart Medal",
+            "desc": "Complete the mission <color=#FFAF2C>Number One Fan (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001102,
+            "name": "Benevolent Heart Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>A Sumo Never Backs Down!</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001103,
+            "name": "Benevolent Heart Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>No Guts No Glory</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001104,
+            "name": "Mutual Aid Medal",
+            "desc": "Complete the mission <color=#FFAF2C>Phantom of the Ballet Twins (III)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Ballet Twins Road",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/b04e78ab403f957ffd81c9c7db7c9fa4.png",
+        "num": 16,
+        "total": 16,
+        "is_lock": true,
+        "id": 47006,
+        "medal_list": [
+          {
+            "quest_id": 47001081,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks on Ballet Twins Road.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001082,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>The Price of Lies (III)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001083,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>The Missing \"5\" (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001084,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>The Missing \"5\" (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001085,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>Don't Get Lost in the Night</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001086,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>Pensive Phantom</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001087,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>Poetboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001088,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>Candidateboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001089,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Sighboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001090,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Hungerboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001091,
+            "name": "Timely Assistance Medal I",
+            "desc": "Fix <color=#FFAF2C>Ghost Catcher Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001092,
+            "name": "Timely Assistance Medal II",
+            "desc": "Fix <color=#FFAF2C>Butler</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001093,
+            "name": "Timely Assistance Medal III",
+            "desc": "Fix <color=#FFAF2C>Flatterboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001094,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Fix <color=#FFAF2C>Multiverseboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001095,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect half of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely make the Sage in a Barrel rub their hands in anticipation!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001096,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect all of HIA Commemorative Coins in this district to earn this medal. This achievement will surely move the Sage in a Barrel... Ahhh, I'm running out of words. Anyway, the Sage will be happy, yeah!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Lumina Square",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/a7263b1d26e37e448dab0729bf13e574.png",
+        "num": 32,
+        "total": 32,
+        "is_lock": true,
+        "id": 47004,
+        "medal_list": [
+          {
+            "quest_id": 47001049,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks at Lumina Square.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001050,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>It's Hard to Find a Job, It's Hard to Be a Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001051,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>It's Hard to Find a Sidekick, It's Hard to Be a Cat</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001052,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>Big City, Little Ones (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001053,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>Riddlers' Club (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001054,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>Riddlers' Club (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001055,
+            "name": "Kind Helper Medal VI",
+            "desc": "Complete the mission <color=#FFAF2C>Riddlers' Club (III)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001056,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>One-Dennyboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001057,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>Anxietyboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001058,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Complaint Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001059,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Treasure Hunt Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001060,
+            "name": "Timely Assistance Medal I",
+            "desc": "Fix <color=#FFAF2C>Scientist Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001061,
+            "name": "Timely Assistance Medal II",
+            "desc": "Fix <color=#FFAF2C>Transforming Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001062,
+            "name": "Timely Assistance Medal III",
+            "desc": "Fix <color=#FFAF2C>Reincarnated Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001063,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Fix <color=#FFAF2C>Curled Up Justaboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001064,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect some of the HIA Commemorative Coins in this region to earn this medal. The Sage in a Barrel is eagerly awaiting!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001065,
+            "name": "Kind Helper Medal VII",
+            "desc": "Complete the mission <color=#FFAF2C>The Price of Lies (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001066,
+            "name": "Kind Helper Medal VIII",
+            "desc": "Complete the mission <color=#FFAF2C>Big City, Little Ones (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001067,
+            "name": "Kind Helper Medal IX",
+            "desc": "Complete the mission <color=#FFAF2C>Big City, Little Ones ΓÇö Part 3</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001068,
+            "name": "Kind Helper Medal X",
+            "desc": "Complete the mission <color=#FFAF2C>Big City, Little Ones (IV)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001069,
+            "name": "Kind Helper Medal XI",
+            "desc": "Complete the mission <color=#FFAF2C>Big City, Little Ones (V)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001070,
+            "name": "Chivalrous Spirit Medal V",
+            "desc": "Help <color=#FFAF2C>One-Dennyboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001071,
+            "name": "Chivalrous Spirit Medal VI",
+            "desc": "Help <color=#FFAF2C>Challenger Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001072,
+            "name": "Chivalrous Spirit Medal VII",
+            "desc": "Help <color=#FFAF2C>Exploreboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001073,
+            "name": "Chivalrous Spirit Medal VIII",
+            "desc": "Help <color=#FFAF2C>Blueboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001074,
+            "name": "Chivalrous Spirit Medal IX",
+            "desc": "Help <color=#FFAF2C>Bangboonie</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001075,
+            "name": "Timely Assistance Medal V",
+            "desc": "Fix <color=#FFAF2C>Bootiful</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001076,
+            "name": "Timely Assistance Medal VI",
+            "desc": "Fix <color=#FFAF2C>Part-timerboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001077,
+            "name": "Timely Assistance Medal VII",
+            "desc": "Fix <color=#FFAF2C>Loyalboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001078,
+            "name": "Timely Assistance Medal VIII",
+            "desc": "Fix <color=#FFAF2C>Flatterboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001079,
+            "name": "Timely Assistance Medal IX",
+            "desc": "Fix <color=#FFAF2C>Slackerboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001080,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect more of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely make the Sage in a Barrel cheer in joy!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Brant Street Construction Site",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/458c36395f0a6f077a7f4dd5fcb7554c.png",
+        "num": 16,
+        "total": 16,
+        "is_lock": true,
+        "id": 47003,
+        "medal_list": [
+          {
+            "quest_id": 47001033,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks at the Brant Street Construction Site.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001034,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>Cement Mixer Modification Manual</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001035,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>Hands and the Art of Cement Mixer Maintenance</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001036,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>Almighty Safety Helmet</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001037,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>Bro-to-Bro Communication</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001038,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>The Missing Drivers</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001039,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>Broboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001040,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>Challenger Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001041,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Catloverboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001042,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Survivalistboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001043,
+            "name": "Timely Assistance Medal I",
+            "desc": "Fix <color=#FFAF2C>Complaint Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001044,
+            "name": "Timely Assistance Medal II",
+            "desc": "Fix <color=#FFAF2C>Safety</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001045,
+            "name": "Timely Assistance Medal III",
+            "desc": "Fix <color=#FFAF2C>Alphaboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001046,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Fix <color=#FFAF2C>Hollerboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001047,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect half of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely make the Sage in a Barrel nod in approval!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001048,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect all of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely bring the Sage in a Barrel to tears!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      },
+      {
+        "name": "Sixth Street",
+        "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/828c59de803bc4ea39cd29474e2aad3f.png",
+        "num": 32,
+        "total": 32,
+        "is_lock": true,
+        "id": 47001,
+        "medal_list": [
+          {
+            "quest_id": 47001001,
+            "name": "Keen Senses Medal",
+            "desc": "Find all the lost cargo trucks on Sixth Street.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001002,
+            "name": "Kind Helper Medal I",
+            "desc": "Complete the mission <color=#FFAF2C>The Ridu Tour (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001003,
+            "name": "Kind Helper Medal II",
+            "desc": "Complete the mission <color=#FFAF2C>The Ridu Tour (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001004,
+            "name": "Kind Helper Medal III",
+            "desc": "Complete the mission <color=#FFAF2C>5th Work Anniversary Photo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001005,
+            "name": "Kind Helper Medal IV",
+            "desc": "Complete the mission <color=#FFAF2C>King of Street Soccer (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001006,
+            "name": "Kind Helper Medal V",
+            "desc": "Complete the mission <color=#FFAF2C>King of Street Soccer (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001007,
+            "name": "Kind Helper Medal VI",
+            "desc": "Complete the mission <color=#FFAF2C>Fluffy Trouble</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001008,
+            "name": "Chivalrous Spirit Medal I",
+            "desc": "Help <color=#FFAF2C>Thesis Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001009,
+            "name": "Chivalrous Spirit Medal II",
+            "desc": "Help <color=#FFAF2C>One-Dennyboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001010,
+            "name": "Chivalrous Spirit Medal III",
+            "desc": "Help <color=#FFAF2C>Muahaha Bangboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001011,
+            "name": "Chivalrous Spirit Medal IV",
+            "desc": "Help <color=#FFAF2C>Gourmetboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001012,
+            "name": "Timely Assistance Medal I",
+            "desc": "Fix <color=#FFAF2C>Wild Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001013,
+            "name": "Timely Assistance Medal II",
+            "desc": "Fix <color=#FFAF2C>Poor Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001014,
+            "name": "Timely Assistance Medal III",
+            "desc": "Fix <color=#FFAF2C>Transforming Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001015,
+            "name": "Timely Assistance Medal IV",
+            "desc": "Fix <color=#FFAF2C>Treasure Hunt Bangboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001016,
+            "name": "Silver Talent Seeker Medal",
+            "desc": "Collect half of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely make the Sage in a Barrel smile in secret!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001017,
+            "name": "Kind Helper Medal VII",
+            "desc": "Complete the mission <color=#FFAF2C>Fluffy Misunderstandings</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001018,
+            "name": "Kind Helper Medal VIII",
+            "desc": "Complete the mission <color=#FFAF2C>Fluffy Expectations</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001019,
+            "name": "Kind Helper Medal IX",
+            "desc": "Complete the mission <color=#FFAF2C>New Fluffy Friend</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001020,
+            "name": "Kind Helper Medal X",
+            "desc": "Complete the mission <color=#FFAF2C>The Farthest Distance (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001021,
+            "name": "Kind Helper Medal XI",
+            "desc": "Complete the mission <color=#FFAF2C>The Farthest Distance (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001022,
+            "name": "Kind Helper Medal XII",
+            "desc": "Complete the mission <color=#FFAF2C>Sixth Street Case (I)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001023,
+            "name": "Kind Helper Medal XIII",
+            "desc": "Complete the mission <color=#FFAF2C>Sixth Street Case (II)</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001024,
+            "name": "Kind Helper Medal XIV",
+            "desc": "Complete the mission <color=#FFAF2C>Grand Gourmet's Challenge</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001025,
+            "name": "Kind Helper Medal XV",
+            "desc": "Complete the mission <color=#FFAF2C>An Unexpected Visitor</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001026,
+            "name": "Kind Helper Medal XVI",
+            "desc": "Complete the mission <color=#FFAF2C>Looking for a Warm Home</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001027,
+            "name": "Chivalrous Spirit Medal V",
+            "desc": "Help <color=#FFAF2C>Plumberboo and Programboo</color> solve their trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001028,
+            "name": "Chivalrous Spirit Medal VI",
+            "desc": "Help <color=#FFAF2C>Fateboo</color> solve its trouble to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001029,
+            "name": "Timely Assistance Medal V",
+            "desc": "Fix <color=#FFAF2C>One-Dennyboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001030,
+            "name": "Timely Assistance Medal VI",
+            "desc": "Fix <color=#FFAF2C>Stickyfingerboo</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001031,
+            "name": "Timely Assistance Medal VII",
+            "desc": "Fix <color=#FFAF2C>Laboorinth</color> to earn this medal.",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          },
+          {
+            "quest_id": 47001032,
+            "name": "Gold Talent Seeker Medal",
+            "desc": "Collect all of the HIA Commemorative Coins in this region to earn this medal. This achievement will surely make the Sage in a Barrel laugh in delight!",
+            "icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/3fc68a9441414c877b81706cdc0b52be.png",
+            "is_finish": true
+          }
+        ],
+        "wiki_url": ""
+      }
+    ],
+    "award_state": "AwardStateDone",
+    "game_data_show": {
+      "personal_title": "Puppet Theater Audience",
+      "title_main_color": "fab700",
+      "title_bottom_color": "fe6300",
+      "title_bg_url": "",
+      "medal_list": [
+        "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/d123daeb4a7960524371e769944555f1.png",
+        "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/9bda8b1ec90eb3a651cb0cad130c4515.png",
+        "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/286c59f117e997c10676888648b6e1b4.png",
+        "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/869f74cad9a1c97ca4241a6c0a3ec1e9.png"
+      ],
+      "card_url": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/975e2cd22fa982690b6e4ec759c00654.png",
+      "medal_item_list": [
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/d123daeb4a7960524371e769944555f1.png",
+          "number": 7,
+          "medal_type": "MedalTypeChangeHadal",
+          "name": "Shiyu Defense: Adaption",
+          "is_show": true,
+          "medal_id": 1002
+        },
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/9bda8b1ec90eb3a651cb0cad130c4515.png",
+          "number": 26,
+          "medal_type": "MedalTypeClimbingTower",
+          "name": "Endless Ascension: Smooth Path",
+          "is_show": true,
+          "medal_id": 2006
+        },
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/286c59f117e997c10676888648b6e1b4.png",
+          "number": 0,
+          "medal_type": "MedalTypeInit",
+          "name": "Deadly Assault: Line Breaker",
+          "is_show": true,
+          "medal_id": 3001
+        }
+      ],
+      "all_medal_list": [
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/d123daeb4a7960524371e769944555f1.png",
+          "number": 7,
+          "medal_type": "MedalTypeChangeHadal",
+          "name": "Shiyu Defense: Adaption",
+          "is_show": true,
+          "medal_id": 1002
+        },
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/9bda8b1ec90eb3a651cb0cad130c4515.png",
+          "number": 26,
+          "medal_type": "MedalTypeClimbingTower",
+          "name": "Endless Ascension: Smooth Path",
+          "is_show": true,
+          "medal_id": 2006
+        },
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/286c59f117e997c10676888648b6e1b4.png",
+          "number": 0,
+          "medal_type": "MedalTypeInit",
+          "name": "Deadly Assault: Line Breaker",
+          "is_show": true,
+          "medal_id": 3001
+        },
+        {
+          "medal_icon": "https://act-webstatic.hoyoverse.com/darkmatter/nap/prod_gf_cn/item_icon_u44f0b/869f74cad9a1c97ca4241a6c0a3ec1e9.png",
+          "number": 42,
+          "medal_type": "MedalTypeClimbingTowerS2",
+          "name": "Endless Last Stand V",
+          "is_show": false,
+          "medal_id": 4005
+        }
+      ]
+    }
+  }
+}

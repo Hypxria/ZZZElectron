@@ -1,70 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Titlebar.scss';
 import MinimizeIcon from '@mui/icons-material/Remove';
 import MaximizeIcon from '@mui/icons-material/CropSquare';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import { FullscreenRounded } from '@mui/icons-material';
 
 interface TitlebarProps {
-  title?: string;
+    title?: string;
+    isSettings: boolean;
+    setIsSettings: (value: boolean) => void;
 }
 
-const Titlebar: React.FC<TitlebarProps> = ({ title = 'My App' }) => {
-  const [isMaximized, setIsMaximized] = useState(false);
+const Titlebar: React.FC<TitlebarProps> = ({
+    title = 'My App',
+    isSettings,
+    setIsSettings: onSettingsChange,
+}: TitlebarProps) => {
+    const [isMaximized, setIsMaximized] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const handleMinimize = () => {
-    window.electron.window.minimize();
-  };
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            const isDocFullscreen = !!document.fullscreenElement;
+            window.electron.window.isFullScreen().then((isElectronFullscreen: boolean) => {
+                setIsFullScreen(isDocFullscreen || isElectronFullscreen);
+            });
+        };
 
-  const handleMaximize = () => {
-    if (isMaximized) {
-      window.electron.window.unmaximize();
-    } else {
-      window.electron.window.maximize();
+        window.electron.window.onFullScreen(handleFullscreenChange);
+
+        // Initial check
+        handleFullscreenChange();
+
+        return () => {
+            
+            window.electron.window.removeFullScreenListener();
+        };
+    }, []);
+
+    const handleMinimize = () => {
+        window.electron.window.minimize();
+    };
+
+    const handleMaximize = () => {
+        if (isMaximized) {
+            window.electron.window.unmaximize();
+        } else {
+            window.electron.window.maximize();
+        }
+        setIsMaximized(!isMaximized);
+    };
+
+    const handleClose = () => {
+        window.electron.window.close();
+    };
+
+    const handleFullscreen = () => {
+        window.electron.window.fullscreen();
     }
-    setIsMaximized(!isMaximized);
-  };
 
-  const handleClose = () => {
-    window.electron.window.close();
-  };
-
-  return (
-    <div className="titlebar">
-      <div className="titlename">
-        <div className="window-title">{title}</div>
-      </div>
-      
-      <div className="window-controls">
-
-        <button 
-          className='window-control-button minimize' 
-          
-        >
-          <SettingsRoundedIcon/>
-        </button>
-        
-        <button
-          className="window-control-button minimize"
-          onClick={handleMinimize}
-        >
-          <MinimizeIcon fontSize="small" />
-        </button>
-        <button
-          className="window-control-button maximize"
-          onClick={handleMaximize}
-        >
-          <MaximizeIcon fontSize="small" />
-        </button>
-        <button
-          className="window-control-button close"
-          onClick={handleClose}
-        >
-          <CloseIcon fontSize="small" />
-        </button>
-      </div>
-    </div>
-  );
+    return (
+        <>
+            {!isFullScreen && (
+                <div className="titlebar">
+                    <div className="titlename">
+                        <div className="window-title">{title}</div>
+                    </div>
+    
+                    <div className="window-controls">
+                        <button
+                            className='window-control-button settingsicon'
+                            onClick={() => onSettingsChange(!isSettings)}
+                        >
+                            <SettingsRoundedIcon fontSize='small' />
+                        </button>
+    
+                        <button
+                            className='window-control-button fullscreen'
+                            onClick={handleFullscreen}
+                        >
+                            <FullscreenRounded fontSize='small' />
+                        </button>
+    
+                        <button
+                            className="window-control-button minimize"
+                            onClick={handleMinimize}
+                        >
+                            <MinimizeIcon fontSize="small" />
+                        </button>
+                        <button
+                            className="window-control-button maximize"
+                            onClick={handleMaximize}
+                        >
+                            <MaximizeIcon fontSize="small" />
+                        </button>
+                        <button
+                            className="window-control-button close"
+                            onClick={handleClose}
+                        >
+                            <CloseIcon fontSize="small" />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
+    );    
 };
 
 export default Titlebar;

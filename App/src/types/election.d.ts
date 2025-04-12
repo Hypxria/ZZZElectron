@@ -4,10 +4,14 @@ interface ElectronAPI {
     spotifyLink: () => Promise<any>;
     restart: () => Promise<void>;
     window: {
+        isFullScreen(): any;
+        onFullScreen(handleFullscreenChange: () => void): unknown;
+        removeFullScreenListener(): unknown;
         minimize: () => Promise<void>;
         maximize: () => Promise<void>;
         unmaximize: () => Promise<void>;
         close: () => Promise<void>;
+        fullscreen: () => Promise<void>;
     };
 }
 

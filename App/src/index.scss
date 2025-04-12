@@ -135,11 +135,11 @@ body {
 }
 
 .content-wrapper {
-  position: absolute;
+  position: relative;
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(100% - 32px);
+  height: calc(100%);
   overflow: hidden;
   display: flex;
   transform-style: preserve-3d;

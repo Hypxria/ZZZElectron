@@ -6,7 +6,7 @@ import DiscordNotification from './components/discord/DiscordNotification';
 import '../index.scss';
 import { ViewState } from '../types/viewState';
 import HoyoMain from './components/hoyo/HoyoMain';
-
+import AppSelector from './components/AppSelector';
 
 
 
@@ -27,8 +27,8 @@ const App: React.FC<AppProps> = () => {
   ];
 
   // Just change the order without restructuring the DOM
-  const orderedSections = viewState === ViewState.SPOTIFY_FULL ? 
-    [...sections].reverse() : 
+  const orderedSections = viewState === ViewState.SPOTIFY_FULL ?
+    [...sections].reverse() :
     sections;
 
 
@@ -46,8 +46,19 @@ const App: React.FC<AppProps> = () => {
       onClick={isSettings ? handleOutsideClick : undefined}
     >
 
+
+      <Titlebar
+        isSettings={isSettings}
+        setIsSettings={setIsSettings}
+      />
+
       <DiscordNotification
 
+      />
+
+      <AppSelector
+        viewState={viewState}
+        setViewState={setViewState}
       />
 
       {isSettings && (
@@ -76,12 +87,6 @@ const App: React.FC<AppProps> = () => {
           <HoyoMain ViewState={viewState} />
         </div>
       </div>
-      <Titlebar
-        isSettings={isSettings}
-        setIsSettings={setIsSettings}
-        viewState={viewState}
-        setViewState={setViewState}
-      />
     </div>
   );
 };

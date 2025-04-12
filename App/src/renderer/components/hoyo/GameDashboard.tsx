@@ -50,7 +50,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   const [selectedGame, setSelectedGame] = useState<string | null>("Zenless Zone Zero");
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
-  const [game, setGame] = useState<Game[] | null>(null)
+  const [game, setGame] = useState<Game[] | null | void | undefined>(null)
 
   useEffect(() => {
     const calculateHeights = () => {
@@ -112,27 +112,31 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     var zzzName: string, zzzLevel: number, starrailName: string, starrailLevel: number, genshinName: string, genshinLevel: number, genshinRg: string, zzzRg: string, starrailRg: string;
 
     const fetchBaseInfo = async () => {
-      baseInfo = await window.hoyoAPI.callMethod('HoyoManager', 'getBaseDetails');
-      baseInfo.data.list.forEach((game: baseInfo.GameRecordDetail) => {
-        switch (game.game_id) {
-          case 2: // Genshin
-            genshinName = game.nickname
-            genshinLevel = game.level
-            genshinRg = game.region
-            break;
-          case 6: // Starrail
-            starrailName = game.nickname;
-            starrailLevel = game.level;
-            starrailRg = game.region
-            break;
-          case 8: // Zenless
-            zzzName = game.nickname;
-            zzzLevel = game.level;
-            zzzRg = game.region
-            console.log(`ZZZ REG = ${zzzRg}`)
-            break;
-        }
-      })
+      try {
+        baseInfo = await window.hoyoAPI.callMethod('HoyoManager', 'getBaseDetails');
+        baseInfo.data.list.forEach((game: baseInfo.GameRecordDetail) => {
+          switch (game.game_id) {
+            case 2: // Genshin
+              genshinName = game.nickname
+              genshinLevel = game.level
+              genshinRg = game.region
+              break;
+            case 6: // Starrail
+              starrailName = game.nickname;
+              starrailLevel = game.level;
+              starrailRg = game.region
+              break;
+            case 8: // Zenless
+              zzzName = game.nickname;
+              zzzLevel = game.level;
+              zzzRg = game.region
+              console.log(`ZZZ REG = ${zzzRg}`)
+              break;
+          }
+        })
+      } catch (error) {
+        console.error('Failed to get base details:', error);
+      }
     }
 
     fetchBaseInfo()
@@ -259,59 +263,61 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     };
 
     const refreshStats = async () => {
+      try {
+        const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
+        const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
 
-      const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
-      const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
+        const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
+        const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '');
 
-      const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
-      const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '');
-
-      const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
-      const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
+        const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
+        const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
 
 
-      const games: Game[] = [
-        {
-          title: "Zenless Zone Zero",
-          logo: zzzIcon,
-          accent: "#6B46C1",
-          stats: [
-            { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
-            { label: "Battery", value: `${zzzBattery.data.energy?.progress.current}/240`, icon: <Battery size={18} /> },
-            { label: "Engagement", value: `${zzzBattery.data.vitality?.current}/${zzzBattery.data.vitality?.max}`, icon: <Coins size={18} /> },
-            { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point}/${zzzBattery.data.weekly_task?.max_point}`, icon: <Clock size={18} /> },
-            { label: "Daily Reset", value: `${calculateTimeUntilReset(zzzRg)} hours`, icon: <Clock size={18} /> },
-          ],
-          events: [
+        const games: Game[] = [
+          {
+            title: "Zenless Zone Zero",
+            logo: zzzIcon,
+            accent: "#6B46C1",
+            stats: [
+              { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
+              { label: "Battery", value: `${zzzBattery.data.energy?.progress.current}/240`, icon: <Battery size={18} /> },
+              { label: "Engagement", value: `${zzzBattery.data.vitality?.current}/${zzzBattery.data.vitality?.max}`, icon: <Coins size={18} /> },
+              { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point}/${zzzBattery.data.weekly_task?.max_point}`, icon: <Clock size={18} /> },
+              { label: "Daily Reset", value: `${calculateTimeUntilReset(zzzRg)} hours`, icon: <Clock size={18} /> },
+            ],
+            events: [
 
-          ]
-        },
-        {
-          title: "Honkai Star Rail",
-          logo: honkaiIcon,
-          accent: "#3182CE",
-          stats: [
-            { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
-            { label: "Stamina", value: `${starrailBattery?.data?.current_stamina}/${starrailBattery?.data?.max_stamina}`, icon: <Battery size={18} /> },
-            { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina}/${starrailBattery?.data?.current_reserve_stamina}`, icon: <Coins size={18} /> },
-            { label: "Echo Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
-            { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
-          ]
-        },
-        {
-          title: "Genshin Impact",
-          logo: genshinIcon,
-          accent: "#48BB78",
-          stats: [
-            { label: "Adventure Rank", value: `${genshinLevel}`, icon: <Star size={18} /> },
-            { label: "Resin", value: `${genshinNotes.data.current_resin}/${genshinNotes.data.max_resin}`, icon: <Battery size={18} /> },
-            { label: "Commisions", value: `${genshinNotes.data.daily_task.finished_num}/${genshinNotes.data.daily_task.total_num}`, icon: <Coins size={18} /> },
-            { label: "Daily Reset", value: `${calculateTimeUntilReset(genshinRg)} hours`, icon: <Clock size={18} /> },
-          ],
-        }
-      ];
-
-      return games
+            ]
+          },
+          {
+            title: "Honkai Star Rail",
+            logo: honkaiIcon,
+            accent: "#3182CE",
+            stats: [
+              { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
+              { label: "Stamina", value: `${starrailBattery?.data?.current_stamina}/${starrailBattery?.data?.max_stamina}`, icon: <Battery size={18} /> },
+              { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina}/${starrailBattery?.data?.current_reserve_stamina}`, icon: <Coins size={18} /> },
+              { label: "Echo Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
+              { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
+            ]
+          },
+          {
+            title: "Genshin Impact",
+            logo: genshinIcon,
+            accent: "#48BB78",
+            stats: [
+              { label: "Adventure Rank", value: `${genshinLevel}`, icon: <Star size={18} /> },
+              { label: "Resin", value: `${genshinNotes.data.current_resin}/${genshinNotes.data.max_resin}`, icon: <Battery size={18} /> },
+              { label: "Commisions", value: `${genshinNotes.data.daily_task.finished_num}/${genshinNotes.data.daily_task.total_num}`, icon: <Coins size={18} /> },
+              { label: "Daily Reset", value: `${calculateTimeUntilReset(genshinRg)} hours`, icon: <Clock size={18} /> },
+            ],
+          }
+        ];
+        return games
+      } catch (error) {
+        console.error('Failed to get stats:', error);
+      }
     }
 
 

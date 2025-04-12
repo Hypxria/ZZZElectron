@@ -1,0 +1,85 @@
+:root {
+  --button-size: 60px;
+  --button-gap: 10px;
+  --side-padding: 7.5px;
+}
+
+.selector-wrapper {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; // Adjust this if needed to be below titlebar but above other content
+}
+
+#selector {
+  opacity: 1;
+  position: absolute;
+  top: 0%;
+
+  /* Align to top */
+  left: 50%;
+
+  /* Start from left edge */
+  transform: translateX(-50%);
+
+  /* Shift back by half of its own width */
+  width: calc(var(--button-size) * 2 + var(--button-gap) + var(--side-padding) * 2);
+  height: 75px;
+  background: white;
+  -webkit-app-region: drag;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // border-bottom-left-radius: 10px;
+  // border-bottom-right-radius: 10px;
+
+  border-radius: 01293213px;
+  translate: 0px 10px;
+  z-index: 10000;
+}
+
+.button-container {
+  display: flex;
+  gap: 0px;
+  align-items: center;
+
+  /* Ensures vertical centering */
+}
+
+.selector-button {
+  --size: 60px;
+  display: flex;
+  -webkit-app-region: no-drag;
+  background: #333;
+  border: none;
+  color: white;
+  width: var(--button-size);
+  height: var(--button-size);
+  padding: 0;
+  border-radius: 100%;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background: #444;
+  }
+}
+
+#content {
+  padding: 20px;
+}
+
+.button-wrapper {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.main-buttons {
+  display: flex;
+  gap: var(--button-gap);
+  z-index: 100;
+}
+

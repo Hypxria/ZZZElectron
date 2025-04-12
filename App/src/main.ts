@@ -46,6 +46,11 @@ const buildCsp = (directives: Record<string, string[]>) => {
 };
 
 const createWindow = async (): Promise<void> => {
+  app.commandLine.appendSwitch('enable-gpu-rasterization');
+  app.commandLine.appendSwitch('enable-zero-copy');
+  app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
+  app.commandLine.appendSwitch('ignore-gpu-blocklist');
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 600,
@@ -57,8 +62,21 @@ const createWindow = async (): Promise<void> => {
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       sandbox: true,
+      webgl: true,
+      offscreen: false,
     },
   });
+  
+  mainWindow?.on('enter-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-change');
+  });
+  
+  mainWindow?.on('leave-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-change');
+  });
+  
+  mainWindow.webContents.setFrameRate(60); // Set desired frame rate
+
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
@@ -120,9 +138,6 @@ function createWebSocketServer() {
             client.send(messageStr);
           }
         });
-
-
-
 
         const response = await handleSpicetifyMessage(messageString);
 
@@ -319,8 +334,8 @@ ipcMain.handle('hoyo:getSToken', async (event, username, password) => {
 
 let hoyoManager: HoyoManager | null = null;
 
-let cookieString:string
-let uid:string
+let cookieString: string
+let uid: string
 
 ipcMain.handle('hoyo:initialize', async (_, cookie, user_id) => {
   cookieString = cookie
@@ -331,27 +346,27 @@ ipcMain.handle('hoyo:initialize', async (_, cookie, user_id) => {
 });
 
 ipcMain.handle('hoyo:callMethod', async (_, className: string, methodName: string, ...args: any[]) => {
-    try {
-        if (!hoyoManager) {
-            // Initialize if not exists
-            console.log('Init first please')
-            return;
-        }
-
-        // Handle nested class calls (like starrail.getInfo())
-        if (className.includes('.')) {
-            const [parentClass, childMethod] = className.split('.');
-            return await hoyoManager[parentClass][childMethod](...args);
-        }
-
-        
-        // Direct method calls
-        console.log(`${className}.${methodName}, args`)
-        return await hoyoManager[methodName](...args);
-    } catch (error) {
-        console.error('Error calling HoyoManager method:', error);
-        throw error;
+  try {
+    if (!hoyoManager) {
+      // Initialize if not exists
+      console.log('Init first please')
+      return;
     }
+
+    // Handle nested class calls (like starrail.getInfo())
+    if (className.includes('.')) {
+      const [parentClass, childMethod] = className.split('.');
+      return await hoyoManager[parentClass][childMethod](...args);
+    }
+
+
+    // Direct method calls
+    console.log(`${className}.${methodName}, args`)
+    return await hoyoManager[methodName](...args);
+  } catch (error) {
+    console.error('Error calling HoyoManager method:', error);
+    throw error;
+  }
 });
 
 // Custom Titlebar handlers
@@ -361,9 +376,9 @@ ipcMain.handle('window-minimize', () => {
 
 ipcMain.handle('window-maximize', () => {
   if (mainWindow?.isMaximized()) {
-      mainWindow.unmaximize();
+    mainWindow.unmaximize();
   } else {
-      mainWindow?.maximize();
+    mainWindow?.maximize();
   }
 });
 
@@ -375,6 +390,20 @@ ipcMain.handle('window-close', () => {
   mainWindow?.close();
 });
 
+ipcMain.handle('toggle-fullscreen', () => {
+    if (mainWindow) {
+        const isFullScreen = mainWindow.isFullScreen();
+        mainWindow.setFullScreen(!isFullScreen);
+        return !isFullScreen;
+    }
+    return false;
+});
+
+ipcMain.handle('window-is-fullscreen', () => {
+  return mainWindow?.isFullScreen();
+});
+
+
 
 ipcMain.on('console-log', (_, message) => {
   console.log(message); // This will print to terminal
@@ -382,6 +411,10 @@ ipcMain.on('console-log', (_, message) => {
 
 
 app.whenReady().then(async () => {
+  app.on('gpu-info-update', () => {
+    const gpuInfo = app.getGPUInfo('basic');
+    console.log('GPU Info:', gpuInfo);
+  });
   createWindow();
 
   app.on('activate', function () {
