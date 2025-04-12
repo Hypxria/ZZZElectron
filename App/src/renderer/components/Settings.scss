@@ -42,7 +42,6 @@
 .settings-container {
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   height: 100%;
   display: flex;
@@ -72,7 +71,7 @@
   user-select: none;
 
   &:hover {
-    background-color: #f0f0f0;
+    background-color: #28282b;
     color: #333;
   }
 
@@ -161,27 +160,78 @@
   height: 100%;
 }
 
-.spotify-input,
-.spotify-input-secret,
-.hoyo-input,
-.hoyo-input-secret,
-.discord-input,
-.discord-input-secret {
-  width: 40vw;
+#input-bar {
+  width: 35vw;
   padding: 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #323232;
   font-size: 14px;
   margin-bottom: 5px;
   margin-top: 5px;
+  background-color: #1e1e20;
 }
 
-.save-button,
-.reset-button {
+#input-button {
   border-radius: 8px;
+  margin-right: 5px;
+  margin-left: 5px;
   margin-bottom: 10px;
   width: 60px;
   height: 40px;
+  border: 1px solid #323232;
+  background-color: #1e1e20;
+  color: white;
+}
+
+.settings-section {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  h3 {
+      margin: 0 0 16px 0;
+      color: white;
+      font-size: 16px;
+  }
+
+  .install-button {
+      appearance: none;
+      background: #1db954;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+          background: #1ed760;
+      }
+
+      &:active {
+          background: #1aa34a;
+      }
+  }
+
+  .install-status {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      user-select: all;
+
+      &.success {
+          background: rgba(29, 185, 84, 0.1);
+          color: #1db954;
+      }
+
+      &.error {
+          background: rgba(255, 68, 68, 0.1);
+          color: #ff4444;
+      }
+  }
 }
 
 @keyframes fadeIn {
@@ -197,7 +247,7 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .settings-container {
-    background-color: #1a1a1a;
+    background-color: #121214;
   }
 
   .navigation-header {
@@ -218,11 +268,11 @@
 
   .settings-button,
   .option-button {
-    background-color: #2a2a2a;
+    background-color: #1e1e20;
     color: #e0e0e0;
 
     &:hover {
-      background-color: #333;
+      background-color: #28282b;
     }
   }
 }

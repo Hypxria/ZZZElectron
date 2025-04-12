@@ -116,7 +116,7 @@ class ZZZElectron {
   private async checkServerAvailable(): Promise<boolean> {
     try {
       // Checking if the server is actually alive before attempting connection
-      await fetch('http://127.0.0.1:5001/health', {
+      const response = await fetch('http://127.0.0.1:5001/health', {
         method: 'HEAD',
         mode: 'no-cors'
       });
@@ -417,8 +417,9 @@ class ZZZElectron {
 
 
                 // Handle getting current track info
+                const currentTrack = Spicetify.Player.data.item;
 
-                console.log('sending')
+                console.log(`current track: ${currentTrack}`)
                 this.sendMessage(JSON.stringify({
                   type: 'response',
                   action: 'current',
@@ -427,7 +428,7 @@ class ZZZElectron {
                     artist: currentTrack?.artists?.[0]?.name || 'Unknown Artist',
                     album: currentTrack?.album?.name || 'Unknown',
                     duration_ms: currentTrack?.duration || 0,
-                    album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata?.image_xlarge_url),
+                    album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata.image_xlarge_url),
                     year: this.songyear || 'Unknown Year',
                     volume: Spicetify.Player.getVolume(),
                     is_playing: Spicetify.Player.isPlaying(),
@@ -594,7 +595,6 @@ class ZZZElectron {
 const zzzElectron = new ZZZElectron();
 export default zzzElectron;
 
-const currentTrack = Spicetify.Player.data.item;
 
 
 

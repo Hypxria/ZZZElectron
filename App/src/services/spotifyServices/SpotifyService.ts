@@ -122,7 +122,7 @@ class SpotifyService {
             return;
         }
 
-        await window.electron.spotifyLink()
+        await window.spotify.spotifyLink()
         await this.connectWebSocket()
     }
 

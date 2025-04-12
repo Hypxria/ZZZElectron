@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld('electron', {
   restart: () => ipcRenderer.invoke('restart-app'),
   openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
   log: (message: any) => ipcRenderer.send('console-log', message),
-  spotifyLink: () => ipcRenderer.invoke('spotify-link'),
+
   onNotification: (callback: (notification: any) => void) => {
     ipcRenderer.on('discord-notification', (_, notification) => {
       callback(notification);
@@ -29,18 +29,24 @@ contextBridge.exposeInMainWorld('electron', {
     onFullScreen: (callback: () => void) => ipcRenderer.on('fullscreen-change', callback),
     removeFullScreenListener: () => ipcRenderer.removeAllListeners('fullscreen-change'),
     fullscreen: () => ipcRenderer.invoke('toggle-fullscreen'),
-
   },
 });
 
+contextBridge.exposeInMainWorld('spotify', {
+  spicetify: {
+    installExtension: () => ipcRenderer.invoke('install-spicetify-extension')
+  },
+  spotifyLink: () => ipcRenderer.invoke('spotify-link'),
+});
+
 contextBridge.exposeInMainWorld('discord', {
-  connect: (id:string, secret:string) => ipcRenderer.invoke('discord:connect', id, secret),
+  connect: (id: string, secret: string) => ipcRenderer.invoke('discord:connect', id, secret),
   disconnect: () => ipcRenderer.invoke('discord:disconnect'),
   onNotification: (callback: (notification: any) => void) => {
-      ipcRenderer.on('discord:notification', (_, notification) => callback(notification));
+    ipcRenderer.on('discord:notification', (_, notification) => callback(notification));
   },
   removeNotificationListener: () => {
-      ipcRenderer.removeAllListeners('discord:notification');
+    ipcRenderer.removeAllListeners('discord:notification');
   },
   revokeAllTokens: () => ipcRenderer.invoke('discord:revoke')
 });
@@ -48,10 +54,10 @@ contextBridge.exposeInMainWorld('discord', {
 
 contextBridge.exposeInMainWorld('hoyoAPI', {
   login: async (username: string, password: string) => {
-      return await ipcRenderer.invoke('hoyo:login', username, password);
+    return await ipcRenderer.invoke('hoyo:login', username, password);
   },
   getSToken: async (username: string, password: string) => {
-      return await ipcRenderer.invoke('hoyo:getSToken', username, password);
+    return await ipcRenderer.invoke('hoyo:getSToken', username, password);
   },
   callMethod: async (className: string, methodName: string, ...args: any[]) => {
     return await ipcRenderer.invoke('hoyo:callMethod', className, methodName, ...args);

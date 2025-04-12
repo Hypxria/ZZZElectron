@@ -1,7 +1,12 @@
 const path = require('path');
 
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    asar: true,
+    extraResource: [
+      'src/assets/extension'
+    ]
+  },
   rebuildConfig: {},
   makers: [
     {
@@ -72,6 +77,21 @@ module.exports = {
               ".json",
             ],
           },
+        },
+        preloadConfig: {
+          config: {
+            target: 'electron-preload',
+            externals: {
+              'child_process': 'commonjs child_process',
+              'fs': 'commonjs fs'
+            },
+            resolve: {
+              fallback: {
+                "child_process": false,
+                "fs": false
+              }
+            }
+          }
         },
         renderer: {
           config: {
