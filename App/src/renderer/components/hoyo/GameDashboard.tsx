@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState, useRef, useEffect } from 'react';
+import React, { CSSProperties, useState, useRef, useEffect, useCallback } from 'react';
 import { Clock, Battery, Star, Coins, Award, RefreshCw } from 'lucide-react';
 import './Styles/GameAccountDashboard.scss';
 import { ViewState } from "../../../types/viewState";
@@ -51,6 +51,13 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [game, setGame] = useState<Game[] | null | void | undefined>(null)
+
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [displayedTime, setDisplayedTime] = useState<string>("Now");
+
+  let refreshStats: any
 
   useEffect(() => {
     const calculateHeights = () => {
@@ -107,6 +114,8 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
 
 
   useEffect(() => {
+    let isMounted = true;
+
     var baseInfo: baseInfo.baseInfo
 
     var zzzName: string, zzzLevel: number, starrailName: string, starrailLevel: number, genshinName: string, genshinLevel: number, genshinRg: string, zzzRg: string, starrailRg: string;
@@ -139,7 +148,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       }
     }
 
-    fetchBaseInfo()
+
     const calculateTimeUntilReset = (region: string) => {
       // Get current time in user's timezone
       const now = new Date();
@@ -262,8 +271,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       return localResetTime;
     };
 
-    const refreshStats = async () => {
+    refreshStats = async () => {
       try {
+        await fetchBaseInfo()
         const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
         const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
 
@@ -314,26 +324,80 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
             ],
           }
         ];
+        setLastUpdated(Date.now());
         return games
       } catch (error) {
         console.error('Failed to get stats:', error);
       }
     }
 
+    const fetchAndSetGames = async () => {
+      try {
+        const fetchedGames = await refreshStats();
+        if (isMounted) {
+          setGame(fetchedGames);
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+        if (isMounted) {
+        }
+      }
+    };
+
+    fetchAndSetGames()
+
+    setTimeout(fetchAndSetGames, 3999)
 
 
-    setInterval(async () => {
-      setGame(await refreshStats());
-    }, 4000);
+    const interval = setInterval(fetchAndSetGames, 300000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [])
 
+  const calculateLastUpdated = useCallback(() => {
+    const now = Date.now();
+    const diff = now - lastUpdated;
+    const minutes = Math.floor(diff / (1000 * 60));
+    
+    if (minutes === 0) {
+      return "Now";
+    } else {
+      return `${minutes}m ago`;
+    }
+  }, [lastUpdated]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDisplayedTime(calculateLastUpdated());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [calculateLastUpdated]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const fetchedGames = await refreshStats();
+      setGame(fetchedGames);
+    } catch (error) {
+      console.error('Error refreshing games:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []); // Empty dependency array since refreshStats is external
 
 
   return (
     <div ref={containerRef} className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
       <div className="dashboard-header">
         <h1 className={`dashboard-title ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>Game Account Status</h1>
-        <button className="refresh-button">
+        <button
+          className="refresh-button"
+          onClick={() => handleRefresh()}
+        >
           <RefreshCw size={14} />
           Refresh
         </button>
@@ -363,7 +427,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
                 }`}
               />
               <h2 className="game-title">{game.title}</h2>
-              <span className="update-time">Updated: 10m ago</span>
+              <span className="update-time">Updated: {displayedTime}</span>
             </div>
 
             {/* Stats section */}
