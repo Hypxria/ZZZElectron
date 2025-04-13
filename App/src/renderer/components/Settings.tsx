@@ -25,6 +25,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
 
 
     const handleMenuSelect = (menu: string) => {
+        window.electron.log(`Menu selected: ${menu}`)
         // Build the full path based on current navigation
         let newPath: string[];
 
@@ -52,12 +53,14 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         if (index === 0) {
             setActiveMenu(null);
             setNavigationPath(['Settings']);
+            window.electron.log(`Navigation path: ${navigationPath}`);
         }
         // If clicking on a submenu, truncate the path up to that point
         else if (index < navigationPath.length) {
             const newPath = navigationPath.slice(0, index + 1);
             setActiveMenu(navigationPath[index]);
             setNavigationPath(newPath);
+            window.electron.log(`Navigation path: ${newPath}`)
         }
     };
 
@@ -138,7 +141,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                 </div>
 
                 {/* Main menu */}
-                {!activeMenu && (
+                {navigationPath.length === 1 && (
                     <div className="main-buttons">
                         <button
                             className="settings-button"
@@ -193,70 +196,71 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                                     {installStatus}
                                 </div>
                             )}
+                            {isInstalling && <div className="install-status installing">Installing...</div>}
                         </div>
                     </div>
                 )}
 
 
 
-            {/* Hoyoverse Settings section */}
-            {activeMenu === 'Hoyolab Settings' && (
-                <div className="options-menu">
-                    <div className="credentials">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                placeholder="Hoyolab Username/Email"
-                                className="hoyo-input"
-                                id='input-bar'
-                            />
-                        </div>
-                        <div className="input-group">
-                            <input
-                                type="password"
-                                placeholder="Hoyolab Password"
-                                className="hoyo-input-secret"
-                                id='input-bar'
-                            />
-                        </div>
-                        <div className="save-input">
-                            <button id='input-button' className="save-button" onClick={handleCredentialsHoyo}>Save</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Discord Settings section */}
-            {activeMenu === 'Discord Settings' && (
-                <div className="options-menu">
-                    <div className="credentials">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                placeholder="Discord Client ID"
-                                className="discord-input"
-                                id='input-bar'
-                            />
-                        </div>
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                placeholder="Discord Client Secret"
-                                className="discord-input-secret"
-                                id='input-bar'
-                            />
-                        </div>
-
-                        <div className="save-input">
-                            <button id='input-button' className="save-button" onClick={handleCredentialsDiscord}>Save</button>
-                            <button id='input-button' className="reset-button" onClick={handleDiscordReset}>Reset</button>
+                {/* Hoyoverse Settings section */}
+                {activeMenu === 'Hoyolab Settings' && (
+                    <div className="options-menu">
+                        <div className="credentials">
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Hoyolab Username/Email"
+                                    className="hoyo-input"
+                                    id='input-bar'
+                                />
+                            </div>
+                            <div className="input-group">
+                                <input
+                                    type="password"
+                                    placeholder="Hoyolab Password"
+                                    className="hoyo-input-secret"
+                                    id='input-bar'
+                                />
+                            </div>
+                            <div className="save-input">
+                                <button id='input-button' className="save-button" onClick={handleCredentialsHoyo}>Save</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-            )}
+                {/* Discord Settings section */}
+                {activeMenu === 'Discord Settings' && (
+                    <div className="options-menu">
+                        <div className="credentials">
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Discord Client ID"
+                                    className="discord-input"
+                                    id='input-bar'
+                                />
+                            </div>
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    placeholder="Discord Client Secret"
+                                    className="discord-input-secret"
+                                    id='input-bar'
+                                />
+                            </div>
 
-        </div>
+                            <div className="save-input">
+                                <button id='input-button' className="save-button" onClick={handleCredentialsDiscord}>Save</button>
+                                <button id='input-button' className="reset-button" onClick={handleDiscordReset}>Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                )}
+
+            </div>
         </div >
     );
 };

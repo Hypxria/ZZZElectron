@@ -184,53 +184,58 @@
 }
 
 .settings-section {
-  padding: 16px;
+  padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
 
   h3 {
-      margin: 0 0 16px 0;
-      color: white;
-      font-size: 16px;
+    margin: 0 0 16px 0;
+    color: white;
+    font-size: 16px;
   }
 
   .install-button {
-      appearance: none;
-      background: #1db954;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 4px;
-      border: none;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
+    appearance: none;
+    background: #1db954;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 
-      &:hover {
-          background: #1ed760;
-      }
+    &:hover {
+      background: #1ed760;
+    }
 
-      &:active {
-          background: #1aa34a;
-      }
+    &:active {
+      background: #1aa34a;
+    }
   }
 
   .install-status {
-      margin-top: 12px;
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-size: 14px;
-      user-select: all;
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    user-select: all;
 
-      &.success {
-          background: rgba(29, 185, 84, 0.1);
-          color: #1db954;
-      }
+    &.success {
+      background: rgba(29, 185, 84, 0.1);
+      color: #1db954;
+    }
 
-      &.error {
-          background: rgba(255, 68, 68, 0.1);
-          color: #ff4444;
-      }
+    &.error {
+      background: rgba(255, 68, 68, 0.1);
+      color: #ff4444;
+    }
+
+    &.installing {
+      background: rgba(247, 129, 2, 0.1);
+      color: rgb(247, 129, 2);
+    }
   }
 }
 
