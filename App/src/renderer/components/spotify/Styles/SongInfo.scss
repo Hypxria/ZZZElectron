@@ -8,7 +8,16 @@
   transform: translateY(-5vh);
 }
 
+.image-overlay {
+  position: relative;
+  display: inline-block; // This makes the div shrink to fit its content
+  line-height: 0; // Removes any extra space from line height
+  font-size: 0; // Removes any extra space from font
+  align-items: center;
+}
+
 .song-image {
+  display: block; // Removes any default inline spacing
   background-color: #212122;
   height: 56vmin;
   width: 56vmin;

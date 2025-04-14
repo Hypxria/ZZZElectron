@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+
 import SongInfo from "./SongInfo";
 import SongControls from "./SongControls";
 import SongUpcoming from "./SongUpcoming";
 import SongBackground from "./SongBackground";
 import SongLyrics from "./SongLyrics";
+import SongVolume from "./SongVolume";
+
 import "./Styles/Main.scss";
 import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService";
 import { ViewState } from "../../../types/viewState";
@@ -257,6 +260,16 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               year: currentTrackData.year || "N/A",
             }}
             colors={colors}
+            SongVolume={() => (
+              <SongVolume
+                volume={currentTrackData.volume || 0}
+                onVolumeChange={async (volume: number) => {
+                  manualStateUpdateRef.current = Date.now();
+                  setCurrentTrackData((prev) => ({ ...prev, volume }));
+                  await spotifyService.setVolume(volume);
+                }}
+              />
+            )}
           />
           <SongControls
             isPlaying={currentTrackData.is_playing || false}

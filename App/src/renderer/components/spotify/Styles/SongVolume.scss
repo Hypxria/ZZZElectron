@@ -1,0 +1,114 @@
+.volume-control-wrapper {
+    position: absolute;
+    left: calc(100% + 15px);
+    top: 50%;
+    translate: 0% -50%;
+    transform: translate(-50%) rotate(90deg);
+    transform-origin: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+    width: 100%;
+}
+
+.volume-icon {
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px !important;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    transform: rotate(-90deg); // Keep icons upright
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.volume-slider-container {
+    width: 95%; // This will become the height when rotated
+    height: 4px;
+    position: relative;
+    cursor: pointer;
+    z-index: 10;
+    pointer-events: all;
+}
+
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    width: 100%;
+
+
+    // Track styles
+    &::-webkit-slider-runnable-track {
+        background: rgba(255, 255, 255, 0.3);
+        height: 4px;
+        border-radius: 2px;
+    }
+
+    &::-moz-range-track {
+        background: rgba(255, 255, 255, 0.3);
+        height: 4px;
+        border-radius: 2px;
+    }
+
+    // Thumb styles
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        margin-top: -4px;
+        background-color: #fff;
+        border-radius: 50%;
+        height: 12px;
+        width: 12px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    &::-moz-range-thumb {
+        border: none;
+        background-color: #fff;
+        border-radius: 50%;
+        height: 12px;
+        width: 12px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    // Hover states
+    &:hover {
+        &::-webkit-slider-thumb {
+            opacity: 1;
+        }
+
+        &::-moz-range-thumb {
+            opacity: 1;
+        }
+    }
+
+    // Focus states for accessibility
+    &:focus {
+        outline: none;
+
+        &::-webkit-slider-thumb {
+            opacity: 1;
+        }
+
+        &::-moz-range-thumb {
+            opacity: 1;
+        }
+    }
+}
+
+
+
+@media(hover:hover) {
+
+    .volume-icon:hover,
+    .volume-slider-container:hover .volume-slider-handle {
+        opacity: 1;
+    }
+}
