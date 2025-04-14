@@ -1,5 +1,7 @@
 import net from 'net';
 import { EventEmitter } from 'events';
+import { VoiceChannelSelectType } from './types'
+import { ThumbUpSharp } from '@mui/icons-material';
 let Store: any;
 let store: any;
 
@@ -18,30 +20,45 @@ interface RpcMessage {
     data?: any;
 }
 
+interface MessageHandler {
+    opcode: number;
+    condition?: (data: any) => boolean;
+    handler: (data: any) => void;
+}
 
+type SubscriptionArgs = Record<string, any> | any[];
+
+interface SubscriptionConfig {
+    event: string;
+    args?: SubscriptionArgs;
+    handler?: EventHandler;
+}
+
+type EventHandler = (data: any) => void;
 
 class DiscordRPC extends EventEmitter {
     private socket: net.Socket | null;
     private buffer: Buffer;
-    private connectionAttempts: number = 0;
-    private readonly maxRetries: number = 3;
-    private readonly connectionTimeout: number = 10000; // 10 seconds
     private readonly CLIENT_ID: string
     private readonly CLIENT_SECRET: string
+
     private store: any;
+    public subscribedEvents: Set<string> = new Set();
 
+    private voice: VoiceManager;
 
-    constructor(CLIENT_ID?: string, CLIENT_SECRET?: string) {
+    constructor(CLIENT_ID: string, CLIENT_SECRET?: string) {
         super();
         this.socket = new net.Socket();
         this.buffer = Buffer.alloc(0);
 
         this.setupSocket();
 
-
         this.CLIENT_ID = CLIENT_ID || ''
         this.CLIENT_SECRET = CLIENT_SECRET || ''
         this.initializeStoreAndSetup();
+
+        this.voice = new VoiceManager(this)
 
     }
 
@@ -54,7 +71,7 @@ class DiscordRPC extends EventEmitter {
         }
     }
 
-    private generateNonce(): string {
+    public generateNonce(): string {
         return Date.now().toString(36) + Math.random().toString(36).substring(2);
     }
 
@@ -72,23 +89,23 @@ class DiscordRPC extends EventEmitter {
             const ipcPath = process.platform === 'win32'
                 ? '\\\\?\\pipe\\discord-ipc-0'
                 : '/tmp/discord-ipc-0';
-    
+
             console.log('Attempting to connect to:', ipcPath);
-    
+
             // Try multiple pipe numbers if the first one fails
             const tryConnect = (pipeNum: number) => {
                 const currentPath = process.platform === 'win32'
                     ? `\\\\?\\pipe\\discord-ipc-${pipeNum}`
                     : `/tmp/discord-ipc-${pipeNum}`;
-    
+
                 console.log(`Trying pipe ${pipeNum}:`, currentPath);
-    
+
                 this.socket!.connect(currentPath);
             };
-    
+
             let currentPipe = 0;
             const maxPipes = 10;
-    
+
             this.socket!.on('error', (err) => {
                 console.log(`Failed to connect to pipe ${currentPipe}:`, err.message);
                 currentPipe++;
@@ -98,17 +115,17 @@ class DiscordRPC extends EventEmitter {
                     reject(new Error('Failed to connect to Discord IPC'));
                 }
             });
-    
+
             this.socket!.once('connect', () => {
                 console.log('Connected to Discord IPC pipe:', currentPipe);
                 resolve(true);
             });
-    
+
             tryConnect(currentPipe);
         });
     }
-    
-    
+
+
 
     private async handleConnect() {
         console.log('Connected to Discord IPC');
@@ -123,12 +140,12 @@ class DiscordRPC extends EventEmitter {
                 nonce: this.generateNonce(),
                 op: 0
             };
-    
+
             console.log('Sending handshake payload:', handshakePayload);
             this.sendFrame(handshakePayload);
-    
+
             // Set up a timeout for handshake response
-            
+
             // Wait for handshake response
             this.once('ready', () => {
                 resolve(true);
@@ -136,7 +153,7 @@ class DiscordRPC extends EventEmitter {
             });
         });
     }
-        
+
     public async revokeAllTokens() {
         const tokens = {
             access_token: this.store.get('access_token'),
@@ -215,7 +232,7 @@ class DiscordRPC extends EventEmitter {
             this.getToken(code)
         });
 
-        
+
 
         const identifyPayload = {
             op: 1, // FRAME opcode
@@ -229,7 +246,7 @@ class DiscordRPC extends EventEmitter {
             }
         };
 
-        
+
         this.sendFrame(identifyPayload);
         // Handlemessage Takes it from here to get the code by codeReceived
 
@@ -273,7 +290,8 @@ class DiscordRPC extends EventEmitter {
     private async authenticate(code: string) {
 
         this.once('authenticated', () => {
-            this.subscribeToNotifications();
+            console.log('subscribing')
+            this.subscribe();
         });
 
         const authenticatePayload = {
@@ -287,11 +305,7 @@ class DiscordRPC extends EventEmitter {
 
         console.log('Sending authenticate payload')
         this.sendFrame(authenticatePayload);
-
-
     }
-
-
 
     private async sendFrame(message: RpcMessage) {
         const data = JSON.stringify(message);
@@ -313,11 +327,7 @@ class DiscordRPC extends EventEmitter {
             if (this.buffer.length < totalLength) break;
 
             const payload = JSON.parse(this.buffer.subarray(8, totalLength).toString());
-            console.log('Received raw payload:', {
-                opcode,
-                length,
-                payload
-            });    
+
             console.log('Received payload:', JSON.stringify(payload, null, 2));
             this.handleMessage(opcode, payload);
 
@@ -326,85 +336,109 @@ class DiscordRPC extends EventEmitter {
     }
 
     private async handleMessage(opcode: number, data: any) {
-        // amazonq-ignore-next-line
         switch (opcode) {
             case 1: // Event
-                if (data.cmd === 'AUTHORIZE' && data.data.code) {
-                    if (data.data && data.data.code) {
-                        console.log('Emitting code:', data.data.code);
-                        this.emit('codeReceived', data.data.code);
-                    } else {
-                        console.log('Authorization data received but no code:', data);
-                    }
-                } else if (data.evt == 'READY' && data.cmd == 'DISPATCH') {
-                    this.emit('ready');
-                } else if (data.evt === 'AUTHENTICATE') {
-                    this.emit('authenticated');
-                }
-                else if (data.evt === 'NOTIFICATION_CREATE') {
-                    this.emit('notification', data.data);
-                } else if (data.cmd === 'AUTHENTICATE') {
-                    console.log('Authenticated successfully');
-                    this.emit('authenticated');
-                    this.subscribeToNotifications();
-                }
-                break;
+                return this.handleEvent(data);
             case 2: // Error
-                // Improved error handling with fallback
-                console.log('error')
-                const errorMessage = data.data?.message || data.message || 'Unknown RPC error';
-                this.emit('error', new Error(errorMessage));
-                break;
+                return this.handleError(data);
+            default:
+                console.log('Unknown opcode:', opcode);
         }
     }
 
-    subscribe() {
-        this.subscribeToMessageDelete()
-        this.subscribeToMessageUpdate()
-        this.subscribeToNotifications()
+    private async handleEvent(data: RpcMessage) {
+        // Handle command responses first
+        if (data.cmd === 'AUTHORIZE' && data.data?.code) {
+            this.emit('codeReceived', data.data.code);
+            return;
+        }
+
+        if (data.cmd === 'AUTHENTICATE') {
+            console.log('authenticated')
+            this.emit('authenticated');
+            return;
+        }
+
+        // Handle dispatched events
+        if (data.evt) {
+            if (data.evt === 'READY' && data.cmd === 'DISPATCH') {
+                this.emit('ready');
+                return;
+            }
+
+            if (data.evt === 'VOICE_CHANNEL_SELECT') {
+                this.emit('voiceChannelSelected', data);
+                return;
+            }
+
+            // Check if we're subscribed to this event
+            else if (this.subscribedEvents.has(data.evt)) {
+                this.emit('data', data);
+            }
+        }
     }
 
+    private handleError(data: any) {
+        const errorMessage = data.data?.message || data.message || 'Unknown RPC error';
+        this.emit('error', new Error(errorMessage));
+    }
 
-    // Subscription to various events that I may need sometime
-    // I'll call this in a function that combines all these calls into one thingy
-    private async subscribeToNotifications() {
+    private async subscribe() {
+        // Now subscribe to events
+        await Promise.all([
+            this.subscribeToEvent('NOTIFICATION_CREATE'),
+            this.voice.voiceCallEventWorkflow(),
+        ]);
+
+        this.emit('subscribed');
+    }
+
+    public async subscribeToEvent(event: string, args?: any) {
+        if (this.subscribedEvents.has(event)) return;
+
         const payload = {
-            op: 1, // Command opcode
+            op: 1,
             cmd: 'SUBSCRIBE',
-            client_id: this.CLIENT_ID,
-            evt: 'NOTIFICATION_CREATE',
+            evt: event,
+            ...(args && { args }),  // Simply check if args exists
             nonce: this.generateNonce(),
+            client_id: this.CLIENT_ID
         };
 
-        console.log('Sending subscription:', JSON.stringify(payload, null, 2));
-        this.sendFrame(payload);
+        try {
+            this.sendFrame(payload);
+            console.log(payload)
+            this.subscribedEvents.add(event);
+            console.log(`Subscribed to ${event}`);
+        } catch (error) {
+            console.error(`Failed to subscribe to ${event}:`, error);
+        }
     }
 
-    private async subscribeToMessageDelete() {
+    public async unsubscribeFromEvent(event: string, args?: any) {
+        if (!this.subscribedEvents.has(event)) return;
+
         const payload = {
-            op: 1, // Command opcode
-            cmd: 'SUBSCRIBE',
-            client_id: this.CLIENT_ID,
-            evt: 'MESSAGE_DELETE',
+            op: 1,
+            cmd: 'UNSUBSCRIBE',
+            ...(args && { args }),  // Simply check if args exists
+            evt: event,
             nonce: this.generateNonce(),
+            client_id: this.CLIENT_ID
         };
 
-        console.log('Sending subscription:', JSON.stringify(payload, null, 2));
-        this.sendFrame(payload);
+        try {
+            this.sendFrame(payload);
+            this.subscribedEvents.delete(event);
+            console.log(`Unsubscribed from ${event}`);
+        } catch (error) {
+            console.error(`Failed to unsubscribe from ${event}:`, error);
+        }
     }
 
-    private async subscribeToMessageUpdate() {
-        const payload = {
-            op: 1, // Command opcode
-            cmd: 'SUBSCRIBE',
-            client_id: this.CLIENT_ID,
-            evt: 'MESSAGE_UPDATE',
-            nonce: this.generateNonce()
-        };
 
-        console.log('Sending subscription:', JSON.stringify(payload, null, 2));
-        this.sendFrame(payload);
-    }
+
+
 
     async disconnect() {
         if (this.socket) {
@@ -424,8 +458,67 @@ class DiscordRPC extends EventEmitter {
         // Remove all EventEmitter listeners
         this.removeAllListeners();
     }
-
 }
+
+class VoiceManager {
+    private rpc: DiscordRPC;
+    private channel_id: string = '';
+    private guild_id: string | null | void= '';
+    
+
+    constructor(rpc: DiscordRPC) {
+        this.rpc = rpc;
+    }
+
+    public async voiceCallEventWorkflow() {
+        this.rpc.once('voiceChannelSelected', (data: VoiceChannelSelectType) => {
+            console.log('voiceChannelSelected event received:', data);
+
+            if(data.data.channel_id !== null || data.data.channel_id !== 'null') {
+                this.channel_id = data.data.channel_id
+                this.subscribeToVoiceEvents(this.channel_id)
+            } else {
+                this.unsubscribeFromVoiceEvents(this.channel_id)
+            }
+        })
+        this.rpc.subscribeToEvent('VOICE_CHANNEL_SELECT');
+    }
+
+    private async subscribeToVoiceEvents(channel_id: string, guild_id?: string) {
+
+        const args = {
+            channel_id: channel_id,
+        }
+
+        await Promise.all([
+            this.rpc.subscribeToEvent('VOICE_STATE_UPDATE', args),
+            this.rpc.subscribeToEvent('VOICE_STATE_CREATE', args),
+            this.rpc.subscribeToEvent('VOICE_STATE_DELETE', args),
+
+            this.rpc.subscribeToEvent('SPEAKING_START', args),
+            this.rpc.subscribeToEvent('SPEAKING_STOP', args)
+        ]);
+    }
+
+    private async unsubscribeFromVoiceEvents(channel_id:string) {
+
+        const args = {
+            channel_id: channel_id,
+        }
+
+        await Promise.all([
+            this.rpc.unsubscribeFromEvent('VOICE_STATE_UPDATE', args),
+            this.rpc.unsubscribeFromEvent('VOICE_STATE_CREATE', args),
+            this.rpc.unsubscribeFromEvent('VOICE_STATE_DELETE', args),
+
+            this.rpc.unsubscribeFromEvent('SPEAKING_START', args),
+            this.rpc.unsubscribeFromEvent('SPEAKING_STOP', args)
+        ]);
+    }
+
+    // Add other voice-related methods here
+}
+
 
 // Usage
 

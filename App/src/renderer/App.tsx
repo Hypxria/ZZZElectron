@@ -103,7 +103,7 @@ const App: React.FC<AppProps> = () => {
           <SpotifyMain ViewState={viewState} />
         </div>
         <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-          <HoyoMain ViewState={viewState} />
+          {/* <HoyoMain ViewState={viewState} /> */}
         </div>
       </div>
     </div>

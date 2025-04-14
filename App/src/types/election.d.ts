@@ -33,8 +33,8 @@ declare global {
             revokeAllTokens: () => Promise<void>; // Add this line
             connect: (id, secret) => Promise<{ success: boolean; error?: string }>;
             disconnect: () => Promise<void>;
-            onNotification: (callback: (notification: any) => void) => void;
-            removeNotificationListener: () => void;
+            onData: (callback: (notification: any) => void) => void;
+            removeDataListener: () => void;
         };
         lrc: {
             parseSyncedLyrics: (lyrics: string) => Promise<any>;

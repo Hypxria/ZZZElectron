@@ -11,17 +11,7 @@ interface NotificationProps {
   isVisible?: boolean;
 }
 
-declare global {
-  interface Window {
-    discord: {
-      revokeAllTokens: () => Promise<void>; // Add this line
-      connect: ( id:string, secret:string) => Promise<{ success: boolean; error?: string }>;
-      disconnect: () => Promise<void>;
-      onNotification: (callback: (notification: any) => void) => void;
-      removeNotificationListener: () => void;
-    }
-  }
-}
+
 
 const parseDiscordFormatting = (text: string) => {
   // First handle double escapes - replace \\ with a temporary marker
@@ -108,11 +98,25 @@ const DiscordNotification: React.FC = ({
   useEffect(() => {
     let mounted = true;
 
+    const handleNotification = (notification: DiscordNotificationType) => {
+      console.log('Notification received:', notification);
+      setAvatarUrl(notification.icon_url);
+      setAuthor(notification.title);
+
+      const date = new Date(notification.message.timestamp);
+      setMessageTime(date)
+      setTimestamp(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+      setMessage(notification.body);
+
+      showNotification()
+    };
+
     const connectToDiscord = async () => {
       try {
         const id = secureLocalStorage.getItem('discord_client_id');
         const secret = secureLocalStorage.getItem('discord_client_secret');
-        
+
         const result = await window.discord.connect(String(id), String(secret));
         if (!mounted) return;
 
@@ -121,53 +125,9 @@ const DiscordNotification: React.FC = ({
           return;
         }
 
-        window.discord.onNotification((notification: DiscordNotificationType) => {
+        window.discord.onData((data: any) => {
           // Getting values that we need
-          console.log('Notification received:', notification);
-          setAvatarUrl(notification.icon_url);
-          setAuthor(notification.title);
-          
-          const date = new Date(notification.message.timestamp);
-          setMessageTime(date)
-          setTimestamp(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
-          /*
-          }
-          Notification received: {
-            channel_id: '1354222328267149373',
-            message: {
-              id: '1354987275741564928',
-              content: '',
-              nick: 'Eleuthia',
-              timestamp: '2025-03-28T01:15:40.983000+00:00',
-              tts: false,
-              mentions: [],
-              mention_roles: [],
-              embeds: [],
-              attachments: [ [Object] ],
-              author: {
-                id: '1250111229582643232',
-                username: 'femboyeleuthia',
-                discriminator: '0',
-                global_name: 'Eleuthia',
-                avatar: '8ff6e5631d4588748ba11b1611d84223',
-                avatar_decoration_data: null,
-                bot: false,
-                flags: 0,
-                premium_type: 0
-              },
-              pinned: false,
-              type: 0
-            },
-            icon_url: 'https://cdn.discordapp.com/avatars/1250111229582643232/8ff6e5631d4588748ba11b1611d84223.webp?size=240',
-            title: 'Eleuthia',
-            body: 'Uploaded digital_art_drawing_illustrati3.webp'
-          }
-          */
-          
-          setMessage(notification.body);
-
-          showNotification()
+          if (data.evt === 'NOTIFICATION_CREATE') handleNotification(data.data)
         });
       } catch (error) {
         if (!mounted) return;
@@ -202,7 +162,7 @@ const DiscordNotification: React.FC = ({
 
   return (
     <div className={`notification-container ${isVisible ? 'visible' : ''}`} onMouseEnter={handleMouseEnter}
-    onMouseLeave={handleMouseLeave}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="profile-picture">
         {avatarUrl ? (
@@ -218,10 +178,10 @@ const DiscordNotification: React.FC = ({
           <span className="timestamp">{timestamp}</span>
         </div>
 
-        <div 
+        <div
           className="notification-message"
-          dangerouslySetInnerHTML={{ 
-            __html: parseDiscordFormatting(message) 
+          dangerouslySetInnerHTML={{
+            __html: parseDiscordFormatting(message)
           }}
         />
       </div>

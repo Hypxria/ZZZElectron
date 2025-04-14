@@ -252,8 +252,8 @@ ipcMain.handle('discord:connect', async (_, id, secret) => {
     await discordRPC.connect();
 
     // Forward notifications to renderer
-    discordRPC.on('notification', (notification) => {
-      mainWindow?.webContents.send('discord:notification', notification);
+    discordRPC.on('data', (data) => {
+      mainWindow?.webContents.send('discord:notification', data);
     });
 
     return { success: true };
