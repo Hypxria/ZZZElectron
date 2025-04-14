@@ -63,7 +63,6 @@ const DiscordNotification: React.FC = ({
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [author, setAuthor] = useState<string>('');
   const [timestamp, setTimestamp] = useState<string>('');
-  const [messageTime, setMessageTime] = useState<Date | null>(null);
   const [message, setMessage] = useState<string>('');
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -104,7 +103,6 @@ const DiscordNotification: React.FC = ({
       setAuthor(notification.title);
 
       const date = new Date(notification.message.timestamp);
-      setMessageTime(date)
       setTimestamp(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
       setMessage(notification.body);

@@ -218,9 +218,14 @@ class DiscordRPC extends EventEmitter {
                 })
             });
             const data = await response.json();
+            this.store.delete('access_token')
+            this.store.delete('refresh_token')
+            this.store.delete('expires_at')
+
             this.store.set('access_token', data.access_token);
             this.store.set('refresh_token', data.refresh_token);
             this.store.set('expires_at', Date.now() + data.expires_in);
+            
             this.authenticate(data.access_token);
             return;
         }
@@ -378,6 +383,23 @@ class DiscordRPC extends EventEmitter {
         }
     }
 
+    public async sendCommand(command:any, args?:any) {
+        const payload = {
+            op:1,
+            cmd: command,
+            nonce: this.generateNonce(),
+            ...(args && { args }),  // Simply check if args exists
+        }
+
+        try {
+            this.sendFrame(payload);
+            console.log(payload)
+            console.log(`Sent ${command}`);
+        } catch (error) {
+            console.error(`Failed to send ${command}:`, error);
+        }
+    }
+
     private handleError(data: any) {
         const errorMessage = data.data?.message || data.message || 'Unknown RPC error';
         this.emit('error', new Error(errorMessage));
@@ -477,6 +499,7 @@ class VoiceManager {
             if(data.data.channel_id !== null || data.data.channel_id !== 'null') {
                 this.channel_id = data.data.channel_id
                 this.subscribeToVoiceEvents(this.channel_id)
+                this.rpc.sendCommand('GET_VOICE_SETTINGS')
             } else {
                 this.unsubscribeFromVoiceEvents(this.channel_id)
             }
@@ -491,12 +514,17 @@ class VoiceManager {
         }
 
         await Promise.all([
+            // These are events to see if a user is muted or such
             this.rpc.subscribeToEvent('VOICE_STATE_UPDATE', args),
             this.rpc.subscribeToEvent('VOICE_STATE_CREATE', args),
             this.rpc.subscribeToEvent('VOICE_STATE_DELETE', args),
 
+            // If user is speaking
             this.rpc.subscribeToEvent('SPEAKING_START', args),
-            this.rpc.subscribeToEvent('SPEAKING_STOP', args)
+            this.rpc.subscribeToEvent('SPEAKING_STOP', args),
+
+            // Current user voice state
+            this.rpc.subscribeToEvent('VOICE_SETTINGS_UPDATE')
         ]);
     }
 
@@ -512,11 +540,39 @@ class VoiceManager {
             this.rpc.unsubscribeFromEvent('VOICE_STATE_DELETE', args),
 
             this.rpc.unsubscribeFromEvent('SPEAKING_START', args),
-            this.rpc.unsubscribeFromEvent('SPEAKING_STOP', args)
+            this.rpc.unsubscribeFromEvent('SPEAKING_STOP', args),
+
+            this.rpc.unsubscribeFromEvent('VOICE_SETTINGS_UPDATE'),
         ]);
     }
 
-    // Add other voice-related methods here
+    private async mute() {
+        const args = {
+            mute: true
+        }
+        this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
+    }
+
+    private async unmute() {
+        const args = {
+            mute: false
+        }
+        this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
+    }
+
+    private async deafen() {
+        const args = {
+            deaf: true
+        }
+        this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
+    }
+
+    private async undeafen() {
+        const args = {
+            deaf: false
+        }
+        this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
+    }
 }
 
 

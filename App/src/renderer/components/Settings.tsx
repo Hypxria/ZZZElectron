@@ -78,15 +78,34 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
     };
 
 
-    const handleCredentialsHoyo = () => {
+    const handleCredentialsHoyo = async () => {
         const idInput = document.querySelector('.hoyo-input') as HTMLInputElement;
         const secretInput = document.querySelector('.hoyo-input-secret') as HTMLInputElement;
 
-        const account = idInput.value;
+        const username = idInput.value;
         const password = secretInput.value;
 
-        secureLocalStorage.setItem('hoyolab_username', account);
+        secureLocalStorage.setItem('hoyolab_username', username);
         secureLocalStorage.setItem('hoyolab_password', password);
+
+
+        if (!username || !password) {
+            throw new Error('Username or password not found in storage');
+        }
+
+        const result = await window.hoyoAPI.login(username, password);
+        console.log('Login successful:', result);
+
+        const cookieString = [
+            `cookie_token_v2=${result.cookies.cookie_token_v2}`,
+            `account_mid_v2=${result.cookies.account_mid_v2}`,
+            `account_id_v2=${result.cookies.account_id_v2}`,
+            `ltoken_v2=${result.cookies.ltoken_v2}`,
+            `ltmid_v2=${result.cookies.ltmid_v2}`,
+            `ltuid_v2=${result.cookies.ltuid_v2}`,
+        ].join('; ');
+
+        window.hoyoAPI.initialize(cookieString, result.uid);
     }
 
     const handleCredentialsDiscord = () => {
@@ -101,7 +120,7 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
 
         // Refreshing discord connection with the new credentials
         window.discord.disconnect();
-        window.electron.restart();
+        window.discord.connect(String(id), String(secret))
     }
 
     const handleDiscordReset = async () => {

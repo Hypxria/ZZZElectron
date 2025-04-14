@@ -59,7 +59,7 @@ const App: React.FC<AppProps> = () => {
   window.electron.log(`ViewState: ${viewState}`)
   return (
     <div
-      className={`App ${isFullScreen ? 'fullscreen': ''}`}
+      className={`App ${isFullScreen ? 'fullscreen' : ''}`}
       onClick={isSettings ? handleOutsideClick : undefined}
     >
 
@@ -67,38 +67,32 @@ const App: React.FC<AppProps> = () => {
       <Titlebar
         isSettings={isSettings}
         setIsSettings={setIsSettings}
-      >
-
-      </Titlebar>
-
-      <DiscordNotification
-
       />
+
+
 
       <AppSelector
         viewState={viewState}
         setViewState={setViewState}
       />
 
-      {isSettings && (
-        <div
-          className="settings-backdrop"
-          onClick={handleOutsideClick}
-        >
-          <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
-        </div>
-      )}
 
-      {isSettings && (
-        <div
-          className="settings-backdrop"
-          onClick={handleOutsideClick}
-        >
-          <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
-        </div>
-      )}
+
+
 
       <div className={`content-wrapper ${viewState}`}>
+
+        {isSettings && (
+          <div
+            className="settings-backdrop"
+            onClick={handleOutsideClick}
+          >
+            <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
+          </div>
+        )}
+        
+        <DiscordNotification />
+
         <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
           <SpotifyMain ViewState={viewState} />
         </div>

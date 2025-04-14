@@ -111,6 +111,11 @@ urbanist font and you know the rest */
     .content-wrapper{
       height: 100%;
     }
+
+    .discord-container {
+      translate: 0 0;
+    }
+
   }
 }
 
@@ -152,6 +157,8 @@ body {
   
   flex: 1;
 }
+
+
 
 .spotify-section {
   left: 0;
@@ -270,26 +277,3 @@ body {
 
 /* Titlebar.css */
 
-.expand-icon {
-  transition: color 0.3s ease;
-
-  &.active {
-    color: #1db954;
-
-    /* Spotify green or any color you prefer */
-  }
-}
-
-.window-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.sub-button {
-  /* ... existing button styles ... */
-  transition: opacity 0.3s ease;
-
-  &.visible {
-    opacity: 1;
-  }
-}
