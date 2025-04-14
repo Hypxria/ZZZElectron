@@ -37,6 +37,7 @@
   position: absolute;
   left: 50%;
   top: 48%;
-  translate: -50% -50%;
+  translate: -50% calc(-50% - 2.5vh);
   z-index: auto;
 }
+

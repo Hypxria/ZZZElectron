@@ -5,7 +5,6 @@
   gap: 1px;
 
   /* Adds space between image and text */
-  transform: translateY(-5vh);
 }
 
 .image-overlay {
@@ -29,30 +28,10 @@
 .song-text {
   text-align: center;
   color: white;
-  font-size: 1rem;
+  font-size: calc(0.7vh + 0.5rem);
   font-family: "Urbanist", sans-serif;
   font-weight: 600;
-}
 
-.song-details {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 4px;
-
-  /* Adds space between image and text */
-  font-size: 0.8rem;
-  font-family: "Urbanist", sans-serif;
-  font-weight: 400;
-  margin-bottom: -10px;
-}
-
-.artist-text {
-  color: white;
-}
-
-.song-text {
   width: 56vmin;
 
   /* Same as song-image width */
@@ -64,7 +43,23 @@
   text-overflow: ellipsis;
 }
 
+.song-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+
+  /* Adds space between image and text */
+  font-size: calc(1.2vh + 0.3rem);
+  font-family: "Urbanist", sans-serif;
+  font-weight: 400;
+  margin-bottom: -10px;
+}
+
 .artist-text {
+  color: white;
+
   width: 56vmin;
 
   /* Same as song-image width */

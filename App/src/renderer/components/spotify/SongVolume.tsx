@@ -25,6 +25,15 @@ const SongVolume: React.FC<SongVolumeProps> = ({
         }
     };
 
+
+    useEffect(() => {
+        const slider = document.querySelector('.volume-slider') as HTMLElement;
+        if (slider) {
+            slider.style.setProperty('--volume-percentage', `${volume}%`);
+        }
+    }, [volume]);
+    
+    
     return (
         <div className="volume-control-wrapper">
             <VolumeDownRoundedIcon

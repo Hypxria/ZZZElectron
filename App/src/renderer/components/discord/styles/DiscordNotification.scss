@@ -31,10 +31,12 @@
   // opacity: 1;
   // transform: translateY(calc(10px + 32px));
   transition: all 0.3s ease;
+  pointer-events: none;
 
   &.visible {
     opacity: 1;
     transform: translateY(calc(32px / 2));
+    pointer-events: all;
   }
 }
 

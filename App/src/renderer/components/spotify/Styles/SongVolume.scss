@@ -3,13 +3,14 @@
     left: calc(100% + 15px);
     top: 50%;
     translate: 0% -50%;
-    transform: translate(-50%) rotate(90deg);
+    transform: translate(-50%) translateY(-50%) rotate(-90deg);
     transform-origin: center;
     display: flex;
     align-items: center;
     gap: 8px;
     z-index: 1;
     width: 100%;
+    
 }
 
 .volume-icon {
@@ -18,7 +19,7 @@
     font-size: 20px !important;
     opacity: 0.7;
     transition: opacity 0.2s ease;
-    transform: rotate(-90deg); // Keep icons upright
+    transform: rotate(90deg); // Keep icons upright
 
     &:hover {
         opacity: 1;
@@ -31,49 +32,41 @@
     position: relative;
     cursor: pointer;
     z-index: 10;
-    pointer-events: all;
 }
 
 
 .volume-slider {
+    pointer-events: all; // Ensure click events work
     -webkit-appearance: none;
     appearance: none;
     cursor: pointer;
     width: 100%;
+    background: transparent;
 
 
     // Track styles
     &::-webkit-slider-runnable-track {
-        background: rgba(255, 255, 255, 0.3);
-        height: 4px;
-        border-radius: 2px;
-    }
+        background: linear-gradient(
+            to right,
+            #fff 0%,
+            #fff var(--volume-percentage),
+            rgba(255, 255, 255, 0.3) var(--volume-percentage),
+            rgba(255, 255, 255, 0.3) 100%
+        );
 
-    &::-moz-range-track {
-        background: rgba(255, 255, 255, 0.3);
         height: 4px;
-        border-radius: 2px;
+        border-radius: 99999999999px;
     }
 
     // Thumb styles
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        margin-top: -4px;
+        margin-top: -3px;
         background-color: #fff;
         border-radius: 50%;
-        height: 12px;
-        width: 12px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-    }
-
-    &::-moz-range-thumb {
-        border: none;
-        background-color: #fff;
-        border-radius: 50%;
-        height: 12px;
-        width: 12px;
+        height: 10px;
+        width: 10px;
         opacity: 0;
         transition: opacity 0.2s ease;
     }

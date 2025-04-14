@@ -57,7 +57,7 @@
 
 .prev-lyric {
   color: var(--dimmer-color);
-  font-size: 1.4rem;
+  font-size: calc(1.4vw + 0.3rem);
   transform: scale(1);
   translate: 0% -100%;
   mask-image: linear-gradient(0deg, var(--dimmer-color), transparent 150%);
@@ -66,7 +66,9 @@
 
 .current-lyric {
   color: var(--average-color);
-  font-size: 1.7rem;
+  // font-size: 1.7rem;
+  font-size: calc(1.7vw + 0.3rem);
+
   font-weight: bold;
   margin: -0.5rem 0;
   font-family: urbanist;
@@ -74,7 +76,7 @@
 
 .next-lyric {
   color: var(--dimmer-color);
-  font-size: 1.4rem;
+  font-size: calc(1.4vw + 0.3rem);
   transform: scale(1);
   translate: 0% 100%;
   mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150%);
