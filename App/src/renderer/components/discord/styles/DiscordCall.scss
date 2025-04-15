@@ -1,0 +1,25 @@
+.discord-call {
+    position: absolute;
+    left: 50%;
+    bottom: 1%;
+    translate: -50% 0;
+    width: 27.5%;
+    height: 10%;
+    background-color: #fff;
+    z-index: 1000;
+
+    border-radius: 12px;
+}
+
+.discord-call-icon {
+    width: 64px; // Adjust this value to make the icon bigger/smaller
+    height: 64px; // Keep same as width for 1:1 aspect ratio
+    cursor: pointer;
+    
+    svg {                    // Add this to target the SVG directly
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 64px;     // Add minimum size
+        min-height: 64px;    // Add minimum size
+    }
+}

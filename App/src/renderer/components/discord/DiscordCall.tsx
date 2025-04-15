@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Styles/DiscordCall.scss';
+import {  } from './icons'
+
 
 const DiscordCall: React.FC = () => {
+
+    
+      
     return (
-        <div className="flex flex-col items-center justify-center">
-            <h1 className="text-2xl font-bold">Discord Call</h1>
-            <p className="text-gray-500">Coming soon...</p>
+        <div className="discord-call">
+            <div className="discord-call-icon">
+=            </div>
         </div>
     );
 };
 
-export default DiscordCall;
+export default DiscordCall; 

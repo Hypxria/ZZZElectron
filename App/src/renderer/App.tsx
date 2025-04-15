@@ -7,7 +7,7 @@ import '../index.scss';
 import { ViewState } from '../types/viewState';
 import HoyoMain from './components/hoyo/HoyoMain';
 import AppSelector from './components/AppSelector';
-
+import DiscordCall from './components/discord/DiscordCall'; 
 
 
 interface AppProps {
@@ -92,6 +92,8 @@ const App: React.FC<AppProps> = () => {
         )}
         
         <DiscordNotification />
+
+        <DiscordCall />
 
         <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
           <SpotifyMain ViewState={viewState} />
