@@ -49,6 +49,15 @@ contextBridge.exposeInMainWorld('discord', {
     ipcRenderer.removeAllListeners('discord:notification');
   },
   revokeAllTokens: () => ipcRenderer.invoke('discord:revoke')
+  ,
+  voice: {
+    mute: () => ipcRenderer.invoke('discord:voice', 'mute'),
+    unmute: () => ipcRenderer.invoke('discord:voice', 'unmute'),
+    deafen: () => ipcRenderer.invoke('discord:voice', 'deafen'),
+    undeafen: () => ipcRenderer.invoke('discord:voice', 'undeafen'),
+    leave: () => ipcRenderer.invoke('discord:voice', 'leave'),
+    join: (channel_id: string) => ipcRenderer.invoke('discord:voice', 'join', channel_id),
+  }
 });
 
 
@@ -66,9 +75,6 @@ contextBridge.exposeInMainWorld('hoyoAPI', {
     return await ipcRenderer.invoke('hoyo:initialize', cookie, user_id);
   },
 });
-// In preload.ts
-
-
 
 contextBridge.exposeInMainWorld('lrc', {
   parseSyncedLyrics: (lyrics: string) => ipcRenderer.invoke('lrc:parse-lyrics', lyrics),

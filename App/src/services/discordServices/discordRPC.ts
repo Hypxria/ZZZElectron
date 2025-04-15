@@ -45,7 +45,7 @@ class DiscordRPC extends EventEmitter {
     private store: any;
     public subscribedEvents: Set<string> = new Set();
 
-    private voice: VoiceManager;
+    public voice: VoiceManager;
 
     constructor(CLIENT_ID: string, CLIENT_SECRET?: string) {
         super();
@@ -546,32 +546,47 @@ class VoiceManager {
         ]);
     }
 
-    private async mute() {
+    public async mute() {
         const args = {
             mute: true
         }
         this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
     }
 
-    private async unmute() {
+    public async unmute() {
         const args = {
             mute: false
         }
         this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
     }
 
-    private async deafen() {
+    public async deafen() {
         const args = {
             deaf: true
         }
         this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
     }
 
-    private async undeafen() {
+    public async undeafen() {
         const args = {
             deaf: false
         }
         this.rpc.sendCommand('SET_VOICE_SETTINGS', args)
+    }
+
+    public async leaveCall() {
+        const args = {
+            channel_id: null
+        }
+        this.rpc.sendCommand('SELECT_VOICE_CHANNEL', args)
+    }
+    
+    public async joinCall(channel_id: string) {
+        const args = {
+            channel_id: channel_id,
+            force: true
+        }
+        this.rpc.sendCommand('SELECT_VOICE_CHANNEL', args)
     }
 }
 

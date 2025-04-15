@@ -67,15 +67,15 @@ const createWindow = async (): Promise<void> => {
       offscreen: false,
     },
   });
-  
+
   mainWindow?.on('enter-full-screen', () => {
     mainWindow?.webContents.send('fullscreen-change');
   });
-  
+
   mainWindow?.on('leave-full-screen', () => {
     mainWindow?.webContents.send('fullscreen-change');
   });
-  
+
   mainWindow.webContents.setFrameRate(60); // Set desired frame rate
 
 
@@ -293,6 +293,45 @@ ipcMain.handle('discord:revoke', async () => {
   }
 })
 
+// main.ts
+ipcMain.handle('discord:voice', async (_, { action }, args?) => {
+  if (!discordRPC) {
+    throw new Error('Discord RPC not initialized');
+  }
+
+  try {
+    switch (action) {
+      case 'mute':
+        await discordRPC.voice.mute();
+        return { success: true };
+      case 'unmute':
+        await discordRPC.voice.unmute();
+        return { success: true };
+      case 'deafen':
+        await discordRPC.voice.deafen();
+        return { success: true };
+      case 'undeafen':
+        await discordRPC.voice.undeafen();
+        return { success: true };
+      case 'leave':
+        await discordRPC.voice.leaveCall();
+        break;
+      case 'join':
+        if (!args || !args.channel_id) {
+          throw new Error('Channel ID is required for join action');
+        }
+        await discordRPC.voice.joinCall(args.channel_id);
+        break;
+      default:
+        throw new Error('Invalid action');
+    }
+  } catch (error) {
+    console.error('Voice control error:', error);
+    throw error;
+  }
+});
+
+
 ipcMain.handle('restart-app', async () => {
   // Perform cleanup
   if (wss) {
@@ -394,12 +433,12 @@ ipcMain.handle('window-close', () => {
 });
 
 ipcMain.handle('toggle-fullscreen', () => {
-    if (mainWindow) {
-        const isFullScreen = mainWindow.isFullScreen();
-        mainWindow.setFullScreen(!isFullScreen);
-        return !isFullScreen;
-    }
-    return false;
+  if (mainWindow) {
+    const isFullScreen = mainWindow.isFullScreen();
+    mainWindow.setFullScreen(!isFullScreen);
+    return !isFullScreen;
+  }
+  return false;
 });
 
 ipcMain.handle('window-is-fullscreen', () => {
@@ -425,7 +464,7 @@ ipcMain.handle('install-spicetify-extension', async () => {
     const extensionsPath = path.join(appDataPath, 'spicetify', 'Extensions');
     const extensionFile = 'zzz-electron-link.js';
     const extensionDestPath = path.join(extensionsPath, extensionFile);
-    
+
     // Get the source path from our assets
     const sourcePath = getAssetPath();
 
@@ -461,9 +500,9 @@ ipcMain.handle('install-spicetify-extension', async () => {
     return { success: true, message: 'Extension installed successfully!' };
   } catch (error) {
     console.error('Installation error:', error);
-    return { 
-      success: false, 
-      message: `Installation failed: ${error.message}` 
+    return {
+      success: false,
+      message: `Installation failed: ${error.message}`
     };
   }
 });

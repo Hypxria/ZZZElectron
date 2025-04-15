@@ -35,6 +35,14 @@ declare global {
             disconnect: () => Promise<void>;
             onData: (callback: (notification: any) => void) => void;
             removeDataListener: () => void;
+            voice: {
+                mute: () => Promise<void>;
+                unmute: () => Promise<void>;
+                deafen: () => Promise<void>;
+                undeafen: () => Promise<void>;
+                leave: () => Promise<void>;
+                join: (channel_id: string) => Promise<void>;
+            }
         };
         lrc: {
             parseSyncedLyrics: (lyrics: string) => Promise<any>;

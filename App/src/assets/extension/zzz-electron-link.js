@@ -314,7 +314,7 @@ self.onmessage = function(e) {
       Spicetify.Player.addEventListener("songchange", (event) => {
         var _a;
         console.log(`song: ${Spicetify.Player.getProgress()}`);
-        if (this.progress > previousDuration - 3550) {
+        if (this.progress > previousDuration - 3550 && Spicetify.Player.getRepeat() !== 2) {
           console.log("Song ended naturally");
           this.wasAutoSwitched = true;
           this.wasAutoSwitchedThisSong = true;
@@ -360,7 +360,7 @@ self.onmessage = function(e) {
   var zzzElectron = new ZZZElectron();
   var app_default = zzzElectron;
 
-  // C:/Users/vivip/AppData/Local/Temp/spicetify-creator/index.jsx
+  // ../../../../AppData/Local/Temp/spicetify-creator/index.jsx
   (async () => {
     await app_default();
   })();

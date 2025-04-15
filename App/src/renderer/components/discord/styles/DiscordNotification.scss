@@ -15,6 +15,7 @@
   right: 50%;
   z-index: 1000;
   translate: 50% 0;
+  outline: solid #27272a 1px;
 
   // Dimensions
   width: var(--notification-width);
@@ -22,7 +23,7 @@
   border-radius: 999999px;
 
   // Styling
-  background-color: var(--notification-background);
+  background-color: black;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 
   // Animation

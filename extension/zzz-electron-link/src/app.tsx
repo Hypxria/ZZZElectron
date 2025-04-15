@@ -530,8 +530,9 @@ class ZZZElectron {
 
     Spicetify.Player.addEventListener('songchange', (event) => {
       // Check if previous song ended naturally (within 1.5s of its end)
+
       console.log(`song: ${Spicetify.Player.getProgress()}`)
-      if (this.progress > (previousDuration - 3550)) {
+      if (this.progress > (previousDuration - 3550) && Spicetify.Player.getRepeat() !== 2) {
         console.log('Song ended naturally')
         this.wasAutoSwitched = true;
         this.wasAutoSwitchedThisSong = true;

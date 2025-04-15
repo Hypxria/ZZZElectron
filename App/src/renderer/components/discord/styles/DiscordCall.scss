@@ -1,25 +1,99 @@
+// DiscordCall.scss
 .discord-call {
     position: absolute;
     left: 50%;
     bottom: 1%;
     translate: -50% 0;
-    width: 27.5%;
-    height: 10%;
-    background-color: #fff;
+    width: min(400px, 100vw - 20px);
+    height: min(75px, calc((100vw - 20px) / 5.33));
+    background-color: #000; // Discord's dark theme color
     z-index: 1000;
-
     border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    outline: solid #27272a 1px;
 }
 
-.discord-call-icon {
-    width: 64px; // Adjust this value to make the icon bigger/smaller
-    height: 64px; // Keep same as width for 1:1 aspect ratio
-    cursor: pointer;
+.call-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: #121213; // Slightly lighter than background
+    border-radius: 8px;
+    outline: solid #27272a 1px;
+
+    div {
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center; // Centers icons horizontally
+
+
+
+        &:hover {
+            background-color: #40444b;
+        }
+    }
+}
+
+.speakers {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: #36393f;
+    border-radius: 8px;
+    min-width: 100px; // Adjust as needed
+    justify-content: center;
+}
+
+#icon {
+    align-items: center;
+    justify-content: center; // Centers icons horizontally
+}
+
+.leave-call {
+    padding: 8px;
+    background: #121213;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    align-items: center;
+    justify-content: center; // Centers icons horizontally
+    outline: solid #27272a 1px;
+
+    div {
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center; // Centers icons horizontally
+    }
+
+    &:hover {
+        background-color: #ed4245; // Discord's danger red
+
+        .mute-button {
+            color: white;
+        }
+    }
+}
+
+.mute-button {
+    color: #b9bbbe; // Discord's icon color
+    width: 20px;
+    height: 20px;
+    transition: color 0.2s;
+
     
-    svg {                    // Add this to target the SVG directly
-        width: 100% !important;
-        height: 100% !important;
-        min-width: 64px;     // Add minimum size
-        min-height: 64px;    // Add minimum size
+    &:hover {
+        color: #dcddde;
     }
 }
