@@ -50,13 +50,17 @@ contextBridge.exposeInMainWorld('discord', {
   },
   revokeAllTokens: () => ipcRenderer.invoke('discord:revoke'),
   voice: {
-    mute: () => ipcRenderer.invoke('discord:voice', 'mute'),
-    unmute: () => ipcRenderer.invoke('discord:voice', 'unmute'),
-    deafen: () => ipcRenderer.invoke('discord:voice', 'deafen'),
-    undeafen: () => ipcRenderer.invoke('discord:voice', 'undeafen'),
-    leave: () => ipcRenderer.invoke('discord:voice', 'leave'),
-    join: (channel_id: string) => ipcRenderer.invoke('discord:voice', 'join', channel_id),
-    getVoiceChannel: () => ipcRenderer.invoke('discord:voice', 'getVoiceChannel'),
+    mute: () => ipcRenderer.invoke('discord:voice', { action: 'mute' }),
+    unmute: () => ipcRenderer.invoke('discord:voice', { action: 'unmute' }),
+    deafen: () => ipcRenderer.invoke('discord:voice', { action: 'deafen' }),
+    undeafen: () => ipcRenderer.invoke('discord:voice', { action: 'undeafen' }),
+    leave: () => ipcRenderer.invoke('discord:voice', { action: 'leave' }),
+    join: (channel_id: string) => ipcRenderer.invoke('discord:voice', 
+      { action: 'join' }, 
+      { channel_id }
+    ),
+    getVoiceChannel: () => ipcRenderer.invoke('discord:voice', { action: 'getVoiceChannel' }),
+    getVoiceSettings: () => ipcRenderer.invoke('discord:voice', { action: 'getVoiceSettings' }),
   }
 });
 

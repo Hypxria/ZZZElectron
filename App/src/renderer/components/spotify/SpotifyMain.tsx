@@ -106,12 +106,12 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     const updateProgress = async () => {
       const timeSinceManualUpdate = Date.now() - manualStateUpdateRef.current;
 
-      console.log('Update Progress Check:', {
-        currentTime: Date.now(),
-        manualStateUpdateTime: manualStateUpdateRef.current,
-        timeSinceManualUpdate,
-        shouldSkip: timeSinceManualUpdate < 200
-      });
+      // console.log('Update Progress Check:', {
+      //   currentTime: Date.now(),
+      //   manualStateUpdateTime: manualStateUpdateRef.current,
+      //   timeSinceManualUpdate,
+      //   shouldSkip: timeSinceManualUpdate < 200
+      // });
 
       if (timeSinceManualUpdate < 200) {
         const remainingWait = 200 - timeSinceManualUpdate;
@@ -127,20 +127,20 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       } else {
         if (justInTimeout) {
           justInTimeout = false
-          console.log('Resuming updates');
+          // console.log('Resuming updates');
         }
       }
 
-      console.log('updating')
+      // console.log('updating')
 
       const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
 
-      console.log('Progress Update:', {
-        serviceProgress,
-        currentLocalProgress: localProgress,
-        refProgress: progressRef.current,
-        stateUpdateTriggered: serviceProgress !== progressRef.current
-      });
+      // console.log('Progress Update:', {
+        // serviceProgress,
+        // currentLocalProgress: localProgress,
+        // refProgress: progressRef.current,
+        // stateUpdateTriggered: serviceProgress !== progressRef.current
+      // });
 
       if (serviceProgress !== progressRef.current) {
         progressRef.current = serviceProgress;
@@ -161,10 +161,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
 
   useEffect(() => {
-    console.log('Local progress state updated:', {
-      newValue: localProgress,
-      refValue: progressRef.current
-    });
+    // console.log('Local progress state updated:', {
+      // newValue: localProgress,
+      // refValue: progressRef.current
+    // });
   }, [localProgress]);
 
 
@@ -172,10 +172,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
   // NextTrack tracking
   const initialNextTrack = useCallback(async () => {
-    console.log("initialNextTrack called");
+    // console.log("initialNextTrack called");
     try {
       const nextTrack = await spotifyService.getNextSong();
-      console.log(`next track:${nextTrack}`)
+      // console.log(`next track:${nextTrack}`)
       setNextTrackData(nextTrack);
     } catch (error) {
       console.error("Error fetching next track:", error);
@@ -187,7 +187,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     const debounceTimeout = setTimeout(async () => {
       try {
         const nextTrack = await spotifyService.getNextSong();
-        console.log(`next track:${nextTrack}`)
+        // console.log(`next track:${nextTrack}`)
         setNextTrackData(prev => {
           if (prev.name === nextTrack.name && prev.artist === nextTrack.artist) return prev;
           return nextTrack;
@@ -214,9 +214,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
 
 
-  console.log(
-    `Song Details- ${currentTrackData.name}, ${currentTrackData.artist}, ${currentTrackData.album}`
-  );
+  
 
   // Getting Avg Colors
   const [colors, setColors] = useState<string[]>([]);

@@ -18,6 +18,8 @@ let wss: WebSocketServer | null = null;
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
 
+ipcMain.setMaxListeners(20); // Or whatever number is appropriate
+
 
 const cspDirectives = {
   'font-src': ["'self'"],
@@ -323,9 +325,13 @@ ipcMain.handle('discord:voice', async (_, { action }, args?) => {
         await discordRPC.voice.joinCall(args.channel_id);
         break;
       case 'getVoiceChannel':
-        return await discordRPC.voice.getVoiceChannel()
+        await discordRPC.voice.getVoiceChannel()
+        break;
+      case 'getVoiceSettings':
+        await discordRPC.voice.getVoiceSettings()
+        break;
       default:
-        throw new Error('Invalid action');
+        throw new Error(`${action} is not a valid action for this function`);
     }
   } catch (error) {
     console.error('Voice control error:', error);

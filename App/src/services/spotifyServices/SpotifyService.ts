@@ -47,10 +47,6 @@ class SpotifyService {
 
     get currentProgress() {
         try {
-            console.log('Getting currentProgress:', {
-                hasProgress: !!this._currentProgress,
-                value: this._currentProgress?.progress_ms,
-            });
             return this._currentProgress;
         } catch (error) {
             console.error('Error in currentProgress getter:', error);
@@ -100,10 +96,8 @@ class SpotifyService {
                         return; // Exit the function if parsing fails
                     }
 
-                    console.log(`response: ${response.type}`)
 
                     if (response.type === 'progress') this.handleProgress(response)
-                    console.log('Received message in SpotifyService:', response);
                     // Handle any responses from app.tsx here if needed
                 } catch (error) {
                     console.error('Error processing WebSocket message:', error);
@@ -157,18 +151,16 @@ class SpotifyService {
     // In SpotifyService.ts methods
     async getCurrentTrack(): Promise<Song> {
         try {
-            console.log('getcurrenttrack run')
             // Send the request for current track info
             this.sendWsMessage({
                 type: 'info',
                 action: 'current'
             });
-            console.log()
             // Create a promise that will resolve when we get the response
             return new Promise((resolve, reject) => {
                 const messageHandler = (event: MessageEvent) => {
                     try {
-                        console.log(`event: ${event.data}`)
+                        // console.log(`event: ${event.data}`)
                         // Use a try-catch block to handle potential JSON parsing errors
                         let response;
                         try {
@@ -184,7 +176,7 @@ class SpotifyService {
 
                             // Remove the message handler
                             this.ws?.removeEventListener('message', messageHandler);
-                            console.log(`response: ${JSON.stringify(response, null, 10)}`)
+                            // console.log(`response: ${JSON.stringify(response, null, 10)}`)
 
                             // Format the data into Song interface
                             const song: Song = {
@@ -200,7 +192,7 @@ class SpotifyService {
                                 repeat_state: response.data.repeat_state,
                                 shuffle_state: response.data.shuffle_state,
                             };
-                            console.log(`song: ${JSON.stringify(song, null, 10)}`)
+                            // console.log(`song: ${JSON.stringify(song, null, 10)}`)
 
                             resolve(song);
                         }
@@ -422,7 +414,7 @@ class SpotifyService {
                     duration_ms: message.data.duration,
                     percentage: message.data.percentage
                 };
-                console.log('Progress updated:', this._currentProgress);
+                // console.log('Progress updated:', this._currentProgress);
             }
         } catch (error) {
             console.error('Error handling progress:', error);

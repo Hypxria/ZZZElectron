@@ -211,7 +211,6 @@ const SongControls: React.FC<SongControlsProps> = ({
       onClick={onShuffle}
     >
       {(() => {
-        console.log(`${shuffle} && ${typeof (shuffle)}`)
         switch (shuffle) {
           case true:
             return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;

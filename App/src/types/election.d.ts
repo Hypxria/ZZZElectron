@@ -42,7 +42,8 @@ declare global {
                 undeafen: () => Promise<void>;
                 leave: () => Promise<void>;
                 join: (channel_id: string) => Promise<void>;
-                getCurrentChannel: () => Promise<any>;
+                getVoiceChannel: () => Promise<void>;
+                getVoiceSettings: () => Promise<void>;
             }
         };
         lrc: {

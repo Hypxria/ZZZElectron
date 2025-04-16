@@ -225,7 +225,7 @@ class DiscordRPC extends EventEmitter {
             this.store.set('access_token', data.access_token);
             this.store.set('refresh_token', data.refresh_token);
             this.store.set('expires_at', Date.now() + data.expires_in);
-            
+
             this.authenticate(data.access_token);
             return;
         }
@@ -364,15 +364,14 @@ class DiscordRPC extends EventEmitter {
             return;
         }
 
+        else if (data.cmd && data.evt == null) {
+            this.emit('data', data);
+        }
+
         // Handle dispatched events
         if (data.evt) {
             if (data.evt === 'READY' && data.cmd === 'DISPATCH') {
                 this.emit('ready');
-                return;
-            }
-
-            if (data.evt === 'VOICE_CHANNEL_SELECT') {
-                this.emit('voiceChannelSelected', data);
                 return;
             }
 
@@ -383,9 +382,9 @@ class DiscordRPC extends EventEmitter {
         }
     }
 
-    public async sendCommand(command:any, args?:any) {
+    public async sendCommand(command: any, args?: any) {
         const payload = {
-            op:1,
+            op: 1,
             cmd: command,
             nonce: this.generateNonce(),
             ...(args && { args }),  // Simply check if args exists
@@ -485,23 +484,25 @@ class DiscordRPC extends EventEmitter {
 class VoiceManager {
     private rpc: DiscordRPC;
     private channel_id: string = '';
-    private guild_id: string | null | void= '';
-    
+    private guild_id: string | null | void = '';
+
 
     constructor(rpc: DiscordRPC) {
         this.rpc = rpc;
     }
 
     public async voiceCallEventWorkflow() {
-        this.rpc.once('voiceChannelSelected', (data: VoiceChannelSelectType) => {
-            console.log('voiceChannelSelected event received:', data);
-
-            if(data.data.channel_id !== null || data.data.channel_id !== 'null') {
-                this.channel_id = data.data.channel_id
-                this.subscribeToVoiceEvents(this.channel_id)
-                this.rpc.sendCommand('GET_VOICE_SETTINGS')
-            } else {
-                this.unsubscribeFromVoiceEvents(this.channel_id)
+        this.rpc.on('data', (data: VoiceChannelSelectType) => {
+            if (data.evt === 'VOICE_CHANNEL_SELECT') {
+                if (data.data.channel_id == null) {
+                    console.log('leaving call')
+                    this.unsubscribeFromVoiceEvents(this.channel_id)
+                } else {
+                    console.log(`joined ${data.data.channel_id}`)
+                    this.channel_id = data.data.channel_id
+                    this.subscribeToVoiceEvents(this.channel_id)
+                    this.rpc.sendCommand('GET_VOICE_SETTINGS')
+                }
             }
         })
         this.rpc.subscribeToEvent('VOICE_CHANNEL_SELECT');
@@ -528,7 +529,7 @@ class VoiceManager {
         ]);
     }
 
-    private async unsubscribeFromVoiceEvents(channel_id:string) {
+    private async unsubscribeFromVoiceEvents(channel_id: string) {
 
         const args = {
             channel_id: channel_id,
@@ -580,13 +581,17 @@ class VoiceManager {
         }
         this.rpc.sendCommand('SELECT_VOICE_CHANNEL', args)
     }
-    
+
     public async joinCall(channel_id: string) {
         const args = {
             channel_id: channel_id,
             force: true
         }
         this.rpc.sendCommand('SELECT_VOICE_CHANNEL', args)
+    }
+
+    public async getVoiceSettings() {
+        this.rpc.sendCommand('GET_VOICE_SETTINGS')
     }
 
     public async getVoiceChannel() {

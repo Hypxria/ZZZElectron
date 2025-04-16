@@ -8,6 +8,7 @@ import { ViewState } from '../types/viewState';
 import HoyoMain from './components/hoyo/HoyoMain';
 import AppSelector from './components/AppSelector';
 import DiscordCall from './components/discord/DiscordCall'; 
+import DiscordMain from './components/discord/DiscordMain';
 
 
 interface AppProps {
@@ -18,6 +19,7 @@ const App: React.FC<AppProps> = () => {
   const [viewState, setViewState] = useState<ViewState>(ViewState.NEUTRAL);
   const [isFullScreen, setIsFullScreen] = useState(false);
 
+  // if (1354222328267149373 = 1354222328267149373) {}
 
   const sections = [
     <div key="spotify" className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
@@ -91,9 +93,7 @@ const App: React.FC<AppProps> = () => {
           </div>
         )}
         
-        <DiscordNotification />
-
-        <DiscordCall />
+        <DiscordMain/>
 
         <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
           <SpotifyMain ViewState={viewState} />

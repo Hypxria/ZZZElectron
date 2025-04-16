@@ -112,17 +112,6 @@ const DiscordNotification: React.FC = ({
 
     const connectToDiscord = async () => {
       try {
-        const id = secureLocalStorage.getItem('discord_client_id');
-        const secret = secureLocalStorage.getItem('discord_client_secret');
-
-        const result = await window.discord.connect(String(id), String(secret));
-        if (!mounted) return;
-
-        if (!result.success) {
-          console.error('Failed to connect to Discord:', result.error);
-          return;
-        }
-
         window.discord.onData((data: any) => {
           // Getting values that we need
           if (data.evt === 'NOTIFICATION_CREATE') handleNotification(data.data)
