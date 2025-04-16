@@ -253,7 +253,7 @@ ipcMain.handle('discord:connect', async (_, id, secret) => {
 
     // Forward notifications to renderer
     discordRPC.on('data', (data) => {
-      mainWindow?.webContents.send('discord:notification', data);
+      mainWindow?.webContents.send('discord:data', data);
     });
 
     return { success: true };
@@ -322,6 +322,8 @@ ipcMain.handle('discord:voice', async (_, { action }, args?) => {
         }
         await discordRPC.voice.joinCall(args.channel_id);
         break;
+      case 'getVoiceChannel':
+        return await discordRPC.voice.getVoiceChannel()
       default:
         throw new Error('Invalid action');
     }

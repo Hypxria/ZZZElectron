@@ -588,6 +588,10 @@ class VoiceManager {
         }
         this.rpc.sendCommand('SELECT_VOICE_CHANNEL', args)
     }
+
+    public async getVoiceChannel() {
+        this.rpc.sendCommand('GET_SELECTED_VOICE_CHANNEL')
+    }
 }
 
 

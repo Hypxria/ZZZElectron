@@ -43,13 +43,12 @@ contextBridge.exposeInMainWorld('discord', {
   connect: (id: string, secret: string) => ipcRenderer.invoke('discord:connect', id, secret),
   disconnect: () => ipcRenderer.invoke('discord:disconnect'),
   onData: (callback: (notification: any) => void) => {
-    ipcRenderer.on('discord:notification', (_, notification) => callback(notification));
+    ipcRenderer.on('discord:data', (_, notification) => callback(notification));
   },
   removeDataListener: () => {
-    ipcRenderer.removeAllListeners('discord:notification');
+    ipcRenderer.removeAllListeners('discord:data');
   },
-  revokeAllTokens: () => ipcRenderer.invoke('discord:revoke')
-  ,
+  revokeAllTokens: () => ipcRenderer.invoke('discord:revoke'),
   voice: {
     mute: () => ipcRenderer.invoke('discord:voice', 'mute'),
     unmute: () => ipcRenderer.invoke('discord:voice', 'unmute'),
@@ -57,6 +56,7 @@ contextBridge.exposeInMainWorld('discord', {
     undeafen: () => ipcRenderer.invoke('discord:voice', 'undeafen'),
     leave: () => ipcRenderer.invoke('discord:voice', 'leave'),
     join: (channel_id: string) => ipcRenderer.invoke('discord:voice', 'join', channel_id),
+    getVoiceChannel: () => ipcRenderer.invoke('discord:voice', 'getVoiceChannel'),
   }
 });
 
