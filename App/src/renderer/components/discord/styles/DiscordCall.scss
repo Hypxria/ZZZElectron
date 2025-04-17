@@ -69,7 +69,7 @@
         justify-content: center; // Add this
         overflow: visible;   // Change from hidden to allow icon to show outside
 
-        &.speaking {
+        &.speaking img {
             outline: 2px solid #43b56d;
         }
 
@@ -87,6 +87,13 @@
             position: absolute;
             right: 0;
             bottom: 0;
+            width: 18px;
+            height: 18px;
+            
+            svg {
+                height: 100%;
+                width: 100%;
+            }
         }
     }
 }

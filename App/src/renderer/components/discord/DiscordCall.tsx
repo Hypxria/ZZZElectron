@@ -65,10 +65,10 @@ const DiscordCall: React.FC = () => {
     }
 
     const handleDiscordData = useCallback(async (data: any) => {
-
         const setInitial = (initialData: GetChannelType) => {
+            if (!initialData) return;
             window.electron.log('setting initial')
-            const voiceUsers = initialData.data.voice_states.reduce((acc, state) => {
+            const voiceUsers = initialData?.data?.voice_states?.reduce((acc, state) => {
                 acc[state.user.id] = {
                     uid: state.user.id,
                     speaking: false,
@@ -82,10 +82,19 @@ const DiscordCall: React.FC = () => {
                 return acc;
             }, {} as VoiceUsers);
 
+            
+            if (!initialData?.data?.voice_states) {
+                setIsInCall(false)
+                return;
+            } else {
+                console.log(initialData?.data?.voice_states?.length)
+                setIsInCall(true)
+            }
+
+
             setCallState(voiceUsers)
             console.log(voiceUsers)
 
-            setIsInCall(true);
         }
         switch (data.evt ?? data.cmd) {
             case 'VOICE_CHANNEL_SELECT':
@@ -97,6 +106,7 @@ const DiscordCall: React.FC = () => {
                 }
                 console.log('channel ID')
 
+                setIsInCall(true);
                 console.log('getting channel')
                 window.discord.voice.getVoiceChannel();
                 console.log('getting voicesettings')
@@ -204,6 +214,10 @@ const DiscordCall: React.FC = () => {
             window.discord.onData(
                 handleDiscordData
             );
+            setTimeout(() => {
+                window.discord.voice.getVoiceChannel();
+                window.discord.voice.getVoiceSettings();
+            }, 2000);
         } catch (error) {
             window.discord.removeDataListener();
             throw new Error(error)
@@ -236,43 +250,46 @@ const DiscordCall: React.FC = () => {
         </div>
     );
 
-    const statusIcon = (
-        <div className={`status-icon ${isDeafened === true ? 'deaf': isMuted === true ? 'mute': ''}`} id='icon' >
+    const StatusIcon = ({ isMuted, isDeafened }: { isMuted: boolean, isDeafened: boolean }) => (
+        <div className={`status-icon ${isDeafened === true ? 'deaf' : isMuted === true ? 'mute' : ''}`} id='icon' >
             {isDeafened === true ?
-            <HeadsetOffRoundedIcon className="mute-button muted" />
-            : isMuted ?
-            <MicOffRoundedIcon className="mute-button muted" />
-            : <></>
+                <HeadsetOffRoundedIcon className="mute-button muted" />
+                : isMuted ?
+                    <MicOffRoundedIcon className="mute-button muted" />
+                    : <></>
             }
         </div>
     );
-    
 
-return (
-    <div className={`discord-call ${isInCall === true ? 'call' : ''}`}>
-        <div className="call-controls">
-            {MuteButton}
-            {DeafenButton}
+
+    return (
+        <div className={`discord-call ${isInCall === true ? 'call' : ''}`}>
+            <div className="call-controls">
+                {MuteButton}
+                {DeafenButton}
+            </div>
+
+
+            <div className={`speakers ${isInCall === true ? 'call' : ''}`}>
+                {/* Add speaker components here */}
+                {isInCall && callState && Object.values(callState).map((user, index) => (
+                    <div className={`speaker ${user.speaking === true ? 'speaking' : ''}`} key={user.uid}>
+                        <img src={user.profile} alt={user.nickname} />
+                        <StatusIcon
+                            isMuted={user?.selfmuted || user?.muted || false}
+                            isDeafened={user?.selfdeafened || user?.deafened || false}
+                        />
+                    </div>
+                ))}
+            </div>
+
+
+
+            <div className="leave-call">
+                {leaveCall}
+            </div>
         </div>
-
-
-        <div className={`speakers ${isInCall === true ? 'call' : ''}`}>
-            {/* Add speaker components here */}
-            {isInCall && callState && Object.values(callState).map((user, index) => (
-                <div className={`speaker ${user.speaking === true ? 'speaking' : ''}`} key={user.uid}>
-                    <img src={user.profile} alt={user.nickname} />
-                    {statusIcon}
-                </div>
-            ))}
-        </div>
-
-
-
-        <div className="leave-call">
-            {leaveCall}
-        </div>
-    </div>
-);
+    );
 };
 
 export default DiscordCall;
