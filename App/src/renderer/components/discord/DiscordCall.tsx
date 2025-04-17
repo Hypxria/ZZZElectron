@@ -37,6 +37,11 @@ const DiscordCall: React.FC = () => {
     const [callState, setCallState] = useState<VoiceUsers | null>(null)
 
     const handleMute = () => {
+        if (isDeafened) {
+            setIsDeafened(false);
+            window.discord.voice.undeafen();
+            return;
+        }
         if (!isMuted) window.discord.voice.mute();
         else window.discord.voice.unmute();
 
@@ -113,7 +118,7 @@ const DiscordCall: React.FC = () => {
                 setCallState((prevCallState): VoiceUsers | null => {
                     if (!prevCallState) return null;
 
-                    const updatedCallState = {...prevCallState};
+                    const updatedCallState = { ...prevCallState };
                     updatedCallState[voiceStateCreateData.data.user.id] = {
                         uid: voiceStateCreateData.data.user.id,
                         speaking: false,
@@ -161,20 +166,24 @@ const DiscordCall: React.FC = () => {
             case 'SPEAKING_START':
                 console.log('Speaking Start:', data);
                 const speakingData: SpeakingType = data;
-                if (callState) {
-                    const updatedCallState = { ...callState };
+                setCallState((prevCallState): VoiceUsers | null => {
+                    if (!prevCallState) return null;
+
+                    const updatedCallState = { ...prevCallState };
                     updatedCallState[speakingData.data.user_id].speaking = true;
-                    setCallState(updatedCallState);
-                }
+                    return updatedCallState;
+                })
                 break;
             case 'SPEAKING_STOP':
                 console.log('Speaking Stop:', data);
                 const speakingStopData: SpeakingType = data
-                if (callState) {
-                    const updatedCallState = { ...callState };
+                setCallState((prevCallState): VoiceUsers | null => {
+                    if (!prevCallState) return null;
+
+                    const updatedCallState = { ...prevCallState };
                     updatedCallState[speakingStopData.data.user_id].speaking = false;
-                    setCallState(updatedCallState);
-                }
+                    return updatedCallState;
+                })
                 break;
             case 'VOICE_SETTINGS_UPDATE':
                 const voiceSettingsUpdateData: VoiceSettingsType = data;
@@ -202,9 +211,9 @@ const DiscordCall: React.FC = () => {
     }, []);
 
     const MuteButton = (
-        <div id='icon' onClick={handleMute}>
-            {isMuted ?
-                <MicOffRoundedIcon className="mute-button" />
+        <div id={`icon ${isMuted === true ? 'muted' : ''}`} onClick={handleMute}>
+            {isMuted || isDeafened ?
+                <MicOffRoundedIcon className="mute-button muted" />
                 :
                 <MicRoundedIcon className="mute-button" />
             }
@@ -214,7 +223,7 @@ const DiscordCall: React.FC = () => {
     const DeafenButton = (
         <div id='icon' onClick={handleDeafen}>
             {isDeafened ?
-                <HeadsetOffRoundedIcon className="mute-button" />
+                <HeadsetOffRoundedIcon className="mute-button muted" />
                 :
                 <HeadsetRoundedIcon className="mute-button" />
             }
@@ -227,27 +236,43 @@ const DiscordCall: React.FC = () => {
         </div>
     );
 
-    return (
-        <div className="discord-call">
-            <div className="call-controls">
-                {MuteButton}
-                {DeafenButton}
-            </div>
-
-            <div className="speakers">
-                {/* Add speaker components here */}
-                {isInCall && callState && Object.values(callState).map((user, index) => (
-                    <div className={`speaker ${user.speaking}`} key={user.uid}>
-                        <img src={user.profile} alt={user.nickname} />
-                    </div>
-                ))}
-            </div>
-
-            <div className="leave-call">
-                {leaveCall}
-            </div>
+    const statusIcon = (
+        <div className={`status-icon ${isDeafened === true ? 'deaf': isMuted === true ? 'mute': ''}`} id='icon' >
+            {isDeafened === true ?
+            <HeadsetOffRoundedIcon className="mute-button muted" />
+            : isMuted ?
+            <MicOffRoundedIcon className="mute-button muted" />
+            : <></>
+            }
         </div>
     );
+    
+
+return (
+    <div className={`discord-call ${isInCall === true ? 'call' : ''}`}>
+        <div className="call-controls">
+            {MuteButton}
+            {DeafenButton}
+        </div>
+
+
+        <div className={`speakers ${isInCall === true ? 'call' : ''}`}>
+            {/* Add speaker components here */}
+            {isInCall && callState && Object.values(callState).map((user, index) => (
+                <div className={`speaker ${user.speaking === true ? 'speaking' : ''}`} key={user.uid}>
+                    <img src={user.profile} alt={user.nickname} />
+                    {statusIcon}
+                </div>
+            ))}
+        </div>
+
+
+
+        <div className="leave-call">
+            {leaveCall}
+        </div>
+    </div>
+);
 };
 
 export default DiscordCall;

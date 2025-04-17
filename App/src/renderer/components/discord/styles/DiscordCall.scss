@@ -3,8 +3,7 @@
     position: absolute;
     left: 50%;
     bottom: 1%;
-    translate: -50% 0;
-    width: min(400px, 100vw - 20px);
+    
     height: min(75px, calc((100vw - 20px) / 5.33));
     background-color: #000; // Discord's dark theme color
     z-index: 1000;
@@ -15,6 +14,15 @@
     padding: 0 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     outline: solid #27272a 1px;
+    gap:12px;
+    pointer-events: none;
+    transition: translate 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    translate: -50% 120px;
+    
+    &.call {
+        translate: -50% 0;
+        pointer-events: all;
+    }
 }
 
 .call-controls {
@@ -46,14 +54,40 @@
 .speakers {
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 8px;
-    background: #36393f;
+    background: #121213; // Slightly lighter than background
     border-radius: 8px;
-    min-width: 100px; // Adjust as needed
-    justify-content: center;
-    .speaker{
-        width: 64px;
-        height: 64px;
+    outline: solid #27272a 1px;
+    
+    .speaker {
+        width: 40px;
+        height: 40px;
+        position: relative;  // Add this to make it the positioning context
+        display: flex;         // Add this
+        align-items: center;   // Add this
+        justify-content: center; // Add this
+        overflow: visible;   // Change from hidden to allow icon to show outside
+
+        &.speaking {
+            outline: 2px solid #43b56d;
+        }
+
+        img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            max-width: 100%;  // Add this to prevent overflow
+            max-height: 100%; // Add this to prevent overflow
+            border-radius: 50%;
+            background-color: #7289da;
+        }
+        
+        .status-icon {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
     }
 }
 
@@ -96,8 +130,12 @@
     height: 20px;
     transition: color 0.2s;
 
-    
+
     &:hover {
         color: #dcddde;
+    }
+
+    &.muted {
+        color: #da3e44;
     }
 }
