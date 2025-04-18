@@ -159,7 +159,6 @@ class ZZZElectron {
       this.ws.onmessage = async (event) => {
         console.log('Received in app.tsx:', event.data);
         // Handle incoming messages here
-        Spicetify.showNotification(`Received: ${event.data}`);
 
         const data = JSON.parse(event.data);
         console.log(`data: ${data}`)
