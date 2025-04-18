@@ -25,7 +25,7 @@
   /* Shift back by half of its own width */
   width: calc(var(--button-size) * 2 + var(--button-gap) + var(--side-padding) * 2);
   height: 75px;
-  background: white;
+  background: #1a1a1a;
   -webkit-app-region: drag;
   display: flex;
   justify-content: center;
@@ -60,6 +60,7 @@
   cursor: pointer;
   justify-content: center;
   align-items: center;
+  padding: 8px; // Add padding to prevent icon from touching edges
 
   &:hover {
     background: #444;
@@ -83,3 +84,20 @@
   z-index: 100;
 }
 
+.hoyo-icon {
+  width: auto;  // Change from fixed width
+  height: 100%; // Fill available height
+  max-width: 100%; // Prevent overflow
+  aspect-ratio: 1/1; // Maintain square aspect ratio
+  position: relative; // Change from absolute
+  display: block; // Ensure proper block rendering
+  object-fit: contain; // Ensure the icon fits without cutting off
+}
+
+.icon-wrapper {
+  height: calc(var(--button-size) - 16px); // Account for button padding
+  width: calc(var(--button-size) - 16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

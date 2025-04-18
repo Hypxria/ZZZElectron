@@ -32,9 +32,12 @@ declare global {
         discord: {
             revokeAllTokens: () => Promise<void>; // Add this line
             connect: (id, secret) => Promise<{ success: boolean; error?: string }>;
+            subscribe: (event: string, args?: any) => Promise<any>;
+            unsubscribe: (event: string, args?: any) => Promise<void>;
             disconnect: () => Promise<void>;
             onData: (callback: (notification: any) => void) => void;
             removeDataListener: () => void;
+            selectTextChannel: (channel_id: string) => Promise<void>;
             voice: {
                 mute: () => Promise<void>;
                 unmute: () => Promise<void>;

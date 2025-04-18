@@ -2,6 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 // src/preload.ts
+import { subscribe, unsubscribe } from 'diagnostics_channel';
 import { contextBridge, shell, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('versions', {
@@ -48,15 +49,18 @@ contextBridge.exposeInMainWorld('discord', {
   removeDataListener: () => {
     ipcRenderer.removeAllListeners('discord:data');
   },
+  subscribe: (event: string, args?: any) => ipcRenderer.invoke('discord:subscribe', event, args),
+  unsubscribe: (event: string, args?: any) => ipcRenderer.invoke('discord:unsubscribe', event, args),
   revokeAllTokens: () => ipcRenderer.invoke('discord:revoke'),
+  selectTextChannel: (channel_id:string) => ipcRenderer.invoke('discord:text', { action: 'selectTextChannel'}, { channel_id } ),
   voice: {
     mute: () => ipcRenderer.invoke('discord:voice', { action: 'mute' }),
     unmute: () => ipcRenderer.invoke('discord:voice', { action: 'unmute' }),
     deafen: () => ipcRenderer.invoke('discord:voice', { action: 'deafen' }),
     undeafen: () => ipcRenderer.invoke('discord:voice', { action: 'undeafen' }),
     leave: () => ipcRenderer.invoke('discord:voice', { action: 'leave' }),
-    join: (channel_id: string) => ipcRenderer.invoke('discord:voice', 
-      { action: 'join' }, 
+    join: (channel_id: string) => ipcRenderer.invoke('discord:voice',
+      { action: 'join' },
       { channel_id }
     ),
     getVoiceChannel: () => ipcRenderer.invoke('discord:voice', { action: 'getVoiceChannel' }),

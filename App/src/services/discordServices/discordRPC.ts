@@ -246,7 +246,7 @@ class DiscordRPC extends EventEmitter {
             args: {
                 client_id: this.CLIENT_ID,
                 client_secret: this.CLIENT_SECRET,
-                scopes: ['rpc', 'messages.read', 'rpc.notifications.read'],
+                scopes: ['rpc', 'messages.read', 'rpc.notifications.read', 'rpc.voice.write', 'rpc.voice.read'],
                 v: 1
             }
         };
@@ -457,9 +457,24 @@ class DiscordRPC extends EventEmitter {
         }
     }
 
+    public async selectTextChannel(channel_id: string){ 
+        const payload = {
+            op: 1,
+            cmd: 'SELECT_TEXT_CHANNEL',
+            args: {
+                channel_id: channel_id,
+                timeout: 4000,
+            },
+            nonce: this.generateNonce(),
+            client_id: this.CLIENT_ID
+        };
 
-
-
+        try {
+            this.sendFrame(payload);
+        } catch (error) {
+            console.error(`Failed to send SELECT_TEXT_CHANNEL:`, error);
+        }
+    }
 
     async disconnect() {
         if (this.socket) {

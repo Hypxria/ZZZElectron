@@ -230,7 +230,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       onClick={onLoop}
     >
       {(() => {
-        console.log(`${loop} && ${typeof (loop)}`)
+        // console.log(`${loop} && ${typeof (loop)}`)
         switch (loop) {
 
           /**
@@ -260,17 +260,6 @@ const SongControls: React.FC<SongControlsProps> = ({
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-
-  const handleVolumeIconClick = (icon: 'up' | 'down') => {
-    if (icon === 'down') {
-      onVolumeChange(0);
-    } else {
-      onVolumeChange(100); // Since your volume is 0-100 based on the code
-    }
-  };
-
-
-
 
   return (
     <div

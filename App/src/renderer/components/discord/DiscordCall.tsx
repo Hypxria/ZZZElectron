@@ -6,8 +6,10 @@ import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
 import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import PhoneDisabledRoundedIcon from '@mui/icons-material/PhoneDisabledRounded';
+import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
-import { VoiceChannelSelectType } from '../../../services/discordServices/types';
+import { DiscordNotificationType } from './../../../services/discordServices/types';
 
 import { GetChannelType } from './../../../services/discordServices/eventTypes/GetChannelType'
 import { SpeakingType } from './../../../services/discordServices/eventTypes/SpeakingType';
@@ -35,6 +37,51 @@ const DiscordCall: React.FC = () => {
     const [isDeafened, setIsDeafened] = useState(false);
     const [isInCall, setIsInCall] = useState(false);
     const [callState, setCallState] = useState<VoiceUsers | null>(null)
+    const [isBeingCalled, setIsBeingCalled] = useState<boolean>(false)
+    const [channelId, setChannelId] = useState<number>(0)
+    const [beingCalledData, setBeingCalledData] = useState<DiscordNotificationType>()
+
+    const isBeingCalledRef = useRef(false);
+
+    useEffect(() => {
+        isBeingCalledRef.current = isBeingCalled;
+    }, [isBeingCalled]);
+
+    // Handling cases where the user doesn't accept nor decline the call
+    useEffect(() => {
+        if (isBeingCalledRef.current) {
+            const timeoutId = setTimeout(() => {
+                setIsBeingCalled(false);
+            }, 30000);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [isInCall, isBeingCalledRef.current])
+
+    useEffect(() => {
+        try {
+
+            const handleData = (data: any) => {
+                handleDiscordData(data);
+            };
+
+            window.discord.onData(handleData);
+
+            const timer = setTimeout(() => {
+                window.discord.voice.getVoiceChannel();
+                window.discord.voice.getVoiceSettings();
+            }, 2000);
+
+            return () => {
+                clearTimeout(timer);
+                window.discord.removeDataListener(); // Remove specific listener
+            }
+        } catch (error) {
+            window.discord.removeDataListener();
+            throw new Error(error)
+        }
+    }, []);
+
 
     const handleMute = () => {
         if (isDeafened) {
@@ -56,13 +103,23 @@ const DiscordCall: React.FC = () => {
     }
 
     const handleLeave = () => {
-        if (isInCall) {
-            window.discord.voice.leave();
-            setCallState(null)
-        }
 
-        setIsInCall(!isInCall)
+        window.discord.voice.leave();
+        setCallState(null)
+
+
+        setIsInCall(false)
     }
+
+    const handleJoin = () => {
+        if (!isInCall) {
+            window.discord.voice.join(channelId.toString());
+        };
+        setIsBeingCalled(false);
+        setIsInCall(true);
+    }
+
+
 
     const handleDiscordData = useCallback(async (data: any) => {
         const setInitial = (initialData: GetChannelType) => {
@@ -82,7 +139,7 @@ const DiscordCall: React.FC = () => {
                 return acc;
             }, {} as VoiceUsers);
 
-            
+
             if (!initialData?.data?.voice_states) {
                 setIsInCall(false)
                 return;
@@ -106,6 +163,10 @@ const DiscordCall: React.FC = () => {
                 }
                 console.log('channel ID')
 
+                if (isBeingCalledRef.current && beingCalledData?.data.channel_id === data.data.channel_id) setIsBeingCalled(false); else throw new Error(`conditions not met, ${isBeingCalledRef.current}, ${beingCalledData?.data.channel_id}, ${data.data.channel_id}`)
+                if (isBeingCalledRef.current && beingCalledData?.data.channel_id === data.data.channel_id) console.log('isbeingcalled false'); else console.log('isbeingcalled true')
+
+
                 setIsInCall(true);
                 console.log('getting channel')
                 window.discord.voice.getVoiceChannel();
@@ -125,6 +186,8 @@ const DiscordCall: React.FC = () => {
                 break;
             case 'VOICE_STATE_CREATE':
                 const voiceStateCreateData: VoiceStateType = data;
+
+
                 setCallState((prevCallState): VoiceUsers | null => {
                     if (!prevCallState) return null;
 
@@ -165,6 +228,7 @@ const DiscordCall: React.FC = () => {
                 break;
             case 'VOICE_STATE_DELETE':
                 const voiceStateDeleteData: VoiceStateType = data;
+                if (isBeingCalledRef.current) { setIsBeingCalled(false); return; };
                 setCallState((prevCallState): VoiceUsers | null => {
                     if (!prevCallState) return null;
 
@@ -200,29 +264,28 @@ const DiscordCall: React.FC = () => {
                 setIsMuted(voiceSettingsUpdateData.data.mute)
                 setIsDeafened(voiceSettingsUpdateData.data.deaf)
                 break;
+            case 'NOTIFICATION_CREATE':
+                const notificationCreateData: DiscordNotificationType = data;
+                if (notificationCreateData.data.message.type === 3) {
+                    const args = {
+                        channel_id: notificationCreateData.data.channel_id,
+                    }
+                    await setIsBeingCalled(true)
+                    await setBeingCalledData(notificationCreateData)
+                    await window.discord.subscribe('VOICE_STATE_DELETE', args)
+                    await setChannelId(args.channel_id)
+
+                    console.log('getting called')
+                }
+                break;
             default:
                 console.log('Unhandled event:', data.evt, data.cmd);
         }
     }, [])
 
-    useEffect(() => {
-        console.log('CallState updated:', callState);
-    }, [callState]);
 
-    useEffect(() => {
-        try {
-            window.discord.onData(
-                handleDiscordData
-            );
-            setTimeout(() => {
-                window.discord.voice.getVoiceChannel();
-                window.discord.voice.getVoiceSettings();
-            }, 2000);
-        } catch (error) {
-            window.discord.removeDataListener();
-            throw new Error(error)
-        }
-    }, []);
+
+
 
     const MuteButton = (
         <div id={`icon ${isMuted === true ? 'muted' : ''}`} onClick={handleMute}>
@@ -261,33 +324,60 @@ const DiscordCall: React.FC = () => {
         </div>
     );
 
+    const pickUpIcon = (
+        <div className="join-call" onClick={handleJoin}>
+            <PhoneRoundedIcon className="join-button" />
+        </div>
+    );
+
+    const declineIcon = (
+        <div className="decline-call" onClick={handleLeave}>
+            <CloseRoundedIcon className="decline-button" />
+        </div>
+
+    )
 
     return (
-        <div className={`discord-call ${isInCall === true ? 'call' : ''}`}>
-            <div className="call-controls">
-                {MuteButton}
-                {DeafenButton}
-            </div>
-
-
-            <div className={`speakers ${isInCall === true ? 'call' : ''}`}>
-                {/* Add speaker components here */}
-                {isInCall && callState && Object.values(callState).map((user, index) => (
-                    <div className={`speaker ${user.speaking === true ? 'speaking' : ''}`} key={user.uid}>
-                        <img src={user.profile} alt={user.nickname} />
-                        <StatusIcon
-                            isMuted={user?.selfmuted || user?.muted || false}
-                            isDeafened={user?.selfdeafened || user?.deafened || false}
-                        />
+        <div className={`discord-call ${isInCall === true ? 'call' : isBeingCalledRef.current === true ? 'ringing' : ''}`}>
+            {isBeingCalledRef.current === true && isInCall === false && (
+                <>
+                    <div className="call-controls">
+                        {pickUpIcon}
                     </div>
-                ))}
-            </div>
+                    <div className='caller'>
+                        <div className='profile-pic'>
+                            <img className='caller-image' src={beingCalledData?.data.icon_url} />
+                        </div>
+                        <div className='call-details'>
+                            <span className='call-title'>{beingCalledData?.data.title}</span>
+                        </div>
+                    </div>
+                </>
+            )}
+            {isInCall === true && (
+                <>
+                    <div className="call-controls">
+                        {MuteButton}
+                        {DeafenButton}
+                    </div>
+                    <div className={`speakers ${isInCall === true ? 'call' : ''}`}>
+                        {/* Add speaker components here */}
+                        {isInCall && callState && Object.values(callState).map((user, index) => (
+                            <div className={`speaker ${user.speaking === true ? 'speaking' : ''}`} key={user.uid}>
+                                <img src={user.profile} alt={user.nickname} />
+                                <StatusIcon
+                                    isMuted={user?.selfmuted || user?.muted || false}
+                                    isDeafened={user?.selfdeafened || user?.deafened || false}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="leave-call">
+                        {leaveCall}
+                    </div>
+                </>
+            )}
 
-
-
-            <div className="leave-call">
-                {leaveCall}
-            </div>
         </div>
     );
 };

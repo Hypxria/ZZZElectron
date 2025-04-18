@@ -295,7 +295,42 @@ ipcMain.handle('discord:revoke', async () => {
   }
 })
 
-// main.ts
+ipcMain.handle('discord:subscribe', async (_, event, args?) => {
+  if (!discordRPC) {
+    throw new Error('Discord RPC not initialized');
+  }
+  try {
+    await discordRPC.subscribeToEvent(event, args);
+  } catch (error) {
+    console.error('Subscription error:', error);
+    throw error;
+  }
+})
+
+ipcMain.handle('discord:text', async (_, { action }, args?) => {
+  if (!discordRPC) {
+    throw new Error('Discord RPC not initialized');
+  }
+  
+  try {
+    switch (action) {
+      case 'selectTextChannel':
+        if (!args || !args.channel_id) {
+          throw new Error('Channel ID is required for selectTextChannel action');
+        }
+        await discordRPC.selectTextChannel(args.channel_id);
+        break;
+      default:
+        throw new Error(`${action} is not a valid action for this function`);
+
+    }
+  }
+  catch (error) {
+    console.error('Text control error:', error);
+    throw error;
+  }
+})
+
 ipcMain.handle('discord:voice', async (_, { action }, args?) => {
   if (!discordRPC) {
     throw new Error('Discord RPC not initialized');
@@ -330,6 +365,7 @@ ipcMain.handle('discord:voice', async (_, { action }, args?) => {
       case 'getVoiceSettings':
         await discordRPC.voice.getVoiceSettings()
         break;
+
       default:
         throw new Error(`${action} is not a valid action for this function`);
     }

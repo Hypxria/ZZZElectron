@@ -64,6 +64,7 @@ const DiscordNotification: React.FC = ({
   const [author, setAuthor] = useState<string>('');
   const [timestamp, setTimestamp] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [channelId, setChannelId] = useState<string>('')
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -99,13 +100,14 @@ const DiscordNotification: React.FC = ({
 
     const handleNotification = (notification: DiscordNotificationType) => {
       console.log('Notification received:', notification);
-      setAvatarUrl(notification.icon_url);
-      setAuthor(notification.title);
+      setAvatarUrl(notification.data.icon_url);
+      setAuthor(notification.data.title);
+      setChannelId(notification.data.channel_id.toString())
 
-      const date = new Date(notification.message.timestamp);
+      const date = new Date(notification.data.message.timestamp);
       setTimestamp(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
-      setMessage(notification.body);
+      setMessage(notification.data.body);
 
       showNotification()
     };
@@ -114,7 +116,7 @@ const DiscordNotification: React.FC = ({
       try {
         window.discord.onData((data: any) => {
           // Getting values that we need
-          if (data.evt === 'NOTIFICATION_CREATE') handleNotification(data.data)
+          if (data.evt === 'NOTIFICATION_CREATE') handleNotification(data)
         });
       } catch (error) {
         if (!mounted) return;
@@ -146,6 +148,9 @@ const DiscordNotification: React.FC = ({
     }, 5000);
   };
 
+  const handleNotiClick = () => {
+    window.discord.selectTextChannel(message)
+  }
 
   return (
     <div className={`notification-container ${isVisible ? 'visible' : ''}`} onMouseEnter={handleMouseEnter}
@@ -159,7 +164,7 @@ const DiscordNotification: React.FC = ({
         )}
       </div>
 
-      <div className="notification-content">
+      <div className="notification-content" onClick={handleNotiClick}>
         <div className="notification-header">
           <span className="author">{author}</span>
           <span className="timestamp">{timestamp}</span>
