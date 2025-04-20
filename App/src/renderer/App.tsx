@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import SpotifyMain from './components/spotify/SpotifyMain';
 import Titlebar from './components/Titlebar';
-import Settings from './components/Settings';
-import DiscordNotification from './components/discord/DiscordNotification';
+import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings';
 import '../index.scss';
 import { ViewState } from '../types/viewState';
 import HoyoMain from './components/hoyo/HoyoMain';
 import AppSelector from './components/AppSelector';
-import DiscordCall from './components/discord/DiscordCall'; 
 import DiscordMain from './components/discord/DiscordMain';
+import secureLocalStorage from 'react-secure-storage';
 
 
 interface AppProps {
 }
 
+
+
 const App: React.FC<AppProps> = () => {
   const [isSettings, setIsSettings] = useState<boolean>(false);
-  const [viewState, setViewState] = useState<ViewState>(ViewState.NEUTRAL);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false)
+  const [enabledModules, setEnabledModules] = useState<EnabledModules>(() => {
+    const savedModules = secureLocalStorage.getItem('enabled_modules');
+    if (savedModules) {
+      return JSON.parse(savedModules as string) as EnabledModules;
+    }
+    return DEFAULT_MODULES;
+  });
+  const [viewState, setViewState] = useState<ViewState>(() => {
+    if (!enabledModules.Hoyolab) {
+      return ViewState.SPOTIFY_FULL;
+    } else if (!enabledModules.Spotify) {
+      return ViewState.RIGHT_FULL;
+    }
+    return ViewState.NEUTRAL;
+  });
 
-  // if (1354222328267149373 = 1354222328267149373) {}
-
-  const sections = [
-    <div key="spotify" className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
-      <SpotifyMain ViewState={viewState} />
-    </div>,
-    <div key="right" className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-      <HoyoMain ViewState={viewState} />
-    </div>
-  ];
+  useEffect(() => {
+    const savedModules = secureLocalStorage.getItem('enabled_modules');
+    console.log(savedModules)
+    if (savedModules) {
+      setEnabledModules(JSON.parse(savedModules as string));
+    }
+  }, []);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -92,15 +104,22 @@ const App: React.FC<AppProps> = () => {
             <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
           </div>
         )}
-        
-        <DiscordMain/>
 
-        <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
-          <SpotifyMain ViewState={viewState} />
-        </div>
-        <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-          {/* <HoyoMain ViewState={viewState} /> */}
-        </div>
+        {enabledModules.Discord && (
+          <DiscordMain />
+
+        )}
+
+        {enabledModules.Spotify && (
+          <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+            <SpotifyMain ViewState={viewState} />
+          </div>
+        )}
+        {enabledModules.Hoyolab && (
+          <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
+            {/* <HoyoMain ViewState={viewState} /> */}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 // src/main.ts
-import { app, BrowserWindow, session, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -40,11 +40,15 @@ const buildCsp = (directives: Record<string, string[]>) => {
     .join(' ');
 };
 
-const createWindow = async (): Promise<void> => {
+const createWindow = async (x: number, y: number): Promise<void> => {
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
   app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
   app.commandLine.appendSwitch('ignore-gpu-blocklist');
+
+  // Adding these lines to handle display-related issues
+  app.commandLine.appendSwitch('disable-gpu-vsync');
+  app.commandLine.appendSwitch('force-device-scale-factor', '1');
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -72,9 +76,13 @@ const createWindow = async (): Promise<void> => {
     mainWindow?.webContents.send('fullscreen-change');
   });
 
+  screen.on('display-metrics-changed', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('display-metrics-changed');
+    }
+  });
 
   mainWindow.webContents.setFrameRate(60); // Set desired frame rate
-
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
@@ -109,10 +117,26 @@ app.whenReady().then(async () => {
     const gpuInfo = app.getGPUInfo('basic');
     console.log('GPU Info:', gpuInfo);
   });
-  createWindow();
+
+  const displays = screen.getAllDisplays();
+  const primaryDisplay = screen.getPrimaryDisplay();
+
+  displays.sort((a, b) => {
+    // Sort first by x position, then by y position
+    if (a.bounds.x !== b.bounds.x) {
+      return a.bounds.x - b.bounds.x;
+    }
+    return a.bounds.y - b.bounds.y;
+  });
+
+  const x = primaryDisplay.bounds.x + (primaryDisplay.bounds.width - 800) / 2;
+  const y = primaryDisplay.bounds.y + (primaryDisplay.bounds.height - 600) / 2;
+
+
+  createWindow(x, y);
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createWindow(x, y);
   });
 });
 

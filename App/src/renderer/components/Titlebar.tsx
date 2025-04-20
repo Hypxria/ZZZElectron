@@ -4,7 +4,8 @@ import MinimizeIcon from '@mui/icons-material/Remove';
 import MaximizeIcon from '@mui/icons-material/CropSquare';
 import CloseIcon from '@mui/icons-material/Close';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import { FullscreenRounded } from '@mui/icons-material';
+import FullscreenRounded from '@mui/icons-material/FullscreenRounded';
+import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded';
 
 interface TitlebarProps {
     title?: string;
@@ -80,7 +81,11 @@ const Titlebar: React.FC<TitlebarProps> = ({
                             className='window-control-button fullscreen'
                             onClick={handleFullscreen}
                         >
-                            <FullscreenRounded fontSize='small' />
+                            {isFullScreen ? (
+                                <FullscreenExitRounded fontSize='small' />
+                            ) : (
+                                <FullscreenRounded fontSize='small' />
+                            )}
                         </button>
     
                         <button

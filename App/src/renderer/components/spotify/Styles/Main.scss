@@ -19,7 +19,6 @@
   align-items: center;
 
   /* Center vertically */
-  transform: translateY();
 }
 
 .undercover {
@@ -33,11 +32,12 @@
 }
 
 .song-info {
-  
   position: absolute;
+  width: fit-content;
+  height: fit-content;
   left: 50%;
-  top: 48%;
-  translate: -50% calc(-50% - 2.5vh);
+  top: 53%;
+  translate: -50% -50%;
   z-index: auto;
 }
 

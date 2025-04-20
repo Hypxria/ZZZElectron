@@ -1,18 +1,23 @@
 /* Song Controls Container */
 
 .song-controls {
+  padding: 15px 0; // Instead of margin-top
+
   display: flex;
   flex-direction: column;
+
   align-items: center;
-  margin-top: 4px;
-  gap: 20px;
-  padding: 0px;
-  width: 100%;
+
+  height: auto;
   z-index: 0;
-  transform: translateY(1vh);
-  --average-color:'#ffffff';
-  --brighter-color:'#cccccc';
-  --dimmer-color:'#999999';
+
+  min-height: 100%; // Instead of height: 100%
+
+  --average-color: '#ffffff';
+  --brighter-color: '#cccccc';
+  --dimmer-color: '#999999';
+
+  box-sizing: border-box;
 }
 
 /* Time Display */
@@ -25,30 +30,31 @@
   font-size: 12px;
   min-width: 45px;
   user-select: none;
+
+  &.time-label-left {
+    font-family: Urbanist;
+    top: 25%;
+    left: -35px;
+
+    /* Adjust based on your needs */
+    font-size: 1rem;
+  }
+
+  &.time-label-right {
+    font-family: Urbanist;
+    top: 25%;
+    right: -35px;
+
+    /* Adjust based on your needs */
+    text-align: right;
+    font-size: 1rem;
+  }
 }
 
-.time-label-left {
-  font-family: Urbanist;
-  top: 25%;
-  left: -35px;
-
-  /* Adjust based on your needs */
-  font-size: 1rem;
-}
-
-.time-label-right {
-  font-family: Urbanist;
-  top: 25%;
-  right: -35px;
-
-  /* Adjust based on your needs */
-  text-align: right;
-  font-size: 1rem;
-}
 
 .progress-bar-wrapper {
   position: relative;
-  width: 110%;
+  width: max(40vw, 300%);
   padding: 0 50px;
   box-sizing: border-box;
 
@@ -71,42 +77,44 @@
   /* or try without padding and use margin instead */
   margin: 8px 0;
   padding: 0;
-}
 
-.progress-bar-background {
-  position: relative;
-  width: 100%;
-  height: 4px;
+  .progress-bar-background {
+    position: relative;
+    width: 100%;
+    height: 4px;
 
-  /* Change the background color to be more transparent */
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  transform-origin: center;
+    /* Change the background color to be more transparent */
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transform-origin: center;
 
-  /* Add this */
-  pointer-events: none;
+    /* Add this */
+    pointer-events: none;
 
-  /* Add this to ensure clicks go to the container */
-  overflow: none;
-  transition: all 0.2s ease;
-}
+    /* Add this to ensure clicks go to the container */
+    overflow: none;
+    transition: all 0.2s ease;
 
-.progress-bar-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: var(--average-color);
-  border-radius: 4px;
-  transform-origin: left;
-  transition: all 0.1s ease-out;
-  opacity: 1;
-  overflow: hidden;
+    .progress-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: var(--average-color);
+      border-radius: 4px;
+      transform-origin: left;
+      transition: all 0.1s ease-out;
+      opacity: 1;
+      overflow: hidden;
+    }
+  }
 }
 
 .progress-bar-container:hover {
-  .progress-bar-background, .progress-bar-fill {
+
+  .progress-bar-background,
+  .progress-bar-fill {
     transform: translateY(-50%);
     height: 6px;
   }
@@ -136,22 +144,23 @@
 /* Button Container */
 
 .song-button-container {
+  height: fit-content;
+  width: fit-content;
   display: flex;
-  gap: 20px;
-  position: absolute;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  transform: translateY(60%);
+  box-sizing: border-box;
+  gap: 1px;
+
 
   button {
-    padding: 6vmin;
     border: none;
     cursor: pointer;
     width: 40px;
 
     /* or whatever size your circle is */
-    height: 40px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -164,17 +173,11 @@
   }
 }
 
-/* Control Buttons */
-
-
-/* Add or update these CSS rules */
-
 .main-controls-row {
   display: flex;
   gap: 20px;
   align-items: center;
-  margin-top: -17.5px;
-  margin-bottom: -22.5px;
+  box-sizing: border-box;
 }
 
 .secondary-controls-row {
@@ -185,7 +188,9 @@
   align-items: center;
 }
 
-.control-icon, .skip-icon, .back-icon {
+.control-icon,
+.skip-icon,
+.back-icon {
   color: var(--average-color);
   border-radius: 50%;
   font-size: 30px !important;
@@ -205,12 +210,14 @@
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
+  transition: color ease-in-out 0.2s;
 
-  &[data-state="1"], &[data-state="2"] {
-    background-color: var(--brighter-color);
-    color: var(--dimmer-color);
+  &.all,
+  &.one {
+    background-color: var(--average-color);
+    color: var(--brighter-color);
     padding: 4px;
-    transition: all 0.2s ease;
+    transition: color ease-in-out 0.2s;
   }
 }
 
@@ -220,12 +227,13 @@
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
+  transition: color ease-in-out 0.2s;
 
-  &[data-state="true"] {
-    background-color: var(--brighter-color);
-    color: var(--dimmer-color);
+  &.shuffled {
+    background-color: var(--average-color);
+    color: var(--brighter-color);
     padding: 4px;
-    transition: all 0.2s ease;
+    transition: color ease-in-out 0.2s;
   }
 }
 
@@ -262,15 +270,18 @@
   }
 
   .progress-bar-container:hover {
-    .progress-bar-background, .progress-bar-fill {
+
+    .progress-bar-background,
+    .progress-bar-fill {
       transform: translateY(-10%);
       height: 6px;
     }
   }
 
-  .progress-bar-handle:hover, .progress-bar-container:active .progress-bar-handle {
+  .progress-bar-handle:hover,
+  .progress-bar-container:active .progress-bar-handle {
     transform: translate(-50%, -50%) scale(1.2);
   }
 
-  
+
 }

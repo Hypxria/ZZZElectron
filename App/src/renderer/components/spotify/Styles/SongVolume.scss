@@ -3,11 +3,11 @@
     left: calc(100% + 15px);
     top: 50%;
     translate: 0% -50%;
-    transform: translate(-50%) translateY(-50%) rotate(-90deg);
+    transform: translate(-50%) translateY(-10%) rotate(-90deg);
     transform-origin: center;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 1vh;
     z-index: 1;
     width: 100%;
     

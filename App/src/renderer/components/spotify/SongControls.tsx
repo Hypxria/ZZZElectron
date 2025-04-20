@@ -213,11 +213,11 @@ const SongControls: React.FC<SongControlsProps> = ({
       {(() => {
         switch (shuffle) {
           case true:
-            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+            return <ShuffleRoundedIcon className="shuffle-icon shuffled" />;
           case false:
-            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+            return <ShuffleRoundedIcon className="shuffle-icon" />;
           default:
-            return <ShuffleRoundedIcon className="shuffle-icon" data-state={shuffle} />;
+            return <ShuffleRoundedIcon className="shuffle-icon" />;
         }
       })()}
     </button>
@@ -242,11 +242,11 @@ const SongControls: React.FC<SongControlsProps> = ({
            * Return current Repeat state (No repeat = 0/Repeat all = 1/Repeat one = 2).
            */
           case 0:
-            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
-          case 2:
-            return <RepeatOneRoundedIcon className="loop-icon" data-state={loop} />;
+            return <RepeatRoundedIcon className="loop-icon none" data-state={loop} />;
           case 1:
-            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
+            return <RepeatRoundedIcon className="loop-icon all" data-state={loop} />;
+          case 2:
+            return <RepeatOneRoundedIcon className="loop-icon one" data-state={loop} />;
           default:
             return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
         }

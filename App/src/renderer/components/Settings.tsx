@@ -4,25 +4,56 @@ import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRound
 import secureLocalStorage from "react-secure-storage";
 import './Settings.scss';
 
+export interface EnabledModules {
+    Spotify: boolean;
+    Discord: boolean;
+    Hoyolab: boolean;
+}
+
+export const DEFAULT_MODULES: EnabledModules = {
+    Spotify: true,
+    Discord: true,
+    Hoyolab: true
+};
+
 interface SettingsProps {
     isSettings: boolean;
     setIsSettings: (value: boolean) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSettings }) => {
+const Settings: React.FC<SettingsProps> = ({
+    isSettings,
+    setIsSettings: setIsSettings,
+}) => {
     const [navigationPath, setNavigationPath] = useState<string[]>(['Settings']);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [installStatus, setInstallStatus] = useState<string>('');
     const [isInstalling, setIsInstalling] = useState(false);
 
+    const modules: Array<keyof EnabledModules> = ['Spotify', 'Discord', 'Hoyolab'];
+    const [enabledModules, setEnabledModules] = useState<EnabledModules>(() => {
+        // Load saved module states from secure storage, defaulting to DEFAULT_MODULES
+        const savedModules = secureLocalStorage.getItem('enabled_modules');
+        if (savedModules) {
+            return JSON.parse(savedModules as string) as EnabledModules;
+        }
+        return DEFAULT_MODULES;
+    });
+
     const generalOptions = [
         'Spotify Settings',
         'Hoyolab Settings',
         'Discord Settings',
-        'Credits',
+        'Modules',
     ];
 
+    const [tempModules, setTempModules] = useState<EnabledModules>(enabledModules);
 
+    useEffect(() => {
+        if (isSettings) {
+            setTempModules(enabledModules);
+        }
+    }, [isSettings]);
 
     const handleMenuSelect = (menu: string) => {
         window.electron.log(`Menu selected: ${menu}`)
@@ -46,6 +77,24 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
         setNavigationPath(newPath);
         setActiveMenu(menu);
     };
+
+    const handleModuleToggle = (moduleName: keyof EnabledModules) => {
+        // Update only the temporary state
+        setTempModules(prev => ({
+            ...prev,
+            [moduleName]: !prev[moduleName]
+        }));
+    };
+
+    const handleModuleSave = () => {
+        // Apply changes
+        setEnabledModules(tempModules);
+        secureLocalStorage.setItem('enabled_modules', JSON.stringify(tempModules));
+        window.electron.log('Module settings saved');
+        // Optionally close settings
+        setIsSettings(false);
+    };
+
 
 
     const handleNavigationClick = (index: number) => {
@@ -276,7 +325,40 @@ const Settings: React.FC<SettingsProps> = ({ isSettings, setIsSettings: setIsSet
                             </div>
                         </div>
                     </div>
+                )}
 
+                {activeMenu === 'Modules' && (
+                    <div className="options-menu">
+                        <div className="settings-section">
+                            <div className="module-toggles">
+                                {modules.map((module) => (
+                                    <div key={module} className="module-toggle">
+                                        <label className="toggle-switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={tempModules[module]}
+                                                onChange={() => handleModuleToggle(module)}
+                                            />
+                                            <span className="toggle-slider"></span>
+                                        </label>
+                                        <span className="module-name">
+                                            {module.charAt(0).toUpperCase() + module.slice(1)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="save-input">
+                                <button
+                                    id='input-button'
+                                    className="save-module-button"
+                                    onClick={handleModuleSave}
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
             </div>

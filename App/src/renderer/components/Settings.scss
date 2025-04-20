@@ -152,6 +152,7 @@
 }
 
 .credentials {
+  padding-top: 10px;
   width: inherit;
   display: flex;
   flex-direction: column;
@@ -184,6 +185,7 @@
 }
 
 .settings-section {
+  align-items: center;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -238,6 +240,125 @@
     }
   }
 }
+
+// Module Toggle Section
+.module-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;  // Increased gap between toggles
+  padding: 24px;  // Increased padding around toggles
+
+  .module-toggle {
+    display: flex;
+    align-items: center;
+    gap: 16px;  // Increased gap between toggle and text
+    padding: 16px 24px;  // Increased padding inside each toggle
+    background-color: #1e1e20;
+    border-radius: 8px;  // Slightly larger border radius
+    transition: background-color 0.2s ease;
+
+    .module-name {
+      font-size: 16px;
+      color: white;
+      font-weight: 500;  // Make text a bit bolder
+    }
+  }
+}
+
+// Toggle switch styles
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 36px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked+.toggle-slider {
+      background-color: #92ff8a;
+
+      &:before {
+        transform: translateX(26px);
+      }
+    }
+
+    &:focus+.toggle-slider {
+      box-shadow: 0 0 1px #f54545;
+    }
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 28px;  
+      width: 28px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+  }
+}
+
+.module-toggle {
+  &:hover {
+    background-color: #28282b;
+    transform: translateY(-2px);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+}
+
+.save-module-button {
+  width: 20%;
+}
+
+// .settings-actions {
+//   display: flex;
+//   gap: 12px;
+//   margin-top: 24px;
+//   padding: 16px;
+//   border-top: 1px solid #2a2a2c;
+
+//   button {
+//       padding: 8px 16px;
+//       border-radius: 6px;
+//       border: none;
+//       cursor: pointer;
+//       transition: all 0.2s ease;
+//       font-weight: 500;
+
+//       &.save-button {
+//           background-color: #92ff8a;
+//           color: #000;
+
+//           &:hover {
+//               background-color: #7ee677;
+//           }
+//       }
+
+//       &:disabled {
+//           opacity: 0.5;
+//           cursor: not-allowed;
+//       }
+//   }
+// }
+
+// misc
 
 @keyframes fadeIn {
   from {
