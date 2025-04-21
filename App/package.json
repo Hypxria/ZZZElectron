@@ -1,11 +1,11 @@
 {
-  "name": "@hyperiya/zzzapp",
-  "productName": "my-app",
+  "name": "@hyperiya/iris",
+  "productName": "Iris",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "build": {
-    "appId": "your.app.id",
+    "appId": "hyperiya.app.Iris",
     "win": {
       "icon": "src/assets/icons/Iris.ico",  
       "target": ["nsis"]

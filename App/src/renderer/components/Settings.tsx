@@ -1,8 +1,10 @@
 // Settings.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, act } from 'react';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import secureLocalStorage from "react-secure-storage";
 import './Settings.scss';
+
+import Iris from '../../assets/icons/IrisWideTransparent.png'
 
 export interface EnabledModules {
     Spotify: boolean;
@@ -227,7 +229,26 @@ const Settings: React.FC<SettingsProps> = ({
                     </div>
                 )}
 
+                {/* About Menu */}
+                {activeMenu === 'About' && (
+                    <div className="options-menu">
+                        <div className="about-content">
+                            <div className='basic-details'>
+                                <img src={Iris} alt="Iris" className="iris-image" />
+                                <div className='name-text'>
+                                    <span id='title'>Iris</span>
+                                    <span id='name'>By Hyperiya</span>
+                                </div>
+                            </div>
 
+                            <p className="iris-text">
+                                Iris is a project created by Hyperiya (That's me!).
+                                It is a project that aims to provide a user-friendly interface for the
+                                Spotify, Discord, and Hoyolab APIs.
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Sub menus */}
                 {activeMenu === 'General' && (
@@ -333,7 +354,7 @@ const Settings: React.FC<SettingsProps> = ({
                         <div className="settings-section">
                             <div className="module-toggles">
                                 {modules.map((module) => (
-                                    
+
                                     <div key={module} className="module-toggle">
                                         <label className="toggle-switch">
                                             <input

@@ -4,9 +4,6 @@ import * as tough from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import crypto from 'crypto';
 
-
-
-
 interface cookies {
     cookie_token_v2: string
     account_mid_v2: string

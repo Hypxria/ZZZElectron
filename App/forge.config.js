@@ -6,7 +6,9 @@ module.exports = {
     extraResource: [
       'src/assets/extension'
     ],
-    icon: 'src/assets/icons/Iris'
+    appId: "hyperiya.app.iris",
+    icon: "src/assets/icons/Iris",  // no file extension needed here
+    name: "Iris"
   },
   rebuildConfig: {},
   makers: [
@@ -17,10 +19,10 @@ module.exports = {
         name: "Iris",
         authors: "Hyperiya",
         description: "Music & Game Stat Displayer",
-        exe: "zzzapp.exe",
+        exe: "Iris.exe",
         setupExe: "iris-setup.exe",
         setupIcon: "src/assets/icons/Iris.ico",
-        iconUrl: "https://raw.githubusercontent.com/yourusername/yourrepo/master/src/assets/icons/Iris.ico"
+        iconUrl: "https://github.com/Hypxria/ZZZElectron/blob/8d4bfd8ba8f0e90b2d7e4c58a1522f52123235cf/App/src/assets/icons/Iris.png"
       },
     },
     {
