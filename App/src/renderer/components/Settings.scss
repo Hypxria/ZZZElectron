@@ -86,19 +86,6 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .nav-item {
-    &:hover {
-      background-color: #2a2a2a;
-      color: #fff;
-    }
-
-    &.active {
-      color: #fff;
-    }
-  }
-}
-
 .settings .main-buttons {
   display: flex;
   flex-direction: column;
@@ -182,10 +169,19 @@
   border: 1px solid #323232;
   background-color: #1e1e20;
   color: white;
+  cursor: pointer;
+
+  &:hover {
+    border: 1px solid #4f4f4f;
+    background-color: #323232;
+  }
 }
 
 .settings-section {
   align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -247,6 +243,7 @@
   flex-direction: column;
   gap: 24px;  // Increased gap between toggles
   padding: 24px;  // Increased padding around toggles
+  width: 100%;
 
   .module-toggle {
     display: flex;
@@ -323,41 +320,6 @@
   }
 }
 
-.save-module-button {
-  width: 20%;
-}
-
-// .settings-actions {
-//   display: flex;
-//   gap: 12px;
-//   margin-top: 24px;
-//   padding: 16px;
-//   border-top: 1px solid #2a2a2c;
-
-//   button {
-//       padding: 8px 16px;
-//       border-radius: 6px;
-//       border: none;
-//       cursor: pointer;
-//       transition: all 0.2s ease;
-//       font-weight: 500;
-
-//       &.save-button {
-//           background-color: #92ff8a;
-//           color: #000;
-
-//           &:hover {
-//               background-color: #7ee677;
-//           }
-//       }
-
-//       &:disabled {
-//           opacity: 0.5;
-//           cursor: not-allowed;
-//       }
-//   }
-// }
-
 // misc
 
 @keyframes fadeIn {
@@ -372,6 +334,17 @@
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
+  .nav-item {
+    &:hover {
+      background-color: #2a2a2a;
+      color: #fff;
+    }
+
+    &.active {
+      color: #fff;
+    }
+  }
+
   .settings-container {
     background-color: #121214;
   }

@@ -26,11 +26,7 @@ class ZZZElectron {
   private isServerCheckInProgress = false;
 
   private progressWorker: Worker | null = null;
-
-  private coverBaseUrl: string = 'https://i.scdn.co/image/';
-
-  private lastSongEndTime: number | null = null;
-  private wasAutoSwitched: boolean = false;
+  
   private wasAutoSwitchedThisSong: boolean = false;
 
   private progress: number = 0
@@ -56,7 +52,7 @@ class ZZZElectron {
       console.log('message')
       let subtract
       if (this.wasAutoSwitchedThisSong) {
-        subtract = 1000
+        subtract = 750
       } else {
         subtract = 0
       }
@@ -492,14 +488,6 @@ class ZZZElectron {
     await this.establishListeners()
     // Show initial message
     Spicetify.showNotification("Hello from ZZZElectron!");
-
-    // Example of sending player duration after 3 seconds
-    setTimeout(() => {
-      const duration = Spicetify.Player.getDuration();
-      this.sendMessage(`Current track duration: ${duration}`);
-    }, 3000);
-
-
   }
 
   // Method to safely send messages
@@ -533,15 +521,12 @@ class ZZZElectron {
       console.log(`song: ${Spicetify.Player.getProgress()}`)
       if (this.progress > (previousDuration - 3550) && Spicetify.Player.getRepeat() !== 2) {
         console.log('Song ended naturally')
-        this.wasAutoSwitched = true;
         this.wasAutoSwitchedThisSong = true;
         setTimeout(() => {
           // Reset after 2 seconds
-          this.wasAutoSwitched = false;
         }, 2000);
       } else {
         this.wasAutoSwitchedThisSong = false;
-        this.wasAutoSwitched = false;
         console.log('Song ended abruptly')
       }
 
@@ -569,9 +554,6 @@ class ZZZElectron {
 
       // Store current values for next change
       previousDuration = Spicetify.Player.getDuration();
-
-      // Your existing song change message
-      this.sendMessage(`Song change: ${event?.data.item.name}`);
     });
   }
 
@@ -579,7 +561,6 @@ class ZZZElectron {
   private async listenForPlayPause() {
     Spicetify.Player.addEventListener('onplaypause', (event) => {
       const isPlaying = Spicetify.Player.isPlaying();
-      this.sendMessage(`Player is ${isPlaying ? 'playing' : 'paused'}`);
     })
   }
 

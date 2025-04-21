@@ -282,9 +282,3 @@ export class HoyolabAuth {
 
 
 }
-
-
-// Usage (isolated in separate file)
-// Example
-// src/main.ts
-

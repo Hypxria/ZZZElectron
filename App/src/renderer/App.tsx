@@ -33,6 +33,12 @@ const App: React.FC<AppProps> = () => {
     }
     return ViewState.NEUTRAL;
   });
+  const [hide, setHide] = useState<boolean>(() => {
+    if (!enabledModules.Hoyolab || !enabledModules.Spotify) {
+      return true;
+    }
+    return false;
+  });
 
   useEffect(() => {
     const savedModules = secureLocalStorage.getItem('enabled_modules');
@@ -84,15 +90,13 @@ const App: React.FC<AppProps> = () => {
       />
 
 
-
-      <AppSelector
-        viewState={viewState}
-        setViewState={setViewState}
-      />
-
-
-
-
+      {/* {enabledModules.Hoyolab && enabledModules.Spotify && ( */}
+        <AppSelector
+          viewState={viewState}
+          setViewState={setViewState}
+          hide={hide}
+        />
+      {/* )} */}
 
       <div className={`content-wrapper ${viewState}`}>
 
@@ -117,7 +121,7 @@ const App: React.FC<AppProps> = () => {
         )}
         {enabledModules.Hoyolab && (
           <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-            {/* <HoyoMain ViewState={viewState} /> */}
+            <HoyoMain ViewState={viewState} />
           </div>
         )}
       </div>

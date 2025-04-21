@@ -15,6 +15,7 @@ interface ElectronAPI {
     };
     exec: (command: string) => Promise<string>;
     window: {
+        windowTitle: (title: string) => Promise<void>;
         isFullScreen(): any;
         onFullScreen(handleFullscreenChange: () => void): unknown;
         removeFullScreenListener(): unknown;

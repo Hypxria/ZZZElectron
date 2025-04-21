@@ -10,12 +10,14 @@ interface TitlebarProps {
 
   viewState: ViewState;
   setViewState: (state: ViewState) => void;
+  hide?: boolean;
 }
 
 
 const AppSelector: React.FC<TitlebarProps> = ({
   viewState,
   setViewState,
+  hide,
 }) => {
 
   const handleLeftButtonClick = () => {
@@ -40,7 +42,7 @@ const AppSelector: React.FC<TitlebarProps> = ({
 
 
   return (
-    <div className="selector-wrapper">
+    <div className={`selector-wrapper ${hide ? 'hide': ''}`}>
       <div
         id="selector"
       >

@@ -93,6 +93,7 @@ const Settings: React.FC<SettingsProps> = ({
         window.electron.log('Module settings saved');
         // Optionally close settings
         setIsSettings(false);
+        location.reload();
     };
 
 
@@ -332,6 +333,7 @@ const Settings: React.FC<SettingsProps> = ({
                         <div className="settings-section">
                             <div className="module-toggles">
                                 {modules.map((module) => (
+                                    
                                     <div key={module} className="module-toggle">
                                         <label className="toggle-switch">
                                             <input
@@ -351,7 +353,7 @@ const Settings: React.FC<SettingsProps> = ({
                             <div className="save-input">
                                 <button
                                     id='input-button'
-                                    className="save-module-button"
+                                    className="save-button"
                                     onClick={handleModuleSave}
                                 >
                                     Save

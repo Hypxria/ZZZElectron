@@ -9,6 +9,10 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000; // Adjust this if needed to be below titlebar but above other content
+
+  &.hide {
+    display: none;
+  }
 }
 
 #selector {
@@ -32,8 +36,9 @@
   align-items: center;
   // border-bottom-left-radius: 10px;
   // border-bottom-right-radius: 10px;
+  border-bottom: solid #27272a 1px;
 
-  border-radius: 01293213px;
+  border-radius: 1293213px;
   translate: 0px 10px;
   z-index: 10000;
 }

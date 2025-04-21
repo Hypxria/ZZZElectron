@@ -1,6 +1,12 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
 export function setupWindowHandlers(mainWindow: BrowserWindow) {
+  ipcMain.handle('window-title', (_, newTitle: string) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setTitle(newTitle);
+    }
+  });
+  
   ipcMain.handle('window-minimize', () => {
     mainWindow?.minimize();
   });

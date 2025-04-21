@@ -54,6 +54,7 @@ const createWindow = async (x: number, y: number): Promise<void> => {
   mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    title: 'Iris', // Add this line
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
     webPreferences: {
@@ -65,6 +66,8 @@ const createWindow = async (x: number, y: number): Promise<void> => {
       offscreen: false,
     },
   });
+
+  mainWindow.setTitle('Iris');
 
   setupIpcHandlers(mainWindow, discordRPC);
 

@@ -67,6 +67,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               prev.volume === track.volume &&
               prev.repeat_state === track.repeat_state &&
               prev.shuffle_state === track.shuffle_state) {
+                window.electron.window.windowTitle(`Iris - ${prev.name}, ${prev.artist}`)
               return prev;
             }
             // Exclude progress_ms from the update
@@ -136,10 +137,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
 
       // console.log('Progress Update:', {
-        // serviceProgress,
-        // currentLocalProgress: localProgress,
-        // refProgress: progressRef.current,
-        // stateUpdateTriggered: serviceProgress !== progressRef.current
+      // serviceProgress,
+      // currentLocalProgress: localProgress,
+      // refProgress: progressRef.current,
+      // stateUpdateTriggered: serviceProgress !== progressRef.current
       // });
 
       if (serviceProgress !== progressRef.current) {
@@ -162,8 +163,8 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
   useEffect(() => {
     // console.log('Local progress state updated:', {
-      // newValue: localProgress,
-      // refValue: progressRef.current
+    // newValue: localProgress,
+    // refValue: progressRef.current
     // });
   }, [localProgress]);
 
@@ -214,7 +215,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
 
 
-  
+
 
   // Getting Avg Colors
   const [colors, setColors] = useState<string[]>([]);

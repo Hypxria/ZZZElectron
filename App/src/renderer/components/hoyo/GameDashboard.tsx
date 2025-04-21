@@ -59,7 +59,6 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
   const [game, setGame] = useState<Game[] | null | void | undefined>(null)
 
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [displayedTime, setDisplayedTime] = useState<string>("Now");
 
@@ -73,7 +72,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       const headerHeight = containerRef.current.querySelector('.dashboard-header')?.clientHeight || 0;
       const containerPadding = 32; // 16px top + 16px bottom
       const gapBetweenCards = 16;
-      
+
 
       // Get number of visible (non-hidden) cards
       const visibleCards = cardsContainerRef.current.querySelectorAll('.game-card:not(.hidden-card)').length;
@@ -126,6 +125,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     var baseInfo: baseInfo.baseInfo
 
     var zzzName: string, zzzLevel: number, starrailName: string, starrailLevel: number, genshinName: string, genshinLevel: number, genshinRg: string, zzzRg: string, starrailRg: string;
+    var genshin: boolean = false, zenless: boolean = false, starrail: boolean = false;
 
     const fetchBaseInfo = async () => {
       try {
@@ -133,20 +133,22 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         baseInfo.data.list.forEach((game: baseInfo.GameRecordDetail) => {
           switch (game.game_id) {
             case 2: // Genshin
-              genshinName = game.nickname
-              genshinLevel = game.level
-              genshinRg = game.region
+              genshinName = game.nickname;
+              genshinLevel = game.level;
+              genshinRg = game.region;
+              genshin = true;
               break;
             case 6: // Starrail
               starrailName = game.nickname;
               starrailLevel = game.level;
-              starrailRg = game.region
+              starrailRg = game.region;
+              starrail = true;
               break;
             case 8: // Zenless
               zzzName = game.nickname;
               zzzLevel = game.level;
-              zzzRg = game.region
-              console.log(`ZZZ REG = ${zzzRg}`)
+              zzzRg = game.region;
+              zenless = true;
               break;
           }
         })
@@ -290,9 +292,10 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
         const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
 
+        const games: Game[] = [];
 
-        const games: Game[] = [
-          {
+        if (zenless) {
+          games.push({
             title: "Zenless Zone Zero",
             logo: zzzIcon,
             accent: "#6B46C1",
@@ -300,14 +303,14 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
               { label: "Battery", value: `${zzzBattery.data.energy?.progress.current}/240`, icon: <Battery size={18} /> },
               { label: "Engagement", value: `${zzzBattery.data.vitality?.current}/${zzzBattery.data.vitality?.max}`, icon: <Coins size={18} /> },
-              { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point}/${zzzBattery.data.weekly_task?.max_point}`, icon: <Clock size={18} /> },
+              { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point || 0}/${zzzBattery.data.weekly_task?.max_point || 1300}`, icon: <Clock size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(zzzRg)} hours`, icon: <Clock size={18} /> },
             ],
-            events: [
+          });
+        }
 
-            ]
-          },
-          {
+        if (starrail) {
+          games.push({
             title: "Honkai Star Rail",
             logo: honkaiIcon,
             accent: "#3182CE",
@@ -315,11 +318,14 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
               { label: "Stamina", value: `${starrailBattery?.data?.current_stamina}/${starrailBattery?.data?.max_stamina}`, icon: <Battery size={18} /> },
               { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina}/${starrailBattery?.data?.current_reserve_stamina}`, icon: <Coins size={18} /> },
-              { label: "Echo Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
+              { label: "Echoes Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
             ]
-          },
-          {
+          });
+        }
+
+        if (genshin) {
+          games.push({
             title: "Genshin Impact",
             logo: genshinIcon,
             accent: "#48BB78",
@@ -329,8 +335,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               { label: "Commisions", value: `${genshinNotes.data.daily_task.finished_num}/${genshinNotes.data.daily_task.total_num}`, icon: <Coins size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(genshinRg)} hours`, icon: <Clock size={18} /> },
             ],
-          }
-        ];
+          });
+        }
+
         setLastUpdated(Date.now());
         return games
       } catch (error) {
@@ -368,7 +375,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     const now = Date.now();
     const diff = now - lastUpdated;
     const minutes = Math.floor(diff / (1000 * 60));
-    
+
     if (minutes === 0) {
       return "Now";
     } else {
@@ -384,15 +391,13 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     return () => clearInterval(timer);
   }, [calculateLastUpdated]);
 
+
   const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
     try {
       const fetchedGames = await refreshStats();
       setGame(fetchedGames);
     } catch (error) {
       console.error('Error refreshing games:', error);
-    } finally {
-      setIsRefreshing(false);
     }
   }, []); // Empty dependency array since refreshStats is external
 
@@ -410,7 +415,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
         </button>
       </div>
 
-      
+
 
       <div ref={cardsContainerRef} className="game-cards-container">
         {!game && <LoadingSpinner />}
@@ -459,25 +464,13 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
                   </div>
                 </div>
 
-                {/* Action section */}
-                {(game?.events?.[0]) && (
-                  <div className="action-section">
-                    <div className="missions-indicator">
-                      <Award size={16} color='white' />
-                      <span className="missions-count">Active Events: 3</span>
-                    </div>
-                    <button className="details-button">
-                      View Details
-                    </button>
-                  </div>
-                )}
               </>
             )}
           </div>
         ))}
       </div>
 
-      
+
 
     </div>
   );

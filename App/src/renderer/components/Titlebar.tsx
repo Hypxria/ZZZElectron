@@ -14,7 +14,7 @@ interface TitlebarProps {
 }
 
 const Titlebar: React.FC<TitlebarProps> = ({
-    title = 'My App',
+    title = 'Iris',
     isSettings,
     setIsSettings: onSettingsChange,
 }: TitlebarProps) => {
