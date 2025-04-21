@@ -17,6 +17,13 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Change to project directory # Add this if your package.json is in a subdirectory
+        run: |
+          cd Iris
+          pwd
+          ls -la
+
+
       - name: Install dependencies
         run: npm install
 
