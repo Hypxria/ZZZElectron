@@ -254,7 +254,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       resetTime.setHours(resetHour, 0, 0, 0);
 
       // Convert to local time
-      const resetTimeStr = formatter.format(resetTime);
+      // const resetTimeStr = formatter.format(resetTime);
       const resetParts = formatter.formatToParts(resetTime);
       const resetTimeParts: Record<string, string> = {};
       resetParts.forEach(part => {
@@ -284,12 +284,12 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       try {
         await fetchBaseInfo()
         const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
-        const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
+        // const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
 
-        const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
+        // const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
         const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '');
 
-        const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
+        // const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
         const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
 
         const games: Game[] = [];
