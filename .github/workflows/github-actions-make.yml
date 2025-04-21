@@ -40,6 +40,23 @@ jobs:
           npm install --save-dev @electron-forge/plugin-webpack
           npx electron-forge import
 
+      - name: Debug webpack output directory
+        working-directory: Iris
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Creating .webpack directory at: $(pwd)/.webpack"
+          mkdir -p .webpack
+          echo "Contents of current directory:"
+          ls -la
+          echo "Attempting npm start..."
+          npm run start || true
+          echo "Contents of .webpack directory (if it exists):"
+          ls -la .webpack || true
+          echo "Full path to .webpack/main:"
+          echo "$(pwd)/.webpack/main"
+          echo "Checking if .webpack/main exists:"
+          test -d .webpack/main && echo "Directory exists" || echo "Directory does not exist"
+
       - name: Build Windows
         if: matrix.os == 'windows-latest'
         working-directory: Iris
@@ -53,7 +70,6 @@ jobs:
         run: |
           npm run package
           npm run build:mac
-          
 
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
@@ -63,7 +79,6 @@ jobs:
           sudo apt-get install -y rpm elfutils
           npm run package
           npm run build:linux
-
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
