@@ -28,6 +28,11 @@ module.exports = {
     {
       name: "@electron-forge/maker-zip",
       platforms: ["darwin"],
+      config: {
+        options: {
+          icon: 'src/assets/icons/Iris.icns' // Make sure you have .icns file for macOS
+        }
+      }
     },
     {
       name: "@electron-forge/maker-deb",
@@ -38,9 +43,40 @@ module.exports = {
       },
     },
     {
-      name: "@electron-forge/maker-rpm",
-      config: {},
+      name: "@electron-forge/maker-dmg", // Add DMG maker for macOS
+      config: {
+        icon: 'src/assets/icons/Iris.icns',
+        format: 'ULFO'
+      }
     },
+    {
+      name: "@electron-forge/maker-deb",
+      config: {
+        options: {
+          icon: 'src/assets/icons/Iris.png',
+          categories: ['Utility'],
+          maintainer: 'Hyperiya'
+        }
+      },
+    },
+    {
+      name: "@electron-forge/maker-rpm",
+      config: {
+        options: {
+          icon: 'src/assets/icons/Iris.png',
+          categories: ['Utility'],
+          maintainer: 'Hyperiya'
+        }
+      },
+    },
+    {
+      name: '@electron-forge/maker-flatpak', // Add Flatpak support
+      config: {
+        options: {
+          icon: 'src/assets/icons/Iris.png'
+        }
+      }
+    }
   ],
   plugins: [
     {

@@ -1,5 +1,4 @@
 .lyrics-container {
-  display: flex;
   position: absolute;
   flex-direction: column;
   align-items: center;
@@ -17,10 +16,12 @@
   --brighter-color:'#cccccc';
   --dimmer-color:'#999999';
   opacity: 0;
+  display: none;
   user-select: all;
   pointer-events: none;
 
   &.shown {
+    display: flex;
     pointer-events: all;
     opacity: 1;
   }

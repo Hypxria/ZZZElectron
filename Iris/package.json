@@ -23,6 +23,9 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
+    "build:win": "electron-forge make --platform win32",
+    "build:mac": "electron-forge make --platform darwin",
+    "build:linux": "electron-forge make --platform linux",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
     "postinstall": "electron-rebuild"
@@ -30,6 +33,8 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.6.1",
     "@electron-forge/maker-deb": "^7.6.1",
+    "@electron-forge/maker-dmg": "^7.8.0",
+    "@electron-forge/maker-flatpak": "^7.8.0",
     "@electron-forge/maker-rpm": "^7.6.1",
     "@electron-forge/maker-squirrel": "^7.6.1",
     "@electron-forge/maker-zip": "^7.6.1",

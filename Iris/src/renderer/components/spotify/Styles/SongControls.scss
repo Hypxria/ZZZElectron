@@ -23,24 +23,27 @@
 /* Time Display */
 
 .time-label {
-  flex-shrink: 0; // Prevents the labels from shrinking
+  position: absolute;
   top: 50%;
+  transform: translateY(-50%);
   color: #fff;
-  min-width: max-content;
   font-size: 12px;
+  min-width: 45px;
   user-select: none;
 
   &.time-label-left {
-    grid-column: 1;
     font-family: Urbanist;
+    top: 25%;
+    left: -35px;
 
     /* Adjust based on your needs */
     font-size: 1rem;
   }
 
   &.time-label-right {
-    grid-column: 3;
     font-family: Urbanist;
+    top: 25%;
+    right: -35px;
 
     /* Adjust based on your needs */
     text-align: right;
