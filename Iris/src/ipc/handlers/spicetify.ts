@@ -6,10 +6,10 @@ import { exec } from 'child_process';
 export function setupSpicetifyHandlers() {
   const getAssetPath = () => {
     if (process.env.NODE_ENV === 'development') {
-      return path.join(app.getAppPath(), 'src', 'assets', 'extension', 'zzz-electron-link.js');
+      return path.join(app.getAppPath(), 'src', 'assets', 'extension', 'iris-link.js');
     }
     // In production, assets are typically in a different location
-    return path.join(process.resourcesPath, 'assets', 'extension', 'zzz-electron-link.js');
+    return path.join(process.resourcesPath, 'assets', 'extension', 'iris-link.js');
   };
 
   // Spicetify Extention Installer
@@ -21,7 +21,7 @@ export function setupSpicetifyHandlers() {
 
       const appDataPath = app.getPath('appData');
       const extensionsPath = path.join(appDataPath, 'spicetify', 'Extensions');
-      const extensionFile = 'zzz-electron-link.js';
+      const extensionFile = 'iris-link.js';
       const extensionDestPath = path.join(extensionsPath, extensionFile);
 
       // Get the source path from our assets

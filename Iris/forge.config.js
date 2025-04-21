@@ -22,7 +22,7 @@ module.exports = {
         exe: "Iris.exe",
         setupExe: "iris-setup.exe",
         setupIcon: "src/assets/icons/Iris.ico",
-        iconUrl: "https://github.com/Hypxria/ZZZElectron/blob/8d4bfd8ba8f0e90b2d7e4c58a1522f52123235cf/App/src/assets/icons/Iris.png"
+        iconUrl: "https://github.com/Hyperiya/Iris/blob/8d4bfd8ba8f0e90b2d7e4c58a1522f52123235cf/Iris/src/assets/icons/Iris.png"
       },
     },
     {

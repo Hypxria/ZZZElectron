@@ -234,7 +234,7 @@ const Settings: React.FC<SettingsProps> = ({
                     <div className="options-menu">
                         <div className="about-content">
                             <div className='basic-details'>
-                                <img src={Iris} alt="Iris" className="iris-image" />
+                                <img src={Iris} alt="Iris" className="iris-image" draggable="true"></img>
                                 <div className='name-text'>
                                     <span id='title'>Iris</span>
                                     <span id='name'>By Hyperiya</span>

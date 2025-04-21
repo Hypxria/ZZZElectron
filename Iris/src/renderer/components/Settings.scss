@@ -28,6 +28,7 @@
   max-width: 800px;
   margin: 0 auto;
   width: 50vw;
+  max-height: 80vh;
   opacity: 0;
   z-index: 1000;
   visibility: hidden;
@@ -345,6 +346,8 @@
   .iris-image {
     width: 30%;
     height: 100%;
+    user-select: none;
+    
   
     img {
       width: 100%;

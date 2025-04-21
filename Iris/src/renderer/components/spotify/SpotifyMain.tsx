@@ -67,7 +67,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               prev.volume === track.volume &&
               prev.repeat_state === track.repeat_state &&
               prev.shuffle_state === track.shuffle_state) {
-                window.electron.window.windowTitle(`Iris - ${prev.name}, ${prev.artist}`)
+              window.electron.window.windowTitle(`Iris - ${prev.name}, ${prev.artist}`)
               return prev;
             }
             // Exclude progress_ms from the update
@@ -259,16 +259,12 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               year: currentTrackData.year || "N/A",
             }}
             colors={colors}
-            SongVolume={() => (
-              <SongVolume
-                volume={currentTrackData.volume || 0}
-                onVolumeChange={async (volume: number) => {
-                  manualStateUpdateRef.current = Date.now();
-                  setCurrentTrackData((prev) => ({ ...prev, volume }));
-                  await spotifyService.setVolume(volume);
-                }}
-              />
-            )}
+            volume={currentTrackData.volume || 0}
+            onVolumeChange={async (volume: number) => {
+              manualStateUpdateRef.current = Date.now();
+              setCurrentTrackData((prev) => ({ ...prev, volume }));
+              await spotifyService.setVolume(volume);
+            }}
           />
           <SongControls
             isPlaying={currentTrackData.is_playing || false}

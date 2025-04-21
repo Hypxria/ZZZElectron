@@ -45,6 +45,8 @@ const createWindow = async (x: number, y: number): Promise<void> => {
   app.commandLine.appendSwitch('enable-zero-copy');
   app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
   app.commandLine.appendSwitch('ignore-gpu-blocklist');
+  app.commandLine.appendSwitch('enable-accelerated-compositing');
+  app.commandLine.appendSwitch('enable-native-gpu-memory-buffers');
 
   // Adding these lines to handle display-related issues
   app.commandLine.appendSwitch('disable-gpu-vsync');
@@ -65,6 +67,7 @@ const createWindow = async (x: number, y: number): Promise<void> => {
       sandbox: true,
       webgl: true,
       offscreen: false,
+      backgroundThrottling: false // Add this to prevent throttling when in background
     },
   });
 

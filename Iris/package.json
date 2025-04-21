@@ -7,14 +7,16 @@
   "build": {
     "appId": "hyperiya.app.iris",
     "win": {
-      "icon": "src/assets/icons/Iris.ico",  
-      "target": ["nsis"]
+      "icon": "src/assets/icons/Iris.ico",
+      "target": [
+        "nsis"
+      ]
     },
     "mac": {
-      "icon": "assets/icons/icon.icns"  
+      "icon": "assets/icons/icon.icns"
     },
     "linux": {
-      "icon": "assets/icons/icon.png"   
+      "icon": "assets/icons/icon.png"
     }
   },
   "scripts": {
@@ -69,13 +71,17 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.4",
     "@mui/material": "^6.4.4",
+    "@mui/styled-engine": "^7.0.2",
     "axios": "^1.8.3",
     "axios-cookiejar-support": "^5.0.5",
     "cryptojs": "^2.5.3",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
+    "iris": "file:",
     "lucide-react": "^0.487.0",
     "net": "^1.0.2",
     "path": "^0.12.7",
@@ -87,7 +93,6 @@
     "scss": "^0.2.4",
     "style-loader": "^4.0.0",
     "tough-cookie": "^5.1.2",
-    "ws": "^8.18.1",
-    "iris": "file:"
+    "ws": "^8.18.1"
   }
 }

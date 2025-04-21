@@ -267,6 +267,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       style={lyricsStyle}
     >
       <div className="progress-bar-wrapper">
+        <span className="time-label time-label-left">{formatTime(displayTime)}</span>
         <div
           className="progress-bar-container"
           ref={progressBarRef}
@@ -278,19 +279,15 @@ const SongControls: React.FC<SongControlsProps> = ({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <span className="time-label time-label-left">{formatTime(displayTime)}</span>
+
           <div className="progress-bar-background">
             <div
               className="progress-bar-fill"
               style={{ transform: `scaleX(${sliderValue / 100})` }}
             />
-            {/* <div
-              className="progress-bar-handle"
-              style={{ left: `${sliderValue}%` }}
-            /> */}
           </div>
-          <span className="time-label time-label-right">{formatTime(duration)}</span>
         </div>
+        <span className="time-label time-label-right">{formatTime(displayTime)}</span>
       </div>
       <div className="song-button-container">
         <div className="main-controls-row">

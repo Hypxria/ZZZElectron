@@ -2,7 +2,7 @@
         while (!Spicetify.React || !Spicetify.ReactDOM) {
           await new Promise(resolve => setTimeout(resolve, 10));
         }
-        var zzzDelectronDlink = (() => {
+        var irisDlink = (() => {
   // src/app.tsx
   var interval = 100;
   var workerCode = `
@@ -14,7 +14,7 @@ self.onmessage = function(e) {
   }
 };
 `;
-  var ZZZElectron = class {
+  var Iris = class {
     constructor() {
       this.ws = null;
       this.reconnectAttempts = 0;
@@ -22,9 +22,6 @@ self.onmessage = function(e) {
       this.reconnectDelay = 1e3;
       this.isServerCheckInProgress = false;
       this.progressWorker = null;
-      this.coverBaseUrl = "https://i.scdn.co/image/";
-      this.lastSongEndTime = null;
-      this.wasAutoSwitched = false;
       this.wasAutoSwitchedThisSong = false;
       this.progress = 0;
       this.main();
@@ -37,7 +34,7 @@ self.onmessage = function(e) {
         console.log("message");
         let subtract;
         if (this.wasAutoSwitchedThisSong) {
-          subtract = 1e3;
+          subtract = 750;
         } else {
           subtract = 0;
         }
@@ -115,7 +112,6 @@ self.onmessage = function(e) {
         this.ws.onmessage = async (event) => {
           var _a, _b, _c, _d;
           console.log("Received in app.tsx:", event.data);
-          Spicetify.showNotification(`Received: ${event.data}`);
           const data = JSON.parse(event.data);
           console.log(`data: ${data}`);
           switch (data.type) {
@@ -291,10 +287,6 @@ self.onmessage = function(e) {
       await this.connectWebSocket();
       await this.establishListeners();
       Spicetify.showNotification("Hello from ZZZElectron!");
-      setTimeout(() => {
-        const duration = Spicetify.Player.getDuration();
-        this.sendMessage(`Current track duration: ${duration}`);
-      }, 3e3);
     }
     async sendMessage(message) {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -316,14 +308,11 @@ self.onmessage = function(e) {
         console.log(`song: ${Spicetify.Player.getProgress()}`);
         if (this.progress > previousDuration - 3550 && Spicetify.Player.getRepeat() !== 2) {
           console.log("Song ended naturally");
-          this.wasAutoSwitched = true;
           this.wasAutoSwitchedThisSong = true;
           setTimeout(() => {
-            this.wasAutoSwitched = false;
           }, 2e3);
         } else {
           this.wasAutoSwitchedThisSong = false;
-          this.wasAutoSwitched = false;
           console.log("Song ended abruptly");
         }
         const currentTrack = Spicetify.Player.data.item;
@@ -341,13 +330,11 @@ self.onmessage = function(e) {
         console.log(`Song ended: Previous Duration: ${previousDuration}`);
         console.log(`Song ended: Previous Progress: ${this.progress}`);
         previousDuration = Spicetify.Player.getDuration();
-        this.sendMessage(`Song change: ${event == null ? void 0 : event.data.item.name}`);
       });
     }
     async listenForPlayPause() {
       Spicetify.Player.addEventListener("onplaypause", (event) => {
         const isPlaying = Spicetify.Player.isPlaying();
-        this.sendMessage(`Player is ${isPlaying ? "playing" : "paused"}`);
       });
     }
     cleanup() {
@@ -357,10 +344,10 @@ self.onmessage = function(e) {
       }
     }
   };
-  var zzzElectron = new ZZZElectron();
+  var zzzElectron = new Iris();
   var app_default = zzzElectron;
 
-  // ../../../../AppData/Local/Temp/spicetify-creator/index.jsx
+  // C:/Users/vivip/AppData/Local/Temp/spicetify-creator/index.jsx
   (async () => {
     await app_default();
   })();

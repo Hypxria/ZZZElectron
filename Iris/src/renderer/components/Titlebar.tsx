@@ -7,6 +7,8 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded';
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded';
 
+import iris from '../../assets/icons/IrisTransparent.png'
+
 interface TitlebarProps {
     title?: string;
     isSettings: boolean;
@@ -66,6 +68,7 @@ const Titlebar: React.FC<TitlebarProps> = ({
             {!isFullScreen && (
                 <div className={`titlebar`}>
                     <div className="titlename">
+                        <img src={iris} className='iris-image'></img>
                         <div className="window-title">{title}</div>
                     </div>
     

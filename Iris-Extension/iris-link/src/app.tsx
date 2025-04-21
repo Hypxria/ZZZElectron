@@ -487,7 +487,7 @@ class Iris {
     await this.connectWebSocket();
     await this.establishListeners()
     // Show initial message
-    Spicetify.showNotification("Hello from ZZZElectron!");
+    Spicetify.showNotification("Hello from Iris!");
   }
 
   // Method to safely send messages
@@ -573,8 +573,8 @@ class Iris {
   }
 }
 
-const zzzElectron = new Iris();
-export default zzzElectron;
+const iris = new Iris();
+export default iris;
 
 
 

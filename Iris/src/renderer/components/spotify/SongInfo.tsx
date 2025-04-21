@@ -1,6 +1,6 @@
-// src/renderer/components/spotify/SongInfo.tsx
 import React from 'react';
 import './Styles/SongInfo.scss';
+import SongVolume from './SongVolume'
 
 interface Song {
   name: string;
@@ -12,10 +12,11 @@ interface Song {
 interface SongInfoProps {
   currentSong: Song;
   colors: string[]
-  SongVolume: React.FC;
+  volume: number
+  onVolumeChange: (volume: number) => void
 }
 
-const SongInfo: React.FC<SongInfoProps> = ({ currentSong, colors, SongVolume }) => {
+const SongInfo: React.FC<SongInfoProps> = ({ currentSong, colors, volume, onVolumeChange }) => {
   return (
     <div className="song-details">
       <div className='image-overlay'>
@@ -24,8 +25,12 @@ const SongInfo: React.FC<SongInfoProps> = ({ currentSong, colors, SongVolume }) 
           src={currentSong?.album_cover}
           alt="Album Cover"
           id="song-image"
+          draggable="false"
         />
-        <SongVolume />
+        <SongVolume
+          volume={volume}
+          onVolumeChange={onVolumeChange}
+        />
       </div>
       <div className="song-text">{currentSong?.name}</div>
       <div className="artist-text">{currentSong?.artist} • <span className='year-text'>{currentSong.year}</span></div>

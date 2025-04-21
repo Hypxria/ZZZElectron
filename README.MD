@@ -43,7 +43,7 @@ Features:
 ### Compiling the Application yourself
 ```bash
 # Clone the repository
-git clone https://github.com/Hypxria/ZZZElectron
+git clone https://github.com/Hyperiya/Iris
 cd Iris
 
 # Install dependencies
