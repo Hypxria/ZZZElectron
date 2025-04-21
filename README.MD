@@ -1,0 +1,131 @@
+# Iris: A Modern Desktop Integration Hub for Discord, Spotify, and Hoyoverse Games
+
+Iris is an Electron-based desktop application that seamlessly integrates Discord, Spotify, and Hoyoverse game services into a unified interface. It provides real-time music controls, game status tracking, and Discord voice chat management with a sleek, modern design.
+
+The application offers a rich set of features including:
+- Spotify integration with real-time playback controls, lyrics display, and dynamic background theming based on album artwork
+- Discord voice chat management with mute/deafen controls and user status tracking
+- Hoyoverse game tracking for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero with real-time resin/stamina monitoring
+- Customizable modular interface that allows users to enable/disable specific features
+- System-native window controls with frameless design
+
+## Repository Structure
+```
+.
+├── App/                          # Main application directory
+│   ├── src/                     # Source code directory
+│   │   ├── main.ts             # Electron main process entry point
+│   │   ├── preload.ts          # Preload script for IPC bridge
+│   │   ├── renderer/           # React renderer components
+│   │   │   ├── components/     # UI components organized by feature
+│   │   │   └── App.tsx        # Main React application component
+│   │   ├── services/          # Service layer for external integrations
+│   │   │   ├── discordServices/  # Discord RPC and voice chat integration
+│   │   │   ├── hoyoServices/    # Hoyoverse API integration
+│   │   │   └── spotifyServices/  # Spotify playback and control
+│   │   ├── ipc/ 
+            ├── handlers/        # Files for functions that create IPC for each different service
+            └── index.ts         # Combines all functions into one for main.ts to call
+│   │   └── utils/             # Utility functions and helpers
+│   ├── forge.config.js        # Electron Forge build configuration
+│   └── package.json          # Project dependencies and scripts
+└── extension/                # Spicetify extension for Spotify integration
+```
+
+## Usage Instructions
+### Prerequisites
+- Spotify desktop client with Spicetify installed*
+- Discord desktop client*
+- Valid Hoyoverse account*
+
+(*- If you don't have any of these at all, this app won't be of any use for you whatsoever.)
+
+### Compiling the Application yourself
+```bash
+# Clone the repository
+git clone [https://github.com/Hypxria/ZZZElectron]
+cd iris
+
+# Install dependencies
+cd App
+npm install
+
+# Compile application
+npm run make
+
+# Install Spicetify extension
+cd extension/zzz-electron-link
+npm install
+
+# Compile the extention yourself
+npm run make
+```
+
+### Quick Start
+1. Start the application in development mode:
+```bash
+cd App
+pnpm start
+```
+
+2. Enable desired modules in the settings menu (accessible via the gear icon in the titlebar)
+
+3. Connect your accounts:
+   - Spotify: Click the button to install the extention, ensuring you have Spicetify, and that it works properly. If you compiled the extention yourself, make sure that the extention is applied.
+   - Discord: Enter in your client ID and client Secret from [https://discord.com/developers/applications] (Make a new application) and grant permissions when prompted
+   - Hoyoverse: Log in through the settings menu
+
+### More Detailed Examples
+#### Spotify Controls
+```typescript
+// Control playback
+await spotifyService.playPause();
+await spotifyService.seek(timeInMs);
+await spotifyService.setVolume(volumeLevel);
+```
+
+#### Discord Voice Integration
+```typescript
+// Join voice channel
+window.discord.voice.join(channelId);
+
+// Toggle audio states
+window.discord.voice.mute();
+window.discord.voice.deafen();
+```
+
+### Troubleshooting
+#### Common Issues
+1. Spotify Connection Failed
+   - Ensure Spicetify is properly installed
+   - Check if the Spotify client is running
+   - Verify the extension is built and installed correctly
+
+2. Discord RPC Not Working
+   - Restart Discord client
+   - Check if Discord is running with proper permissions
+   - Verify the Discord application ID is correct
+
+3. Hoyoverse API Errors
+   - Verify login credentials
+   - Check network connectivity
+   - Ensure correct server region is selected
+
+## Data Flow
+Iris manages real-time data flow between multiple services through WebSocket connections and IPC channels.
+
+```ascii
+[Spotify Client] <-> [Spicetify Extension] <-> [WebSocket] <-> [Electron Main] <-> [React UI]
+[Discord Client] <-> [Discord RPC] <-> [IPC Bridge] <-> [Electron Main] <-> [React UI]
+[Hoyoverse API] <-> [HTTP Client] <-> [Service Layer] <-> [Electron Main] <-> [React UI]
+```
+
+Key interactions:
+- Spotify playback state is synchronized through WebSocket connection
+- Discord voice states are managed through RPC and IPC channels
+- Hoyoverse game data is fetched through authenticated HTTP requests
+- UI updates are managed through React state management
+- Theme colors are dynamically extracted from album artwork
+
+# Lisense
+Iris © 2025 is licensed under CC BY-NC-SA 4.0 
