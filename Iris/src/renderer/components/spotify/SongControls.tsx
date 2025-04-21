@@ -96,12 +96,14 @@ const SongControls: React.FC<SongControlsProps> = ({
   }
 
   const handleBack = () => {
-    window.electron.log(`${currentTime / 1000}`)
-    if (currentTime / 1000 < 3) {
+    window.electron.log(`${currentTime / 1000 < 3}`)
+    if ((currentTime / 1000) < 3) {
       onBack();
       return;
+    } else {
+      onSeek(0);
+      return;
     }
-
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {

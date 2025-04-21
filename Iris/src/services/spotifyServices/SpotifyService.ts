@@ -299,7 +299,7 @@ class SpotifyService {
         try {
             this.sendWsMessage({
                 type: 'playback',
-                action: 'back'
+                action: 'prev'
             });
         } catch (error) {
             console.error('Error playing previous song:', error);

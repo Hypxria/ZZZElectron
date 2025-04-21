@@ -114,6 +114,7 @@
 .options-menu {
   flex-grow: 1;
   animation: fadeIn 0.3s ease-out;
+  max-height: 80vh;
 }
 
 .options-list {
@@ -317,6 +318,7 @@
   display: flex;
   flex-direction: column;
   padding: 30px;
+  
 
   .basic-details {
     display: flex;
@@ -360,6 +362,9 @@
 
   .iris-text {
     color: #fff;
+    white-space: pre-line; /* Preserves new lines and wraps text */
+    overflow-y: auto;
+    max-height: 60vh; // Adjust this value as needed
   }
 
 }
