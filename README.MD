@@ -44,7 +44,7 @@ Features:
 ```bash
 # Clone the repository
 git clone https://github.com/Hypxria/ZZZElectron
-cd iris
+cd Iris
 
 # Install dependencies
 cd App
@@ -52,13 +52,15 @@ npm install
 
 # Compile application
 npm run make
+```
 
+```bash
 # Install Spicetify extension
-cd extension/zzz-electron-link
+cd Iris-Rxtension/iris-link
 npm install
 
 # Compile the extention yourself
-npm run make
+npm run build
 ```
 
 ### Quick Start
