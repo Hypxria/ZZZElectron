@@ -35,28 +35,37 @@ jobs:
         working-directory: Iris
         run: |
           npm install
+          npm install --save-dev @electron-forge/cli
+          npm install --save-dev @electron-forge/maker-deb @electron-forge/maker-rpm
+          npx electron-forge import
 
       - name: Build Windows
         if: matrix.os == 'windows-latest'
         working-directory: Iris
-        run: npm run build:win
+        run: npx electron-forge make --platform win32
 
       - name: Build macOS
         if: matrix.os == 'macos-latest'
         working-directory: Iris
-        run: npm run build:mac
+        run: npx electron-forge make --platform darwin
 
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
         working-directory: Iris
-        run: npm run build:linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm elfutils
+          sudo add-apt-repository ppa:flatpak/stable
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder
+          npx electron-forge make --platform linux --targets=@electron-forge/maker-deb,@electron-forge/maker-rpm
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
           path: |
-            out/make/**/*.exe
-            out/make/**/*.deb
-            out/make/**/*.rpm
-            out/make/**/*.dmg
+            Iris/out/make/**/*.exe
+            Iris/out/make/**/*.deb
+            Iris/out/make/**/*.rpm
+            Iris/out/make/**/*.dmg
