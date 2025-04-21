@@ -2,10 +2,10 @@
   "name": "@hyperiya/iris",
   "productName": "Iris",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Music & Game Stat Displayer",
   "main": ".webpack/main",
   "build": {
-    "appId": "hyperiya.app.Iris",
+    "appId": "hyperiya.app.iris",
     "win": {
       "icon": "src/assets/icons/Iris.ico",  
       "target": ["nsis"]
@@ -88,6 +88,6 @@
     "style-loader": "^4.0.0",
     "tough-cookie": "^5.1.2",
     "ws": "^8.18.1",
-    "zzzapp": "file:"
+    "iris": "file:"
   }
 }

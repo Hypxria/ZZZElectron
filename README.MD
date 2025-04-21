@@ -1,8 +1,8 @@
 # Iris: A Modern Desktop Integration Hub for Discord, Spotify, and Hoyoverse Games
 
-Iris is an Electron-based desktop application that seamlessly integrates Discord, Spotify, and Hoyoverse game services into a unified interface. It provides real-time music controls, game status tracking, and Discord voice chat management with a sleek, modern design.
+Iris is an Electron-based desktop application that seamlessly integrates Discord, Spotify, and Hoyoverse game services into an interface. It provides real-time music controls, game status tracking, and Discord voice chat management with a sleek, modern design.
 
-The application offers a rich set of features including:
+Features:
 - Spotify integration with real-time playback controls, lyrics display, and dynamic background theming based on album artwork
 - Discord voice chat management with mute/deafen controls and user status tracking
 - Hoyoverse game tracking for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero with real-time resin/stamina monitoring
@@ -13,23 +13,23 @@ The application offers a rich set of features including:
 ```
 .
 ├── App/                          # Main application directory
-│   ├── src/                     # Source code directory
-│   │   ├── main.ts             # Electron main process entry point
-│   │   ├── preload.ts          # Preload script for IPC bridge
-│   │   ├── renderer/           # React renderer components
-│   │   │   ├── components/     # UI components organized by feature
-│   │   │   └── App.tsx        # Main React application component
-│   │   ├── services/          # Service layer for external integrations
+│   ├── src/                      # Source code directory
+│   │   ├── main.ts               # Electron main process entry point
+│   │   ├── preload.ts            # Preload script for IPC bridge
+│   │   ├── renderer/             # React renderer components
+│   │   │   ├── components/       # UI components organized by feature
+│   │   │   └── App.tsx           # Main React application component
+│   │   ├── services/             # Service layer for external integrations
 │   │   │   ├── discordServices/  # Discord RPC and voice chat integration
-│   │   │   ├── hoyoServices/    # Hoyoverse API integration
+│   │   │   ├── hoyoServices/     # Hoyoverse API integration
 │   │   │   └── spotifyServices/  # Spotify playback and control
 │   │   ├── ipc/ 
-            ├── handlers/        # Files for functions that create IPC for each different service
-            └── index.ts         # Combines all functions into one for main.ts to call
-│   │   └── utils/             # Utility functions and helpers
-│   ├── forge.config.js        # Electron Forge build configuration
-│   └── package.json          # Project dependencies and scripts
-└── extension/                # Spicetify extension for Spotify integration
+│   │   │   ├── handlers/         # Files for functions that create IPC for each different service
+│   │   │   └── index.ts          # Combines all functions into one for main.ts to call
+│   │   └── utils/                # Utility functions and helpers
+│   ├── forge.config.js           # Electron Forge build configuration
+│   └── package.json              # Project dependencies and scripts
+└── extension/                    # Spicetify extension for Spotify integration
 ```
 
 ## Usage Instructions
@@ -43,7 +43,7 @@ The application offers a rich set of features including:
 ### Compiling the Application yourself
 ```bash
 # Clone the repository
-git clone [https://github.com/Hypxria/ZZZElectron]
+git clone https://github.com/Hypxria/ZZZElectron
 cd iris
 
 # Install dependencies
@@ -62,17 +62,17 @@ npm run make
 ```
 
 ### Quick Start
-1. Start the application in development mode:
+1. (If applicable) Start the application in development mode:
 ```bash
 cd App
-pnpm start
+npm start
 ```
 
 2. Enable desired modules in the settings menu (accessible via the gear icon in the titlebar)
 
 3. Connect your accounts:
    - Spotify: Click the button to install the extention, ensuring you have Spicetify, and that it works properly. If you compiled the extention yourself, make sure that the extention is applied.
-   - Discord: Enter in your client ID and client Secret from [https://discord.com/developers/applications] (Make a new application) and grant permissions when prompted
+   - Discord: Enter in your client ID and client Secret from https://discord.com/developers/applications (Make a new application) and grant permissions when prompted
    - Hoyoverse: Log in through the settings menu
 
 ### More Detailed Examples

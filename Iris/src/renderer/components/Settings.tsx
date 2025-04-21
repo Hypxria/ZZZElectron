@@ -245,6 +245,7 @@ const Settings: React.FC<SettingsProps> = ({
                                 Iris is a project created by Hyperiya (That's me!).
                                 It is a project that aims to provide a user-friendly interface for the
                                 Spotify, Discord, and Hoyolab APIs.
+                                Iris © 2025 is licensed under CC BY-NC-SA 4.0 (Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License). 
                             </p>
                         </div>
                     </div>

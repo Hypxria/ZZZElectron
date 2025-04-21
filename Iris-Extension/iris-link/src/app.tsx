@@ -15,7 +15,7 @@ Hyperiya comments are back
 This worker is just to get the song progress *really* often because (as stated far below) get onsongprogress is slow when tabbed out.
 */
 
-class ZZZElectron {
+class Iris {
   // Websocket to send info back to the app
   private ws: WebSocket | null = null;
 
@@ -573,7 +573,7 @@ class ZZZElectron {
   }
 }
 
-const zzzElectron = new ZZZElectron();
+const zzzElectron = new Iris();
 export default zzzElectron;
 
 
