@@ -17,27 +17,33 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Change to project directory # Add this if your package.json is in a subdirectory
+      - name: Change to project directory (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
           cd Iris
-          pwd 
-          ls -la
+          pwd
+          dir
 
-      - name: Install dependencies
+      - name: Change to project directory (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
           cd Iris
-          npm install
+          pwd
+          ls -la
 
       - name: Build Windows
         if: matrix.os == 'windows-latest'
+        working-directory: Iris
         run: npm run build:win
 
       - name: Build macOS
         if: matrix.os == 'macos-latest'
+        working-directory: Iris
         run: npm run build:mac
 
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
+        working-directory: Iris
         run: npm run build:linux
 
       - name: Upload artifacts
