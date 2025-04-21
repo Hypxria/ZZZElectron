@@ -43,12 +43,17 @@ jobs:
       - name: Build Windows
         if: matrix.os == 'windows-latest'
         working-directory: Iris
-        run: npm run build:windows
+        run: |
+          npm run package        
+          npm run build:windows
 
       - name: Build macOS
         if: matrix.os == 'macos-latest'
         working-directory: Iris
-        run: npm run build:mac
+        run: |
+          npm run package
+          npm run build:mac
+          
 
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
@@ -56,6 +61,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y rpm elfutils
+          npm run package
           npm run build:linux
 
 
