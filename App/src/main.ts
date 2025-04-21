@@ -57,6 +57,7 @@ const createWindow = async (x: number, y: number): Promise<void> => {
     title: 'Iris', // Add this line
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
+    icon: './assets/icons/Iris.png',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

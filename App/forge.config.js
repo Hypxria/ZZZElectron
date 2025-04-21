@@ -5,13 +5,23 @@ module.exports = {
     asar: true,
     extraResource: [
       'src/assets/extension'
-    ]
+    ],
+    icon: 'src/assets/icons/Iris'
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
-      config: {},
+      config: {
+        // Add these configurations
+        name: "Iris",
+        authors: "Hyperiya",
+        description: "Music & Game Stat Displayer",
+        exe: "zzzapp.exe",
+        setupExe: "iris-setup.exe",
+        setupIcon: "src/assets/icons/Iris.ico",
+        iconUrl: "https://raw.githubusercontent.com/yourusername/yourrepo/master/src/assets/icons/Iris.ico"
+      },
     },
     {
       name: "@electron-forge/maker-zip",
@@ -19,7 +29,11 @@ module.exports = {
     },
     {
       name: "@electron-forge/maker-deb",
-      config: {},
+      config: {
+        options: {
+          icon: 'src/assets/icons/Iris.png'
+        }
+      },
     },
     {
       name: "@electron-forge/maker-rpm",

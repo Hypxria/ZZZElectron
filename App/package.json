@@ -4,6 +4,19 @@
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",
+  "build": {
+    "appId": "your.app.id",
+    "win": {
+      "icon": "src/assets/icons/Iris.ico",  
+      "target": ["nsis"]
+    },
+    "mac": {
+      "icon": "assets/icons/icon.icns"  
+    },
+    "linux": {
+      "icon": "assets/icons/icon.png"   
+    }
+  },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",

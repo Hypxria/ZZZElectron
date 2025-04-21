@@ -3,9 +3,9 @@ import { Clock, Battery, Star, Coins, Award, RefreshCw } from 'lucide-react';
 import './Styles/GameAccountDashboard.scss';
 import { ViewState } from "../../../types/viewState";
 
-import zzzIcon from "../../../assets/icons/Zenless_Zone_Zero_logo.png"
-import genshinIcon from "../../../assets/icons/Genshin-Impact-Logo.png"
-import honkaiIcon from "../../../assets/icons/Honkai_Star-Rail_Logo.png"
+import zzzIcon from "../../../assets/images/Zenless_Zone_Zero_logo.png"
+import genshinIcon from "../../../assets/images/Genshin-Impact-Logo.png"
+import honkaiIcon from "../../../assets/images/Honkai_Star-Rail_Logo.png"
 
 import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes, baseInfo } from 'src/services/hoyoServices/gameResponseTypes';
 
