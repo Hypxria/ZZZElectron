@@ -11,21 +11,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Change to project directory # Add this if your package.json is in a subdirectory
         run: |
           cd Iris
-          pwd
+          pwd 
           ls -la
 
-
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          cd Iris
 
       - name: Build Windows
         if: matrix.os == 'windows-latest'
