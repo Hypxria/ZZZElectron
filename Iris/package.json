@@ -3,7 +3,7 @@
   "productName": "Iris",
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
-  "main": ".webpack/main",
+  "main": ".webpack/main/index.js",
   "build": {
     "appId": "hyperiya.app.iris",
     "win": {
