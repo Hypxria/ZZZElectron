@@ -34,7 +34,6 @@ jobs:
       - name: Install dependencies
         working-directory: Iris
         run: |
-          cd Iris
           npm install
 
       - name: Build Windows
