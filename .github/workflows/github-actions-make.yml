@@ -1,0 +1,100 @@
+name: Build
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+
+      - name: Change to project directory (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd Iris
+          pwd
+          dir
+
+      - name: Change to project directory (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd Iris
+          pwd
+          ls -la
+
+      - name: Install dependencies
+        working-directory: Iris
+        run: |
+          npm install
+          npm install --save-dev @electron-forge/cli
+          npm install --save-dev @electron-forge/maker-deb @electron-forge/maker-rpm
+          npm install --save-dev @electron-forge/plugin-webpack
+          npx electron-forge import
+
+      - name: Fix Electron sandbox permissions (Linux)
+        if: matrix.os == 'ubuntu-latest' 
+        working-directory: Iris
+        run: |
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+
+      # - name: Debug webpack output directory
+      #   working-directory: Iris
+      #   run: |
+      #     echo "Current directory: $(pwd)"
+      #     echo "Creating .webpack directory at: $(pwd)/.webpack"
+      #     mkdir -p .webpack
+      #     echo "Contents of current directory:"
+      #     ls -la
+      #     echo "Attempting npm start..."
+      #     npm run start || true
+      #     echo "Contents of .webpack directory (if it exists):"
+      #     ls -la .webpack || true
+      #     echo "Full path to .webpack/main:"
+      #     echo "$(pwd)/.webpack/main"
+      #     echo "Checking if .webpack/main exists:"
+      #     test -d .webpack/main && echo "Directory exists" || echo "Directory does not exist"
+
+      - name: Build Windows
+        if: matrix.os == 'windows-latest'
+        working-directory: Iris
+        run: |
+          npm run package        
+          npm run build:windows
+
+      # - name: Build macOS
+      #   if: matrix.os == 'macos-latest'
+      #   working-directory: Iris
+      #   run: |
+      #     npx electron-forge import
+      #     npm run package
+      #     npm run build:mac
+
+      # - name: Build Linux
+      #   if: matrix.os == 'ubuntu-latest'
+      #   working-directory: Iris
+      #   run: |
+      #     npx electron-forge import
+      #     sudo apt-get update
+      #     sudo apt-get install -y rpm elfutils
+      #     npm run package
+      #     npm run build:linux
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: |
+            Iris/out/make/**/*.exe
+            Iris/out/make/**/*.deb
+            Iris/out/make/**/*.rpm
+            Iris/out/make/**/*.dmg
