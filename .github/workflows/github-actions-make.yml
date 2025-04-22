@@ -41,7 +41,7 @@ jobs:
           npx electron-forge import
 
       - name: Fix Electron sandbox permissions (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os != 'windows-latest' 
         working-directory: Iris
         run: |
           sudo chown root:root node_modules/electron/dist/chrome-sandbox
