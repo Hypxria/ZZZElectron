@@ -50,7 +50,6 @@ jobs:
       - name: Debug webpack output directory
         working-directory: Iris
         run: |
-          npx electron-forge import
           echo "Current directory: $(pwd)"
           echo "Creating .webpack directory at: $(pwd)/.webpack"
           mkdir -p .webpack
@@ -69,7 +68,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         working-directory: Iris
         run: |
-          npx electron-forge import
           npm run package        
           npm run build:windows
 

@@ -5,6 +5,7 @@
   "description": "Music & Game Stat Displayer",
   "main": ".webpack/main/index.js",
   "build": {
+    "extends": null,
     "appId": "hyperiya.app.iris",
     "win": {
       "icon": "src/assets/icons/Iris.ico",
