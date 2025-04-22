@@ -8,7 +8,8 @@ module.exports = {
       'src/assets/extension'
     ],
     appId: "hyperiya.app.iris",
-    icon: "src/assets/icons/Iris",  // no file extension needed here
+    icon: path.join(__dirname, 'src', 'assets', 'icons', 'Iris'),
+    executableName: "Iris",
     name: "Iris"
   },
   rebuildConfig: {},
@@ -49,6 +50,10 @@ module.exports = {
       config: {
         mainConfig: {
           entry: "./src/main.ts",
+          output: {
+            filename: '[name].js',
+            path: path.resolve(__dirname, '.webpack')
+          },
           module: {
             rules: [
               {
