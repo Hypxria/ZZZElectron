@@ -18,7 +18,10 @@ jobs:
           
       - name: Install dependencies
         working-directory: Iris
-        run: npm install
+        run: |
+            npm install
+            npm install pnpm
+
         
       - name: Build Windows
         working-directory: Iris
