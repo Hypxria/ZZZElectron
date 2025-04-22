@@ -71,23 +71,23 @@ jobs:
           npm run package        
           npm run build:windows
 
-      - name: Build macOS
-        if: matrix.os == 'macos-latest'
-        working-directory: Iris
-        run: |
-          npx electron-forge import
-          npm run package
-          npm run build:mac
+      # - name: Build macOS
+      #   if: matrix.os == 'macos-latest'
+      #   working-directory: Iris
+      #   run: |
+      #     npx electron-forge import
+      #     npm run package
+      #     npm run build:mac
 
-      - name: Build Linux
-        if: matrix.os == 'ubuntu-latest'
-        working-directory: Iris
-        run: |
-          npx electron-forge import
-          sudo apt-get update
-          sudo apt-get install -y rpm elfutils
-          npm run package
-          npm run build:linux
+      # - name: Build Linux
+      #   if: matrix.os == 'ubuntu-latest'
+      #   working-directory: Iris
+      #   run: |
+      #     npx electron-forge import
+      #     sudo apt-get update
+      #     sudo apt-get install -y rpm elfutils
+      #     npm run package
+      #     npm run build:linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
