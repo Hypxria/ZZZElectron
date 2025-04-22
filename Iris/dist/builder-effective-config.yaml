@@ -1,0 +1,20 @@
+directories:
+  output: dist
+  buildResources: build
+appId: hyperiya.app.iris
+win:
+  icon: src/assets/icons/Iris.ico
+  target:
+    - nsis
+    - portable
+mac:
+  icon: assets/icons/icon.icns
+  category: public.app-category.utilities
+linux:
+  icon: assets/icons/icon.png
+  target:
+    - AppImage
+    - deb
+    - rpm
+files: []
+electronVersion: 34.2.0
