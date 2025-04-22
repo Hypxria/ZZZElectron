@@ -47,22 +47,22 @@ jobs:
           sudo chown root:root node_modules/electron/dist/chrome-sandbox
           sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
 
-      - name: Debug webpack output directory
-        working-directory: Iris
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Creating .webpack directory at: $(pwd)/.webpack"
-          mkdir -p .webpack
-          echo "Contents of current directory:"
-          ls -la
-          echo "Attempting npm start..."
-          npm run start || true
-          echo "Contents of .webpack directory (if it exists):"
-          ls -la .webpack || true
-          echo "Full path to .webpack/main:"
-          echo "$(pwd)/.webpack/main"
-          echo "Checking if .webpack/main exists:"
-          test -d .webpack/main && echo "Directory exists" || echo "Directory does not exist"
+      # - name: Debug webpack output directory
+      #   working-directory: Iris
+      #   run: |
+      #     echo "Current directory: $(pwd)"
+      #     echo "Creating .webpack directory at: $(pwd)/.webpack"
+      #     mkdir -p .webpack
+      #     echo "Contents of current directory:"
+      #     ls -la
+      #     echo "Attempting npm start..."
+      #     npm run start || true
+      #     echo "Contents of .webpack directory (if it exists):"
+      #     ls -la .webpack || true
+      #     echo "Full path to .webpack/main:"
+      #     echo "$(pwd)/.webpack/main"
+      #     echo "Checking if .webpack/main exists:"
+      #     test -d .webpack/main && echo "Directory exists" || echo "Directory does not exist"
 
       - name: Build Windows
         if: matrix.os == 'windows-latest'
