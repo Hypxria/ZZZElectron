@@ -40,6 +40,13 @@ jobs:
           npm install --save-dev @electron-forge/plugin-webpack
           npx electron-forge import
 
+      - name: Fix Electron sandbox permissions (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: Iris
+        run: |
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+
       - name: Debug webpack output directory
         working-directory: Iris
         run: |
