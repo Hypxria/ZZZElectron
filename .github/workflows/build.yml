@@ -23,8 +23,9 @@ jobs:
           npm install pnpm
 
       - name: Build Webpack
+        working-directory: Iris
         run: |
-          npm run build
+            npm run build
 
       - name: Build Windows
         working-directory: Iris
