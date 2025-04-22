@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   packagerConfig: {
+    derefSymlinks: true,
     asar: true,
     extraResource: [
       'src/assets/extension'
@@ -22,61 +23,25 @@ module.exports = {
         exe: "Iris.exe",
         setupExe: "iris-setup.exe",
         setupIcon: "src/assets/icons/Iris.ico",
-        iconUrl: "https://github.com/Hyperiya/Iris/blob/8d4bfd8ba8f0e90b2d7e4c58a1522f52123235cf/Iris/src/assets/icons/Iris.png"
+        iconUrl: "https://github.com/Hypxria/ZZZElectron/blob/8d4bfd8ba8f0e90b2d7e4c58a1522f52123235cf/App/src/assets/icons/Iris.png"
       },
     },
     {
       name: "@electron-forge/maker-zip",
       platforms: ["darwin"],
-      config: {
-        options: {
-          icon: 'src/assets/icons/Iris.icns' // Make sure you have .icns file for macOS
-        }
-      }
     },
     {
       name: "@electron-forge/maker-deb",
       config: {
         options: {
           icon: 'src/assets/icons/Iris.png'
-        }
-      },
-    },
-    {
-      name: "@electron-forge/maker-dmg", // Add DMG maker for macOS
-      config: {
-        icon: 'src/assets/icons/Iris.icns',
-        format: 'ULFO'
-      }
-    },
-    {
-      name: "@electron-forge/maker-deb",
-      config: {
-        options: {
-          icon: 'src/assets/icons/Iris.png',
-          categories: ['Utility'],
-          maintainer: 'Hyperiya'
         }
       },
     },
     {
       name: "@electron-forge/maker-rpm",
-      config: {
-        options: {
-          icon: 'src/assets/icons/Iris.png',
-          categories: ['Utility'],
-          maintainer: 'Hyperiya'
-        }
-      },
+      config: {},
     },
-    {
-      name: '@electron-forge/maker-flatpak', // Add Flatpak support
-      config: {
-        options: {
-          icon: 'src/assets/icons/Iris.png'
-        }
-      }
-    }
   ],
   plugins: [
     {

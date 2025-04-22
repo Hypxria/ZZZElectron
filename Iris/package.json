@@ -3,33 +3,36 @@
   "productName": "Iris",
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
-  "main": ".webpack/main/index.js",
+  "main": ".webpack/main",
   "build": {
-    "extends": null,
     "appId": "hyperiya.app.iris",
     "win": {
       "icon": "src/assets/icons/Iris.ico",
       "target": [
-        "nsis"
+        "nsis",
+        "portable"
       ]
     },
     "mac": {
-      "icon": "assets/icons/icon.icns"
+      "icon": "assets/icons/icon.icns",
+      "category": "public.app-category.utilities"
     },
     "linux": {
-      "icon": "assets/icons/icon.png"
+      "icon": "assets/icons/icon.png",
+      "target": ["AppImage", "deb", "rpm"]
     }
   },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
-    "build:win": "electron-forge make --platform win32",
-    "build:mac": "electron-forge make --platform darwin",
-    "build:linux": "electron-forge make --platform linux",
+    "make": "set DEBUG=electron-packager && electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "postinstall": "electron-rebuild"
+    "postinstall": "electron-rebuild && electron-builder install-app-deps",
+    "dist": "electron-builder -mwl",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.6.1",
@@ -54,9 +57,8 @@
     "@types/ws": "^8.18.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "autoprefixer": "^10.4.21",
-    "buffer": "^6.0.3",
-    "css-loader": "^6.11.0",
     "electron": "34.2.0",
+    "electron-builder": "^26.0.12",
     "file-loader": "^6.2.0",
     "path-browserify": "^1.0.1",
     "postcss": "^8.5.3",
@@ -84,13 +86,18 @@
     "@mui/styled-engine": "^7.0.2",
     "axios": "^1.8.3",
     "axios-cookiejar-support": "^5.0.5",
+    "buffer": "^6.0.3",
     "cryptojs": "^2.5.3",
+    "css-loader": "^6.11.0",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
+    "file-loader": "^6.2.0",
     "iris": "file:",
     "lucide-react": "^0.487.0",
     "net": "^1.0.2",
     "path": "^0.12.7",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-secure-storage": "^1.3.2",
@@ -99,6 +106,8 @@
     "scss": "^0.2.4",
     "style-loader": "^4.0.0",
     "tough-cookie": "^5.1.2",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.7.3",
     "ws": "^8.18.1"
   }
 }
