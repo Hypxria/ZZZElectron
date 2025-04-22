@@ -84,6 +84,10 @@ module.exports = {
       config: {
         mainConfig: {
           entry: "./src/main.ts",
+          output: {
+            path: './.webpack/main',
+            filename: "index.js",
+          },
           module: {
             rules: [
               {
