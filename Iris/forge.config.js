@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   packagerConfig: {
     derefSymlinks: true,
-    asar: true,
+    asar: false,
     extraResource: [
       'src/assets/extension'
     ],
