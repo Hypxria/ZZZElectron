@@ -45,10 +45,9 @@ Features:
 ```bash
 # Clone the repository
 git clone https://github.com/Hyperiya/Iris
-cd Iris
+cd Iris/Iris
 
 # Install dependencies
-cd App
 npm install
 
 # Compile application
@@ -57,7 +56,7 @@ npm run make
 
 ```bash
 # Install Spicetify extension
-cd Iris-Rxtension/iris-link
+cd Iris-Extension/iris-link
 npm install
 
 # Compile the extention yourself
