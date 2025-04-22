@@ -1,3 +1,4 @@
+![Iris](https://github.com/Hyperiya/Iris/blob/350b11a1268595e40dbd0e3094945166cdad0aca/Iris/src/assets/icons/IrisWideTransparent.png "Iris")
 # Iris: A Modern Desktop Integration Hub for Discord, Spotify, and Hoyoverse Games
 
 Iris is an Electron-based desktop application that seamlessly integrates Discord, Spotify, and Hoyoverse game services into an interface. It provides real-time music controls, game status tracking, and Discord voice chat management with a sleek, modern design.

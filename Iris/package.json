@@ -9,17 +9,14 @@
     "win": {
       "icon": "src/assets/icons/Iris.ico",
       "target": [
-        "nsis",
-        "portable"
+        "nsis"
       ]
     },
     "mac": {
-      "icon": "assets/icons/icon.icns",
-      "category": "public.app-category.utilities"
+      "icon": "assets/icons/icon.icns"
     },
     "linux": {
-      "icon": "assets/icons/icon.png",
-      "target": ["AppImage", "deb", "rpm"]
+      "icon": "assets/icons/icon.png"
     }
   },
   "scripts": {
@@ -28,7 +25,7 @@
     "make": "set DEBUG=electron-packager && electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "postinstall": "electron-rebuild && electron-builder install-app-deps",
+    "postinstall": "electron-rebuild",
     "dist": "electron-builder -mwl",
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac",
