@@ -8,10 +8,29 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 import { setupIpcHandlers } from './ipc';
 import { cleanupSpotifyHandlers } from './ipc/handlers/spotify'
 
+import { saveWindowState, restoreWindowState } from './utils/windowState';
+
+let store: any;
+let Store: any;
+
+async function initializeStore() {
+  if (!Store) {
+      Store = (await import("electron-store")).default;
+      store = new Store();
+  }
+  return store;
+}
+
+store = initializeStore()
+
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
 
 ipcMain.setMaxListeners(20); // Or whatever number is appropriate
+
+type WindowEventType = 'resize' | 'move' | 'close';
+const events: WindowEventType[] = ['resize', 'move', 'close'];
+
 
 const cspDirectives = {
   'font-src': ["'self'"],
@@ -41,6 +60,8 @@ const buildCsp = (directives: Record<string, string[]>) => {
 };
 
 const createWindow = async (x: number, y: number): Promise<void> => {
+  const windowState = await restoreWindowState();
+
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
   app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
@@ -54,8 +75,11 @@ const createWindow = async (x: number, y: number): Promise<void> => {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    ...windowState.bounds,
     height: 600,
     width: 800,
+    minWidth: 500,
+    minHeight: 390,
     title: 'Iris', // Add this line
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
@@ -73,7 +97,47 @@ const createWindow = async (x: number, y: number): Promise<void> => {
 
   mainWindow.setTitle('Iris');
 
+  if (windowState.isMaximized) {
+    mainWindow.maximize();
+  }
+
+  if (windowState.isFullScreen) {
+    mainWindow.setFullScreen(true);
+  }
+
+  if (mainWindow) {
+    mainWindow.on('resize', () => {
+      if (mainWindow) saveWindowState(mainWindow);
+    });
+  
+    mainWindow.on('move', () => {
+      if (mainWindow) saveWindowState(mainWindow);
+    });
+  
+    mainWindow.on('close', () => {
+      if (mainWindow) saveWindowState(mainWindow);
+    });
+  }
+  
+  
+
   setupIpcHandlers(mainWindow, discordRPC);
+
+  mainWindow.on('maximize', () => {
+    if (mainWindow) saveWindowState(mainWindow);
+  });
+
+  mainWindow.on('unmaximize', () => {
+    if (mainWindow) saveWindowState(mainWindow);
+  });
+
+  mainWindow.on('enter-full-screen', () => {
+    if (mainWindow) saveWindowState(mainWindow);
+  });
+
+  mainWindow.on('leave-full-screen', () => {
+    if (mainWindow) saveWindowState(mainWindow);
+  });
 
   mainWindow?.on('enter-full-screen', () => {
     mainWindow?.webContents.send('fullscreen-change');
@@ -100,12 +164,37 @@ const createWindow = async (x: number, y: number): Promise<void> => {
     });
   });
 
+  const ensureWindowVisible = () => {
+    if (!mainWindow) return;
+    
+    const displays = screen.getAllDisplays();
+    const { bounds } = windowState;
+    
+    // Check if window is visible on any display
+    const isVisible = displays.some(display => {
+      return bounds.x >= display.bounds.x &&
+             bounds.y >= display.bounds.y &&
+             bounds.x + bounds.width <= display.bounds.x + display.bounds.width &&
+             bounds.y + bounds.height <= display.bounds.y + display.bounds.height;
+    });
+
+    // If not visible, center on primary display
+    if (!isVisible) {
+      const primaryDisplay = screen.getPrimaryDisplay();
+      const x = Math.floor(primaryDisplay.bounds.x + (primaryDisplay.bounds.width - bounds.width) / 2);
+      const y = Math.floor(primaryDisplay.bounds.y + (primaryDisplay.bounds.height - bounds.height) / 2);
+      mainWindow.setPosition(x, y);
+    }
+  };
+
+  ensureWindowVisible();
+
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
   }
 };
 
