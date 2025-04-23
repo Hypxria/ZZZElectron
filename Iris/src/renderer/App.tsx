@@ -9,7 +9,6 @@ import AppSelector from './components/AppSelector';
 import DiscordMain from './components/discord/DiscordMain';
 import secureLocalStorage from 'react-secure-storage';
 
-
 interface AppProps {
 }
 
@@ -66,8 +65,6 @@ const App: React.FC<AppProps> = () => {
       window.electron.window.removeFullScreenListener();
     };
   }, []);
-
-  // Just change the order without restructuring the DOM
 
   const handleOutsideClick = (e: React.MouseEvent) => {
     // Only close if clicking the container itself, not its children

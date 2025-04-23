@@ -2,7 +2,7 @@
   position: absolute;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
+  padding: 2rem;
   color: white;
   text-align: center;
   max-height: 100%;
@@ -16,12 +16,12 @@
   --brighter-color:'#cccccc';
   --dimmer-color:'#999999';
   opacity: 0;
-  display: none;
+  // display: none;
   user-select: all;
   pointer-events: none;
 
   &.shown {
-    display: flex;
+    // display: flex;
     pointer-events: all;
     opacity: 1;
   }
@@ -35,7 +35,7 @@
   padding: 1rem;
   border-radius: 8px;
   width: 70vw;
-  max-width: 700px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
