@@ -1,6 +1,6 @@
-import { DSGenerator } from './dsTypes';
-import { Region, Game, DSHeaders } from './types';
-const nodeCrypto = require('crypto')
+import { DSGenerator } from './dsTypes.js';
+import { Region, Game, DSHeaders } from './types.js';
+import nodeCrypto from 'crypto';
 
 const CN_TIMEZONE = 8 * 60 * 60 * 1000; // UTC+8 in milliseconds
 
@@ -58,7 +58,7 @@ export function generateCnDynamicSecret(
     .join("&") : "";
 
   const message = `salt=${salt}&t=${t}&r=${r}&b=${b}&q=${q}`;
-  const hash = require('crypto').createHash('md5').update(message).digest('hex');
+  const hash = nodeCrypto.createHash('md5').update(message).digest('hex');
   return `${t},${r},${hash}`;
 }
 

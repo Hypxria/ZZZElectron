@@ -57,7 +57,7 @@ export function setupSpicetifyHandlers() {
       });
 
       return { success: true, message: 'Extension installed successfully!' };
-    } catch (error) {
+    } catch (error:any) {
       console.error('Installation error:', error);
       return {
         success: false,

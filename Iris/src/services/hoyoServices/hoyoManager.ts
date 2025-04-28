@@ -1,7 +1,7 @@
-import { CookieManager } from './CookieManager';
-import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds';
-import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes';
-import { Region, Game, GameRecord, DSHeaders } from './types';
+import { CookieManager } from './CookieManager.js';
+import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds.js';
+import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes/index.js';
+import { Region, Game, GameRecord, DSHeaders } from './types.js';
 import axios, { AxiosResponse } from 'axios';
 
 const CN_REGIONS = ['prod_gf_sg', 'prod_official_cht', 'os_cht'];
@@ -113,7 +113,7 @@ export class HoyoManager {
 
     // Check ds.ts for what's going on here/ why I'm doing it.
     const ds = region && CN_REGIONS.includes(region)
-      ? generateCnDynamicSecret(params, params, DS_SALT[Region.CHINESE])
+      ? generateCnDynamicSecret(params, params, Region.CHINESE)
       : generateDynamicSecret();
 
     console.log(`ds= ${ds}`)
@@ -149,7 +149,7 @@ export class HoyoManager {
 
     // Generate appropriate DS
     if (region && CN_REGIONS.includes(region)) {
-      headers.ds = generateCnDynamicSecret(params, params, DS_SALT[Region.CHINESE]);
+      headers.ds = generateCnDynamicSecret(params, params, Region.CHINESE);
     } else {
       headers.ds = generateDynamicSecret();
     }

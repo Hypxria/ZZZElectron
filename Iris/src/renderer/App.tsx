@@ -1,14 +1,14 @@
 import React, { useState, useEffect, use } from 'react';
-import SpotifyMain from './components/spotify/SpotifyMain';
-import Titlebar from './components/Titlebar';
-import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings';
+import SpotifyMain from './components/spotify/SpotifyMain.js';
+import Titlebar from './components/Titlebar.js';
+import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings.js';
 import '../index.scss';
-import { ViewState } from '../types/viewState';
-import HoyoMain from './components/hoyo/HoyoMain';
-import AppSelector from './components/AppSelector';
-import DiscordMain from './components/discord/DiscordMain';
+import { ViewState } from '../types/viewState.js';
+import HoyoMain from './components/hoyo/HoyoMain.js';
+import AppSelector from './components/AppSelector.js';
+import DiscordMain from './components/discord/DiscordMain.js';
 import secureLocalStorage from 'react-secure-storage';
-import { SpeechRecognitionService } from '../services/micServices/speech';
+import { SpeechRecognitionService } from '../services/micServices/speech.js';
 
 interface AppProps {
 }

@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
   "main": ".webpack/main",
+  "type": "module",
   "build": {
     "appId": "hyperiya.app.iris",
     "win": {
@@ -19,6 +20,7 @@
       "icon": "assets/icons/icon.png"
     }
   },
+  
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",

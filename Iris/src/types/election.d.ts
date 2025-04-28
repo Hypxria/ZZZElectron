@@ -33,7 +33,7 @@ declare global {
         electron: ElectronAPI;
         discord: {
             revokeAllTokens: () => Promise<void>; // Add this line
-            connect: (id, secret) => Promise<{ success: boolean; error?: string }>;
+            connect: (id:string, secret:string) => Promise<{ success: boolean; error?: string }>;
             subscribe: (event: string, args?: any) => Promise<any>;
             unsubscribe: (event: string, args?: any) => Promise<void>;
             disconnect: () => Promise<void>;
