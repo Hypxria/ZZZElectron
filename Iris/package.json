@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
   "main": ".webpack/main",
+  "config": {
+    "forge": "./forge.config.mjs"
+  },
   "type": "module",
   "build": {
     "appId": "hyperiya.app.iris",

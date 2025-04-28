@@ -1,14 +1,14 @@
 // src/main.ts
 import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
-import DiscordRPC from './services/discordServices/discordRPC.js';
+import DiscordRPC from './services/discordServices/discordRPC.ts';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-import { setupIpcHandlers } from './ipc/index.js';
-import { cleanupSpotifyHandlers } from './ipc/handlers/spotify.js'
+import { setupIpcHandlers } from './ipc/index.ts';
+import { cleanupSpotifyHandlers } from './ipc/handlers/spotify.ts'
 
-import { saveWindowState, restoreWindowState } from './utils/windowState.js';
+import { saveWindowState, restoreWindowState } from './utils/windowState.ts';
 
 let store: any;
 let Store: any;

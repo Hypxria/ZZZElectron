@@ -1,7 +1,7 @@
-import { CookieManager } from './CookieManager.js';
-import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds.js';
+import { CookieManager } from './CookieManager.ts';
+import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds.ts';
 import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes/index.js';
-import { Region, Game, GameRecord, DSHeaders } from './types.js';
+import { Region, Game, GameRecord, DSHeaders } from './types.ts';
 import axios, { AxiosResponse } from 'axios';
 
 const CN_REGIONS = ['prod_gf_sg', 'prod_official_cht', 'os_cht'];

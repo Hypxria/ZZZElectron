@@ -1,5 +1,5 @@
-import { DSGenerator } from './dsTypes.js';
-import { Region, Game, DSHeaders } from './types.js';
+import { DSGenerator } from './dsTypes.ts';
+import { Region, Game, DSHeaders } from './types.ts';
 import nodeCrypto from 'crypto';
 
 const CN_TIMEZONE = 8 * 60 * 60 * 1000; // UTC+8 in milliseconds
