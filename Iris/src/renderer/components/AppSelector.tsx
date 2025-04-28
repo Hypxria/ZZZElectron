@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import './AppSelector.scss'
 
-import LibraryMusicRoundedIcon from '@mui/icons-material/LibraryMusicRounded';
+import { LibraryMusicRounded } from '@mui/icons-material';
 
 
-import { ViewState } from '../../types/viewState';
+import { ViewState } from '../../types/viewState.ts';
 
 interface TitlebarProps {
 
@@ -52,7 +52,7 @@ const AppSelector: React.FC<TitlebarProps> = ({
               <div className='spotify-button'>
                 <button className="selector-button" onClick={handleLeftButtonClick} >
                   <div className='music-icon'>
-                    <LibraryMusicRoundedIcon  />
+                    <LibraryMusicRounded  />
                   </div>
                 </button>
               </div>

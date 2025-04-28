@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import SpotifyService from '../../services/spotifyServices/SpotifyService';
+import SpotifyService from '../../services/spotifyServices/SpotifyService.ts';
 import WebSocket, { WebSocketServer } from 'ws';
-import { LrcLibApi } from '../../services/spotifyServices/LrcLibService';
+import { LrcLibApi } from '../../services/spotifyServices/LrcLibService.ts';
 import * as http from 'http';
 
 

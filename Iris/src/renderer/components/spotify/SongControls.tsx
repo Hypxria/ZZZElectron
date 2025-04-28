@@ -1,15 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Styles/SongControls.scss';
 
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
-import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
-import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
-import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
-import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
-import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
+
+import { PlayArrow, Pause, SkipNextRounded, SkipPreviousRounded, ShuffleRounded, RepeatOneRounded, RepeatRounded } from '@mui/icons-material';
+
 
 
 interface SongControlsProps {
@@ -179,9 +173,9 @@ const SongControls: React.FC<SongControlsProps> = ({
       onClick={handlePlayPause}
     >
       {isPlaying ? (
-        <PauseIcon className="control-icon" />
+        <Pause className="control-icon" />
       ) : (
-        <PlayArrowIcon className="control-icon" />
+        <PlayArrow className="control-icon" />
       )}
     </button>
   );
@@ -192,7 +186,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       id="skip"
       onClick={handleSkip}
     >
-      <SkipNextRoundedIcon className="skip-icon" />
+      <SkipNextRounded className="skip-icon" />
     </button>
   );
 
@@ -202,7 +196,7 @@ const SongControls: React.FC<SongControlsProps> = ({
       id="back"
       onClick={handleBack}
     >
-      <SkipPreviousRoundedIcon className="back-icon" />
+      <SkipPreviousRounded className="back-icon" />
     </button>
   );
 
@@ -215,11 +209,11 @@ const SongControls: React.FC<SongControlsProps> = ({
       {(() => {
         switch (shuffle) {
           case true:
-            return <ShuffleRoundedIcon className="shuffle-icon shuffled" />;
+            return <ShuffleRounded className="shuffle-icon shuffled" />;
           case false:
-            return <ShuffleRoundedIcon className="shuffle-icon" />;
+            return <ShuffleRounded className="shuffle-icon" />;
           default:
-            return <ShuffleRoundedIcon className="shuffle-icon" />;
+            return <ShuffleRounded className="shuffle-icon" />;
         }
       })()}
     </button>
@@ -244,13 +238,13 @@ const SongControls: React.FC<SongControlsProps> = ({
            * Return current Repeat state (No repeat = 0/Repeat all = 1/Repeat one = 2).
            */
           case 0:
-            return <RepeatRoundedIcon className="loop-icon none" data-state={loop} />;
+            return <RepeatRounded className="loop-icon none" data-state={loop} />;
           case 1:
-            return <RepeatRoundedIcon className="loop-icon all" data-state={loop} />;
+            return <RepeatRounded className="loop-icon all" data-state={loop} />;
           case 2:
-            return <RepeatOneRoundedIcon className="loop-icon one" data-state={loop} />;
+            return <RepeatOneRounded className="loop-icon one" data-state={loop} />;
           default:
-            return <RepeatRoundedIcon className="loop-icon" data-state={loop} />;
+            return <RepeatRounded className="loop-icon" data-state={loop} />;
         }
       })()}
     </button>

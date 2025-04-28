@@ -1,7 +1,7 @@
 // src/renderer/index.tsx
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import App from './App.tsx';
 
 const container = document.getElementById('root');
 if (!container) {

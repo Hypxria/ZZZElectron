@@ -1,8 +1,7 @@
 // src/renderer/components/spotify/VolumeControls.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import './Styles/SongVolume.scss';
-import VolumeDownRoundedIcon from '@mui/icons-material/VolumeDownRounded';
-import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
+import { VolumeDownRounded, VolumeUpRounded } from '@mui/icons-material';
 
 interface SongVolumeProps {
     volume: number;
@@ -36,7 +35,7 @@ const SongVolume: React.FC<SongVolumeProps> = ({
     
     return (
         <div className="volume-control-wrapper">
-            <VolumeDownRoundedIcon
+            <VolumeDownRounded
                 className="volume-icon"
                 onClick={() => handleVolumeIconClick('down')}
             />
@@ -49,7 +48,7 @@ const SongVolume: React.FC<SongVolumeProps> = ({
                 className="volume-slider"
                 aria-label="Volume"
             />
-            <VolumeUpRoundedIcon
+            <VolumeUpRounded
                 className="volume-icon"
                 onClick={() => handleVolumeIconClick('up')}
             />

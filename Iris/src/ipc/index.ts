@@ -1,11 +1,11 @@
 import { BrowserWindow } from 'electron';
-import { setupWindowHandlers } from './handlers/window';
-import { setupDiscordHandlers } from './handlers/discord';
-import { setupSpotifyHandlers } from './handlers/spotify';
-import { setupHoyoHandlers } from './handlers/hoyo';
-import { setupSpicetifyHandlers } from './handlers/spicetify';
-import { setupHoyoAuthHandlers } from './handlers/hoyoAuth';
-import DiscordRPC from '../services/discordServices/discordRPC';
+import { setupWindowHandlers } from './handlers/window.ts';
+import { setupDiscordHandlers } from './handlers/discord.ts';
+import { setupSpotifyHandlers } from './handlers/spotify.ts';
+import { setupHoyoHandlers } from './handlers/hoyo.ts';
+import { setupSpicetifyHandlers } from './handlers/spicetify.ts';
+import { setupHoyoAuthHandlers } from './handlers/hoyoAuth.ts';
+import DiscordRPC from '../services/discordServices/discordRPC.ts';
 
 export function setupIpcHandlers(mainWindow: BrowserWindow, discordRPC: DiscordRPC | null) {
     setupWindowHandlers(mainWindow);

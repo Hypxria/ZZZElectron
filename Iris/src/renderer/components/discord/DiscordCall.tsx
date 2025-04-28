@@ -1,20 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Styles/DiscordCall.scss';
 
-import MicRoundedIcon from '@mui/icons-material/MicRounded';
-import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
-import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
-import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
-import PhoneDisabledRoundedIcon from '@mui/icons-material/PhoneDisabledRounded';
-import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { MicOffRounded, HeadsetRounded, HeadsetOffRounded, PhoneDisabledRounded, PhoneRounded, CloseRounded, MicRounded } from '@mui/icons-material';
 
-import { DiscordNotificationType } from './../../../services/discordServices/types';
+import { DiscordNotificationType } from './../../../services/discordServices/types.ts';
 
-import { GetChannelType } from './../../../services/discordServices/eventTypes/GetChannelType'
-import { SpeakingType } from './../../../services/discordServices/eventTypes/SpeakingType';
-import { VoiceStateType } from './../../../services/discordServices/eventTypes/VoiceStateType';
-import { VoiceSettingsType } from './../../../services/discordServices/eventTypes/VoiceSettingsType';
+import { GetChannelType } from './../../../services/discordServices/eventTypes/GetChannelType.ts'
+import { SpeakingType } from './../../../services/discordServices/eventTypes/SpeakingType.ts';
+import { VoiceStateType } from './../../../services/discordServices/eventTypes/VoiceStateType.ts';
+import { VoiceSettingsType } from './../../../services/discordServices/eventTypes/VoiceSettingsType.ts';
 
 
 interface VoiceUsers {
@@ -290,9 +284,9 @@ const DiscordCall: React.FC = () => {
     const MuteButton = (
         <div id={`icon ${isMuted === true ? 'muted' : ''}`} onClick={handleMute}>
             {isMuted || isDeafened ?
-                <MicOffRoundedIcon className="mute-button muted" />
+                <MicOffRounded className="mute-button muted" />
                 :
-                <MicRoundedIcon className="mute-button" />
+                <MicRounded className="mute-button" />
             }
         </div>
     );
@@ -300,25 +294,25 @@ const DiscordCall: React.FC = () => {
     const DeafenButton = (
         <div id='icon' onClick={handleDeafen}>
             {isDeafened ?
-                <HeadsetOffRoundedIcon className="mute-button muted" />
+                <HeadsetOffRounded className="mute-button muted" />
                 :
-                <HeadsetRoundedIcon className="mute-button" />
+                <HeadsetRounded className="mute-button" />
             }
         </div>
     );
 
     const leaveCall = (
         <div id='icon' onClick={handleLeave}>
-            <PhoneDisabledRoundedIcon className="mute-button" />
+            <PhoneDisabledRounded className="mute-button" />
         </div>
     );
 
     const StatusIcon = ({ isMuted, isDeafened }: { isMuted: boolean, isDeafened: boolean }) => (
         <div className={`status-icon ${isDeafened === true ? 'deaf' : isMuted === true ? 'mute' : ''}`} id='icon' >
             {isDeafened === true ?
-                <HeadsetOffRoundedIcon className="mute-button muted" />
+                <HeadsetOffRounded className="mute-button muted" />
                 : isMuted ?
-                    <MicOffRoundedIcon className="mute-button muted" />
+                    <MicOffRounded className="mute-button muted" />
                     : <></>
             }
         </div>
@@ -326,13 +320,13 @@ const DiscordCall: React.FC = () => {
 
     const pickUpIcon = (
         <div className="join-call" onClick={handleJoin}>
-            <PhoneRoundedIcon className="join-button" />
+            <PhoneRounded className="join-button" />
         </div>
     );
 
     const declineIcon = (
         <div className="decline-call" onClick={handleLeave}>
-            <CloseRoundedIcon className="decline-button" />
+            <CloseRounded className="decline-button" />
         </div>
 
     )

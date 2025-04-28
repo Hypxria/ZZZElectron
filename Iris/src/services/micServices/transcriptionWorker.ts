@@ -1,14 +1,11 @@
-
+import { pipeline } from '@xenova/transformers'
 
 let recognizer: any = null;
-let pipeline: any = null;
 
 // Handle messages from main thread
 self.onmessage = async (e) => {
     const { type, audioData, taskId } = e.data;
 
-    const { pipeline: pipelineImport } = await import('@xenova/transformers')
-    pipeline = pipelineImport
     
     switch (type) {
         case 'init':
@@ -17,6 +14,7 @@ self.onmessage = async (e) => {
                     'automatic-speech-recognition',
                     'Xenova/whisper-tiny.en',
                     {
+                        //@ts-ignore
                         chunk_length_s: 3,
                         stride_length_s: 1.5,
                         language: 'english',

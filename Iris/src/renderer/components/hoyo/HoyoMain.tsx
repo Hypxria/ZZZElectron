@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import secureLocalStorage from 'react-secure-storage';
-import GameAccountDashboard from './GameDashboard';
-import { ViewState } from "../../../types/viewState";
+import GameAccountDashboard from './GameDashboard.tsx';
+import { ViewState } from "../../../types/viewState.ts";
 import './Styles/Main.scss';
 
 interface AppProps {

@@ -1,4 +1,4 @@
-import DiscordRPC from '../../services/discordServices/discordRPC';
+import DiscordRPC from '../../services/discordServices/discordRPC.ts';
 import { BrowserWindow, ipcMain } from 'electron';
 
 export function setupDiscordHandlers(mainWindow: BrowserWindow, discordRPC: DiscordRPC | null) {

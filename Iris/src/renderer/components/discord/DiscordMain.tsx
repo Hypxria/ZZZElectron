@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Styles/DiscordNotification.scss';
-import { DiscordNotificationType } from './../../../services/discordServices/types';
+import { DiscordNotificationType } from './../../../services/discordServices/types.ts';
 import secureLocalStorage from 'react-secure-storage';
 
-import DiscordCall from './DiscordCall';
-import DiscordNotification from './DiscordNotification';
+import DiscordCall from './DiscordCall.tsx';
+import DiscordNotification from './DiscordNotification.tsx';
 
 
 const DiscordMain: React.FC = ({

@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { HoyolabAuth } from '../../services/hoyoServices/auth';
+import { HoyolabAuth } from '../../services/hoyoServices/auth.ts';
 
 export function setupHoyoAuthHandlers () {
   ipcMain.handle('hoyo:login', async (event, username, password) => {

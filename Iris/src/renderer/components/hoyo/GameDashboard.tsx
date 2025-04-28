@@ -1,13 +1,13 @@
 import React, { CSSProperties, useState, useRef, useEffect, useCallback } from 'react';
 import { Clock, Battery, Star, Coins, Award, RefreshCw } from 'lucide-react';
 import './Styles/GameAccountDashboard.scss';
-import { ViewState } from "../../../types/viewState";
+import { ViewState } from "../../../types/viewState.ts";
 
 import zzzIcon from "../../../assets/images/Zenless_Zone_Zero_logo.png"
 import genshinIcon from "../../../assets/images/Genshin-Impact-Logo.png"
 import honkaiIcon from "../../../assets/images/Honkai_Star-Rail_Logo.png"
 
-import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes, baseInfo } from 'src/services/hoyoServices/gameResponseTypes';
+import { starrailBattery, starrailInfo, zenlessBattery, zenlessInfo, genshinInfo, genshinNotes, baseInfo } from '../../../services/hoyoServices/gameResponseTypes/index.ts';
 
 interface CustomCSS extends CSSProperties {
   '--accent-color'?: string;

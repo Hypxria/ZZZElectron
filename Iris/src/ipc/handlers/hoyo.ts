@@ -1,4 +1,4 @@
-import { HoyoManager } from '../../services/hoyoServices/hoyoManager';
+import { HoyoManager } from '../../services/hoyoServices/hoyoManager.ts';
 import { ipcMain } from 'electron';
 
 let hoyoManager: HoyoManager | null = null;

@@ -1,6 +1,6 @@
 // Settings.tsx
 import React, { useState, useEffect, act } from 'react';
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import { ArrowForwardIosRounded } from '@mui/icons-material';
 import secureLocalStorage from "react-secure-storage";
 import './Settings.scss';
 
@@ -196,7 +196,7 @@ const Settings: React.FC<SettingsProps> = ({
                     {navigationPath.map((item, index) => (
                         <React.Fragment key={index}>
                             {index > 0 && (
-                                <ArrowForwardIosRoundedIcon className="nav-arrow" />
+                                <ArrowForwardIosRounded className="nav-arrow" />
                             )}
                             <span
                                 className={`nav-item ${index === navigationPath.length - 1 ? 'active' : ''

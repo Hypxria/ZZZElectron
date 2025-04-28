@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 
-import SongInfo from "./SongInfo";
-import SongControls from "./SongControls";
-import SongUpcoming from "./SongUpcoming";
-import SongBackground from "./SongBackground";
-import SongLyrics from "./SongLyrics";
-import SongVolume from "./SongVolume";
+import SongInfo from "./SongInfo.tsx";
+import SongControls from "./SongControls.tsx";
+import SongUpcoming from "./SongUpcoming.tsx";
+import SongBackground from "./SongBackground.tsx";
+import SongLyrics from "./SongLyrics.tsx";
+import SongVolume from "./SongVolume.tsx";
 
 import "./Styles/Main.scss";
-import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService";
-import { ViewState } from "../../../types/viewState";
-import { ColorExtractor } from '../../../utils/ColorExtractor'
+import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService.ts";
+import { ViewState } from "../../../types/viewState.ts";
+import { ColorExtractor } from '../../../utils/ColorExtractor.ts'
 
 interface SpotifyMainProps {
   ViewState: ViewState

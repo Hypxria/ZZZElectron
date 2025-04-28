@@ -2,6 +2,7 @@
 import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC.ts';
 
+import Store from 'electron-store';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
@@ -10,18 +11,9 @@ import { cleanupSpotifyHandlers } from './ipc/handlers/spotify.ts'
 
 import { saveWindowState, restoreWindowState } from './utils/windowState.ts';
 
-let store: any;
-let Store: any;
+let store: Store
 
-async function initializeStore() {
-  if (!Store) {
-      Store = (await import("electron-store")).default;
-      store = new Store();
-  }
-  return store;
-}
-
-store = initializeStore()
+store = new Store()
 
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;

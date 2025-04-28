@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Titlebar.scss';
-import MinimizeIcon from '@mui/icons-material/Remove';
-import MaximizeIcon from '@mui/icons-material/CropSquare';
-import CloseIcon from '@mui/icons-material/Close';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import FullscreenRounded from '@mui/icons-material/FullscreenRounded';
-import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded';
+import { MinimizeRounded, CropSquare, CloseRounded, SettingsRounded, FullscreenRounded, FullscreenExitRounded } from '@mui/icons-material';
 
 import iris from '../../assets/icons/IrisTransparent.png'
 
@@ -77,7 +72,7 @@ const Titlebar: React.FC<TitlebarProps> = ({
                             className='window-control-button settingsicon'
                             onClick={() => onSettingsChange(!isSettings)}
                         >
-                            <SettingsRoundedIcon fontSize='small' />
+                            <SettingsRounded fontSize='small' />
                         </button>
     
                         <button
@@ -95,19 +90,21 @@ const Titlebar: React.FC<TitlebarProps> = ({
                             className="window-control-button minimize"
                             onClick={handleMinimize}
                         >
-                            <MinimizeIcon fontSize="small" />
+                            <MinimizeRounded fontSize="small" />
                         </button>
                         <button
                             className="window-control-button maximize"
+                            aria-label="Maximize"
+                            data-system-region="maximize"
                             onClick={handleMaximize}
                         >
-                            <MaximizeIcon fontSize="small" />
+                            <CropSquare fontSize="small" />
                         </button>
                         <button
                             className="window-control-button close"
                             onClick={handleClose}
                         >
-                            <CloseIcon fontSize="small" />
+                            <CloseRounded fontSize="small" />
                         </button>
                     </div>
                 </div>

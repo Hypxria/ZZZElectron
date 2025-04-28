@@ -1,6 +1,6 @@
 import React from 'react';
 import './Styles/SongInfo.scss';
-import SongVolume from './SongVolume'
+import SongVolume from './SongVolume.tsx'
 
 interface Song {
   name: string;
