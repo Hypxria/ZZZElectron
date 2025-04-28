@@ -20,11 +20,16 @@ export class TranscriptionManager {
 
 
     constructor() {
-        const workerUrl = new URL('./transcriptionWorker.ts', window.location.origin + '/src/services/micServices/').href;
+        const workerUrl = new URL(
+            './transcriptionWorker.ts',
+            import.meta.url
+        ).href;
 
         this.worker = new Worker(workerUrl, {
-            type: 'module'
+            type: 'module',
+            name: 'transcription-worker'
         });
+
 
         this.worker.onmessage = (event) => {
             const { taskId, result, error } = event.data;

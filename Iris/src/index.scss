@@ -210,6 +210,9 @@ body {
   backface-visibility: hidden; // This can help with rendering issues
 }
 
+.settings-backdrop {
+  z-index: 9999
+}
 
 .content-wrapper {
   &.SPOTIFY_FULL {

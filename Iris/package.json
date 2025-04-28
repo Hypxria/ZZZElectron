@@ -23,7 +23,6 @@
       "icon": "assets/icons/icon.png"
     }
   },
-  
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -63,14 +62,12 @@
     "electron-builder": "^26.0.12",
     "file-loader": "^6.2.0",
     "path-browserify": "^1.0.1",
-    "postcss": "^8.5.3",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.17",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
-    "util": "^0.12.5",
-    "worker-loader": "^3.0.8"
+    "util": "^0.12.5"
   },
   "browser": {
     "crypto": false
