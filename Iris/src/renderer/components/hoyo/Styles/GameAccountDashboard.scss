@@ -112,10 +112,11 @@
     font-weight: bold;
     margin: 0;
     translate: 70px -5%;
-    width: 13vw;
+    width: 25vw;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: translate 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
     &.full {
         translate: none;

@@ -1,7 +1,7 @@
 .titlebar {
   height: 32px;
   background: #121212;
-  border-bottom: solid #27272a 2px;
+  border-bottom: solid #27272a 1px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,6 +21,7 @@
     .iris-image {
       width: 20px;
       aspect-ratio: 1/1;
+      border-radius: 2px;
 
       image {
         height: 100%;

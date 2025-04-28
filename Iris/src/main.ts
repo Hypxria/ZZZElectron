@@ -2,7 +2,6 @@
 import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC.ts';
 
-import Store from 'electron-store';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
@@ -11,23 +10,15 @@ import { cleanupSpotifyHandlers } from './ipc/handlers/spotify.ts'
 
 import { saveWindowState, restoreWindowState } from './utils/windowState.ts';
 
-let store: Store
-
-store = new Store()
-
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
 
 ipcMain.setMaxListeners(20); // Or whatever number is appropriate
 
-type WindowEventType = 'resize' | 'move' | 'close';
-const events: WindowEventType[] = ['resize', 'move', 'close'];
-
-
 const cspDirectives = {
   'font-src': ["'self'"],
   'default-src': ["'self'"],
-  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "blob:"],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'blob:'],
   'style-src': ["'self'", "'unsafe-inline'"],
   'connect-src': [
     "'self'",
@@ -57,18 +48,20 @@ const buildCsp = (directives: Record<string, string[]>) => {
 const createWindow = async (x: number, y: number): Promise<void> => {
   const windowState = await restoreWindowState();
 
-  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=4096');
-
+  // Optimizations
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
-  app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
+  app.commandLine.appendSwitch('enable-hardware-overlays');
+  app.commandLine.appendSwitch('enable-accelerated-2d-canvas');
+  app.commandLine.appendSwitch('enable-accelerated-video-decode');
   app.commandLine.appendSwitch('ignore-gpu-blocklist');
-  app.commandLine.appendSwitch('enable-accelerated-compositing');
   app.commandLine.appendSwitch('enable-native-gpu-memory-buffers');
-
-  // Adding these lines to handle display-related issues
-  app.commandLine.appendSwitch('disable-gpu-vsync');
-  app.commandLine.appendSwitch('force-device-scale-factor', '1');
+  app.commandLine.appendSwitch('force-gpu-rasterization');
+  app.commandLine.appendSwitch('disable-frame-rate-limit');
+  app.commandLine.appendSwitch('disable-gpu-vsync'); // Can help with choppy animations
+  app.commandLine.appendSwitch('enable-high-resolution-time');
+  app.commandLine.appendSwitch('enable-webgl');
+  app.commandLine.appendSwitch('enable-webgl2');
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -88,8 +81,9 @@ const createWindow = async (x: number, y: number): Promise<void> => {
       sandbox: true,
       webgl: true,
       offscreen: false,
-      backgroundThrottling: false // Add this to prevent throttling when in background
+      backgroundThrottling: false, // Add this to prevent throttling when in background
     },
+    paintWhenInitiallyHidden: true,
   });
 
   mainWindow.setTitle('Iris');
