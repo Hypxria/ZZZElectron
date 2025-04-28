@@ -1,6 +1,6 @@
 import { CookieManager } from './CookieManager.ts';
 import { generateDynamicSecret, generateCnDynamicSecret, DS_SALT } from './ds.ts';
-import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes/index.js';
+import { genshinNotes, zenlessBattery, genshinInfo, genshinEvents, starrailBattery, starrailInfo, starrailEvents, zenlessInfo, baseInfo } from './gameResponseTypes/index.ts';
 import { Region, Game, GameRecord, DSHeaders } from './types.ts';
 import axios, { AxiosResponse } from 'axios';
 

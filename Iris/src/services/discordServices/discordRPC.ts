@@ -1,17 +1,9 @@
 import net from 'net';
 import { EventEmitter } from 'events';
-import { VoiceChannelSelectType } from './types.js'
+import { VoiceChannelSelectType } from './types.ts'
 import { ThumbUpSharp } from '@mui/icons-material';
-let Store: any;
-let store: any;
+import Store from 'electron-store';
 
-async function initializeStore() {
-    if (!Store) {
-        Store = (await import("electron-store")).default;
-        store = new Store();
-    }
-    return store;
-}
 
 interface RpcMessage {
     op: number;
@@ -20,21 +12,11 @@ interface RpcMessage {
     data?: any;
 }
 
-interface MessageHandler {
-    opcode: number;
-    condition?: (data: any) => boolean;
-    handler: (data: any) => void;
+interface TokenStore {
+    access_token: string;
+    refresh_token: string;
+    expires_at: number;
 }
-
-type SubscriptionArgs = Record<string, any> | any[];
-
-interface SubscriptionConfig {
-    event: string;
-    args?: SubscriptionArgs;
-    handler?: EventHandler;
-}
-
-type EventHandler = (data: any) => void;
 
 class DiscordRPC extends EventEmitter {
     private socket: net.Socket | null;
@@ -42,7 +24,7 @@ class DiscordRPC extends EventEmitter {
     private readonly CLIENT_ID: string
     private readonly CLIENT_SECRET: string
 
-    private store: any;
+    private store: Store = new Store();
     public subscribedEvents: Set<string> = new Set();
 
     public voice: VoiceManager;
@@ -64,7 +46,6 @@ class DiscordRPC extends EventEmitter {
 
     private async initializeStoreAndSetup() {
         try {
-            this.store = await initializeStore();
             console.log(this.store.get('unicorn'));
         } catch (error) {
             console.error('Failed to initialize store:', error);
@@ -156,9 +137,9 @@ class DiscordRPC extends EventEmitter {
 
     public async revokeAllTokens() {
         const tokens = {
-            access_token: this.store.get('access_token'),
-            refresh_token: this.store.get('refresh_token'),
-            expires_at: this.store.get('expires_at')
+            access_token: this.store.get('access_token') as string,
+            refresh_token: this.store.get('refresh_token') as string,
+            expires_at: this.store.get('expires_at') as number
         }
 
         // Revoke acccess token
@@ -168,7 +149,7 @@ class DiscordRPC extends EventEmitter {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                token: tokens.access_token
+                token: tokens.access_token as string
             })
         });
 
@@ -179,7 +160,7 @@ class DiscordRPC extends EventEmitter {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                token: tokens.refresh_token
+                token: tokens.refresh_token as string
             })
         });
 
@@ -191,10 +172,10 @@ class DiscordRPC extends EventEmitter {
     }
 
     private async authorize() {
-        const tokens = {
-            access_token: this.store.get('access_token'),
-            refresh_token: this.store.get('refresh_token'),
-            expires_at: this.store.get('expires_at')
+        const tokens:TokenStore = {
+            access_token: this.store.get('access_token') as string,
+            refresh_token: this.store.get('refresh_token') as string,
+            expires_at: this.store.get('expires_at') as number
         }
 
         console.log(`access tokens: ${tokens.access_token}, ${tokens.refresh_token}, ${tokens.expires_at}`)

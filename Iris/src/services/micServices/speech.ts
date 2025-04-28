@@ -1,6 +1,6 @@
-import { AudioUtils } from './AudioUtils.js';
-import { AudioProcessor } from './AudioProcessor.js';
-import { TranscriptionManager } from './TranscriptionManager.js';
+import { AudioUtils } from './AudioUtils.ts';
+import { AudioProcessor } from './AudioProcessor.ts';
+import { TranscriptionManager } from './TranscriptionManager.ts';
 
 let pipeline: any;
 let read_audio: any;

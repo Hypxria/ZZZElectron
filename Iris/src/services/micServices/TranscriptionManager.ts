@@ -52,14 +52,6 @@ export class TranscriptionManager {
 
     async initialize() {
         try {
-            const appPath = await window.electron.getAppPath();
-            console.log('App path:', appPath);
-            const workerPath = `file://${appPath}/src/services/micServices/transcriptionWorker.js`;
-            
-            this.worker = new Worker(workerPath, {
-                type: 'module'
-            });
-
             this.setupWorkerHandlers();
         } catch (error) {
             console.error('Failed to initialize worker:', error);

@@ -1,9 +1,9 @@
-import path from "path"
+import path from 'path'
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default {
+const config = {
   packagerConfig: {
     derefSymlinks: true,
     asar: true,
@@ -11,7 +11,7 @@ export default {
       'src/assets/extension'
     ],
     appId: "hyperiya.app.iris",
-    icon: path.join(__dirname, 'src', 'assets', 'icons', 'Iris'),
+    icon: path.join(process.cwd(), 'src', 'assets', 'icons', 'Iris'),
     executableName: "Iris",
     name: "Iris"
   },
@@ -52,21 +52,17 @@ export default {
       name: "@electron-forge/plugin-webpack",
       config: {
         mainConfig: {
-          target: ['es2022'],
           entry: "./src/main.ts",
-          devtool: 'source-map',
-          output: {
-            filename: '[name].js',
-            path: path.resolve(__dirname, '.webpack'),
-            module: true,
-            library: {
-              type: 'module'
-            },
-            chunkFormat: 'module'
-          },
           experiments: {
             outputModule: true,
             topLevelAwait: true,
+          },
+          output: {
+            filename: '[name].js',
+            path: path.resolve(process.cwd(), '.webpack'),
+            module: true,
+            libraryTarget: 'module',
+            chunkFormat: 'module'
           },
           module: {
             rules: [
@@ -74,35 +70,53 @@ export default {
                 test: /\.tsx?$/,
                 exclude: /(node_modules|\.webpack)/,
                 use: {
-                  loader: 'ts-loader',
+                  loader: "ts-loader",
                   options: {
                     transpileOnly: true,
-                    compilerOptions: {
-                      module: 'ESNext',
-                      moduleResolution: 'node'
-                    }
+                  },
+                },
+              },
+              {
+                test: /\.(ts|js)$/,
+                include: [
+                  path.resolve(__dirname, 'src/services'),
+                  path.resolve(__dirname, 'src/main.ts')
+                ],
+                use: {
+                  loader: 'ts-loader',
+                  options: {
+                    transpileOnly: true
                   }
                 }
-              }
-            ]
+              },
+              {
+                test: /\.(svg|png|jpg|gif|jpeg)$/,
+                include: [
+                  path.resolve(__dirname, "src/assets/icons")
+                ],
+                type: "asset/inline"
+              },
+            ],
           },
           resolve: {
-            extensions: ['.js', '.ts', '.tsx', '.jsx', '.json'],
-            extensionAlias: {
-              '.js': ['.ts', '.tsx', '.js', '.jsx'],
-              '.mjs': ['.mts', '.mjs']
-            },
-            fallback: {
-              fs: false
-            }
-          }
+            extensions: [
+              ".js",
+              ".ts",
+              ".jsx",
+              ".tsx",
+              ".css",
+              ".scss",
+              ".json",
+            ],
+            preferRelative: true
+          },
         },
         preloadConfig: {
           config: {
             target: 'electron-preload',
             externals: {
-              'child_process': 'commonjs child_process',
-              'fs': 'commonjs fs'
+              'child_process': 'child_process',
+              'fs': 'fs'
             },
             resolve: {
               fallback: {
@@ -114,20 +128,6 @@ export default {
         },
         renderer: {
           config: {
-            entry: './src/renderer/index.tsx',
-            output: {
-              filename: '[name].js',
-              path: path.resolve(__dirname, '.webpack/renderer'),
-              library: {
-                type: 'module'
-              },
-              module: true,
-              chunkFormat: 'module'
-            },
-            experiments: {
-              outputModule: true,
-              topLevelAwait: true,
-            },
             module: {
               rules: [
                 {
@@ -137,14 +137,10 @@ export default {
                     /src\/services/  // Exclude services from renderer
                   ],
                   use: {
-                    loader: 'ts-loader',
+                    loader: "ts-loader",
                     options: {
                       transpileOnly: true,
-                      compilerOptions: {
-                        module: 'esnext',
-                        moduleResolution: 'node'
-                      }
-                    }
+                    },
                   },
                 },
                 {
@@ -167,13 +163,9 @@ export default {
               ],
             },
             resolve: {
-              extensions: ['.js', '.ts', '.tsx', '.jsx', '.json'],
-              extensionAlias: {
-                '.js': ['.ts', '.tsx', '.js', '.jsx'],
-                '.mjs': ['.mts', '.mjs']
-              }
+              extensions: [".js", ".ts", ".jsx", ".tsx", ".scss", ".css"],
+              preferRelative: true
             },
-            target: 'electron-renderer',
           },
           entryPoints: [
             {
@@ -191,3 +183,4 @@ export default {
   ],
 };
 
+export default config;

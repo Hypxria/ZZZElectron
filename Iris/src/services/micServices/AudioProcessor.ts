@@ -1,4 +1,4 @@
-import { AudioUtils } from './AudioUtils.js';
+import { AudioUtils } from './AudioUtils.ts';
 
 export class AudioProcessor {
     static async processAudio(audioChunks:Blob[], audioContext: AudioContext) {

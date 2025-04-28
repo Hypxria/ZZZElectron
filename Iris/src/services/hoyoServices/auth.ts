@@ -1,5 +1,5 @@
 // src/hoyolab-auth.ts
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import * as tough from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import crypto from 'crypto';
@@ -46,7 +46,7 @@ CgGs52bFoYMtyi+xEQIDAQAB
 `
 
 export class HoyolabAuth {
-    private client: axios.AxiosInstance;
+    private client: AxiosInstance;
 
     private debug = true;
 
@@ -60,13 +60,13 @@ export class HoyolabAuth {
 
     constructor() {
         const cookieJar = new tough.CookieJar();
-        this.client = wrapper(axios.create({
+        this.client = axios.create({
             jar: cookieJar,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                 'Referer': 'https://account.hoyoverse.com/',
             },
-        }));
+        });
     }
 
     async encryptCredentials(text: string, keyType: number): Promise<string> {

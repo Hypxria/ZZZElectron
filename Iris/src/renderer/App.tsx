@@ -1,14 +1,14 @@
 import React, { useState, useEffect, use } from 'react';
-import SpotifyMain from './components/spotify/SpotifyMain';
-import Titlebar from './components/Titlebar';
-import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings';
+import SpotifyMain from './components/spotify/SpotifyMain.tsx';
+import Titlebar from './components/Titlebar.tsx';
+import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings.tsx';
 import '../index.scss';
-import { ViewState } from '../types/viewState';
-import HoyoMain from './components/hoyo/HoyoMain';
-import AppSelector from './components/AppSelector';
-import DiscordMain from './components/discord/DiscordMain';
+import { ViewState } from '../types/viewState.ts';
+import HoyoMain from './components/hoyo/HoyoMain.tsx';
+import AppSelector from './components/AppSelector.tsx';
+import DiscordMain from './components/discord/DiscordMain.tsx';
 import secureLocalStorage from 'react-secure-storage';
-// import { SpeechRecognitionService } from '../services/micServices/speech.js';
+import { SpeechRecognitionService } from '../services/micServices/speech.ts';
 
 interface AppProps {
 }
@@ -40,14 +40,14 @@ const App: React.FC<AppProps> = () => {
     return false;
   });
   
-  // const speechService = new SpeechRecognitionService();
+  const speechService = new SpeechRecognitionService();
 
 
   useEffect(() => {
     // Usage example
 
     // Initialize the service
-    // speechService.initialize();
+    speechService.initialize();
 
 
 
@@ -88,12 +88,12 @@ const App: React.FC<AppProps> = () => {
   };
 
   const turnOnThing = () => {
-    // speechService.startListening();
+    speechService.startListening();
 
   }
 
   const turnOffThing = () => {
-    // speechService.stopListening();
+    speechService.stopListening();
 
   }
 
@@ -144,7 +144,7 @@ const App: React.FC<AppProps> = () => {
 
         </button>
 
-        {/* {enabledModules.Spotify && (
+        {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
             <SpotifyMain ViewState={viewState} />
           </div>
@@ -153,7 +153,7 @@ const App: React.FC<AppProps> = () => {
           <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
             <HoyoMain ViewState={viewState} />
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );
