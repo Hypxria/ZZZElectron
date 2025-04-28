@@ -5,7 +5,7 @@ import DiscordRPC from './services/discordServices/discordRPC';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-import { setupIpcHandlers } from './ipc';
+import { setupIpcHandlers } from './ipc/index';
 import { cleanupSpotifyHandlers } from './ipc/handlers/spotify'
 
 import { saveWindowState, restoreWindowState } from './utils/windowState';
@@ -35,7 +35,7 @@ const events: WindowEventType[] = ['resize', 'move', 'close'];
 const cspDirectives = {
   'font-src': ["'self'"],
   'default-src': ["'self'"],
-  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "blob:"],
   'style-src': ["'self'", "'unsafe-inline'"],
   'connect-src': [
     "'self'",
@@ -45,6 +45,9 @@ const cspDirectives = {
     'https://account.hoyoverse.com/',
     'https://sg-public-api.hoyoverse.com',
     'https://sg-public-api.hoyolab.com',
+    'https://huggingface.co',
+    'https://cdn-lfs.hf.co',
+    'https://cdn.jsdelivr.net',
     'ws://127.0.0.1:5000',
     'ws://127.0.0.1:5001',
     'ws://localhost:5000',
@@ -61,6 +64,8 @@ const buildCsp = (directives: Record<string, string[]>) => {
 
 const createWindow = async (x: number, y: number): Promise<void> => {
   const windowState = await restoreWindowState();
+
+  app.commandLine.appendSwitch('js-flags', '--max-old-space-size=4096');
 
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
@@ -199,9 +204,11 @@ const createWindow = async (x: number, y: number): Promise<void> => {
 };
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
+
+
+ipcMain.handle('get-app-path', () => {
+  return app.getAppPath();
+});
 
 ipcMain.on('console-log', (_, message) => {
   console.log(message); // This will print to terminal

@@ -1,6 +1,6 @@
 import net from 'net';
 import { EventEmitter } from 'events';
-import { VoiceChannelSelectType } from './types'
+import { VoiceChannelSelectType } from './types.js'
 import { ThumbUpSharp } from '@mui/icons-material';
 let Store: any;
 let store: any;

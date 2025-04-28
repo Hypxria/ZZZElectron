@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import SpotifyMain from './components/spotify/SpotifyMain';
 import Titlebar from './components/Titlebar';
 import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings';
@@ -8,6 +8,7 @@ import HoyoMain from './components/hoyo/HoyoMain';
 import AppSelector from './components/AppSelector';
 import DiscordMain from './components/discord/DiscordMain';
 import secureLocalStorage from 'react-secure-storage';
+import { SpeechRecognitionService } from '../services/micServices/speech';
 
 interface AppProps {
 }
@@ -38,6 +39,19 @@ const App: React.FC<AppProps> = () => {
     }
     return false;
   });
+  
+  const speechService = new SpeechRecognitionService();
+
+
+  useEffect(() => {
+    // Usage example
+
+    // Initialize the service
+    speechService.initialize();
+
+
+
+  }, []);
 
   useEffect(() => {
     const savedModules = secureLocalStorage.getItem('enabled_modules');
@@ -73,6 +87,16 @@ const App: React.FC<AppProps> = () => {
     }
   };
 
+  const turnOnThing = () => {
+    speechService.startListening();
+
+  }
+
+  const turnOffThing = () => {
+    speechService.stopListening();
+
+  }
+
   window.electron.log(`ViewState: ${viewState}`)
   return (
     <div
@@ -88,11 +112,11 @@ const App: React.FC<AppProps> = () => {
 
 
       {/* {enabledModules.Hoyolab && enabledModules.Spotify && ( */}
-        <AppSelector
-          viewState={viewState}
-          setViewState={setViewState}
-          hide={hide}
-        />
+      <AppSelector
+        viewState={viewState}
+        setViewState={setViewState}
+        hide={hide}
+      />
       {/* )} */}
 
       <div className={`content-wrapper ${viewState}`}>
@@ -111,7 +135,16 @@ const App: React.FC<AppProps> = () => {
 
         )}
 
-        {enabledModules.Spotify && (
+        <button onClick={turnOnThing}>
+          ON
+        </button>
+
+        <button onClick={turnOffThing}>
+          OFF
+
+        </button>
+
+        {/* {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
             <SpotifyMain ViewState={viewState} />
           </div>
@@ -120,7 +153,7 @@ const App: React.FC<AppProps> = () => {
           <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
             <HoyoMain ViewState={viewState} />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

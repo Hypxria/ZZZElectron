@@ -15,7 +15,7 @@ contextBridge.exposeInMainWorld('electron', {
   restart: () => ipcRenderer.invoke('restart-app'),
   openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
   log: (message: any) => ipcRenderer.send('console-log', message),
-
+  getAppPath: () => ipcRenderer.invoke('get-app-path'),
   onNotification: (callback: (notification: any) => void) => {
     ipcRenderer.on('discord-notification', (_, notification) => {
       callback(notification);

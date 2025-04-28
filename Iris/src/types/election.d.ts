@@ -2,6 +2,7 @@ interface ElectronAPI {
     openExternal: (url: string) => Promise<void>;
     log: (message: any) => void;
     restart: () => Promise<void>;
+    getAppPath: () => Promise<string>;
     platform: {
         isWindows: () => Promise<boolean>;
     };
