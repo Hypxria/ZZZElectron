@@ -29,7 +29,6 @@ export class SpeechRecognitionService {
     private commandTimeout: NodeJS.Timeout | null = null;
     private silenceTimeout: NodeJS.Timeout | null = null;
     private isSpeaking: boolean = false;
-    private currentAudioChunks: Blob[] = [];
     private transcriptionManager: TranscriptionManager;
     private activeRecordings: Map<string, {
         chunks: Blob[],
@@ -37,6 +36,15 @@ export class SpeechRecognitionService {
     }> = new Map();
     private currentRecordingId: string | null = null;  // Track current active recording
 
+    // Recognition Calibration
+    private ambientNoiseLevel: number = 0;
+    private speakingThreshold: number = 30;
+    private isCalibrating: boolean = false;
+    private calibrationSamples: number[] = [];
+    private readonly CALIBRATION_DURATION = 3000; // 3 seconds
+    private readonly SAMPLE_SIZE = 100; // Number of samples to keep for rolling average
+    private rollingLevels: number[] = [];
+    private lastLevels: number[] = [];
 
     constructor() {
         this.transcriptionManager = new TranscriptionManager();
@@ -50,9 +58,6 @@ export class SpeechRecognitionService {
     async initialize() {
         if (!this.isInitialized) {
             try {
-
-                this.transcriptionManager.initialize();
-
                 pipeline = await initializeTransformers();
 
                 read_audio = await initializeUtils();
@@ -128,6 +133,47 @@ export class SpeechRecognitionService {
         }
     }
 
+    private calculateWeightedAverage(dataArray: Uint8Array): number {
+        // Focus on frequencies between 85Hz and 255Hz (where most speech occurs)
+        const speechStart = Math.floor(85 * dataArray.length / (this.audioContext!.sampleRate / 2));
+        const speechEnd = Math.floor(255 * dataArray.length / (this.audioContext!.sampleRate / 2));
+        
+        let weightedSum = 0;
+        let weightSum = 0;
+        
+        for (let i = speechStart; i < speechEnd; i++) {
+            const weight = 1 - Math.abs(i - (speechStart + speechEnd) / 2) / (speechEnd - speechStart);
+            weightedSum += dataArray[i] * weight;
+            weightSum += weight;
+        }
+        
+        // Get the raw average
+        const rawAverage = weightedSum / weightSum;
+
+        // Scale to 0-100 range
+        return this.scaleToRange(rawAverage, 0, 255, 0, 100);
+    }
+
+    private scaleToRange(
+        value: number,
+        oldMin: number,
+        oldMax: number,
+        newMin: number,
+        newMax: number
+    ): number {
+        // Ensure value is within the old range
+        const clampedValue = Math.max(oldMin, Math.min(oldMax, value));
+        
+        // Calculate scaling
+        const scale = (newMax - newMin) / (oldMax - oldMin);
+        const scaledValue = newMin + (clampedValue - oldMin) * scale;
+        
+        // Round to 2 decimal places and ensure within 0-100
+        return Math.min(100, Math.max(0, Math.round(scaledValue * 100) / 100));
+    }
+
+    
+
     async startListening(): Promise<void> {
         if (this.isListening) return;
         this.isListening = true;
@@ -157,7 +203,6 @@ export class SpeechRecognitionService {
                 audioBitsPerSecond: 16000
             });
 
-            this.currentAudioChunks = [];
 
             this.mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0 && this.currentRecordingId) {
@@ -175,27 +220,24 @@ export class SpeechRecognitionService {
             let silenceStart = Date.now();
 
             const checkAudioLevel = () => {
-                if (!this.isListening) console.log('bypass');
+                if (!this.isListening) return;
 
                 analyser.getByteFrequencyData(dataArray);
-                const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+                const average = this.calculateWeightedAverage(dataArray);
+                console.log(average)
 
-                if (average > 30) { // Adjust threshold as needed
-                    console.log('we\'re speaking')
+                if (average > 50) { // Adjust threshold as needed
                     if (!this.currentRecordingId) { // Check currentRecordingId instead of isSpeaking
                         this.handleSpeechStart();
                     }
                     silenceStart = Date.now();
-                } else if (this.currentRecordingId && Date.now() - silenceStart > 500) {
+                } else if (this.currentRecordingId && Date.now() - silenceStart > 250) {
                     this.handleSpeechEnd();
-                    console.log('we\'re not speaking')
-                } else {
-                    console.log('aerage not satisfied')
                 }
             };
 
             const runAudioCheck = () => {
-                console.log('ran animation')
+                // console.log('ran animation')
                 checkAudioLevel();
 
                 // Always schedule next frame while listening

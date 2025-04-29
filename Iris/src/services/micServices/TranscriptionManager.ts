@@ -1,117 +1,101 @@
-// services/TranscriptionManager.ts
-import path from 'path';
-
-interface TranscriptionTask {
-    id: string;
-    audioData: Float64Array;
-    timestamp: number;
-}
-
 export class TranscriptionManager {
-    private recognizerPool: any[] = [];
-    private poolSize: number = 3; // Number of concurrent transcriptions possible
-    private activeTranscriptions: Set<string> = new Set();
-    private pipeline: any
-    private worker: Worker;
-    private transcriptionCallbacks: Map<string, { 
-        resolve: (value: string) => void, 
-        reject: (reason?: any) => void 
-    }> = new Map();
-
+    private workers: Map<string, Worker> = new Map();
+    private taskQueue: string[] = [];
+    private isProcessing: boolean = false;
 
     constructor() {
-        const workerUrl = new URL(
-            './transcriptionWorker.ts',
-            import.meta.url
-        ).href;
-
-        this.worker = new Worker(workerUrl, {
-            type: 'module',
-            name: 'transcription-worker'
-        });
-
-
-        this.worker.onmessage = (event) => {
-            const { taskId, result, error } = event.data;
-
-            if (error) {
-                const callback = this.transcriptionCallbacks.get(taskId);
-                if (callback) {
-                    callback.reject(error);
-                    this.transcriptionCallbacks.delete(taskId);
-                    this.activeTranscriptions.delete(taskId);
-                }
-            } else {
-                const callback = this.transcriptionCallbacks.get(taskId);
-                if (callback) {
-                    callback.resolve(result);
-                    this.transcriptionCallbacks.delete(taskId);
-                    this.activeTranscriptions.delete(taskId);
-                }
-            }
-        };
-
-        // Initialize the worker
-        this.worker.postMessage({ type: 'init' });
+        // Constructor remains minimal - we'll create workers on demand
     }
 
-    async initialize() {
-        try {
-            this.setupWorkerHandlers();
-        } catch (error) {
-            console.error('Failed to initialize worker:', error);
-            throw error;
-        }
-    }
-
-    private setupWorkerHandlers() {
-        if (!this.worker) return;
-
-        this.worker.onmessage = (event) => {
-            const { taskId, result, error } = event.data;
-            
-            if (error) {
-                const callback = this.transcriptionCallbacks.get(taskId);
-                if (callback) {
-                    callback.reject(error);
-                    this.transcriptionCallbacks.delete(taskId);
-                    this.activeTranscriptions.delete(taskId);
-                }
-            } else {
-                const callback = this.transcriptionCallbacks.get(taskId);
-                if (callback) {
-                    callback.resolve(result);
-                    this.transcriptionCallbacks.delete(taskId);
-                    this.activeTranscriptions.delete(taskId);
-                }
-            }
-        };
-
-        // Initialize the worker
-        this.worker.postMessage({ type: 'init' });
-    }
-
-
-    async transcribe(audioData: Float64Array): Promise<string> {
-        if (!this.worker) {
-            throw new Error('Worker not initialized');
-        }
+    public async transcribe(audioData: Float64Array): Promise<string> {
+        // Generate a unique ID for this transcription task
+        const taskId = crypto.randomUUID();
 
         return new Promise((resolve, reject) => {
-            const taskId = crypto.randomUUID();
-            this.activeTranscriptions.add(taskId);
-            this.transcriptionCallbacks.set(taskId, { resolve, reject });
+            // Create a new worker for this task
+            const worker = new Worker(
+                new URL('./transcriptionWorker.ts', import.meta.url),
+                { type: 'module' }
+            );
 
-            this.worker!.postMessage({
-                type: 'transcribe',
-                taskId,
-                audioData
-            }, [audioData.buffer]); // Transfer the buffer for better performance
+            // Store the worker with its taskId
+            this.workers.set(taskId, worker);
+
+            // Set up message handler for this specific worker
+            worker.onmessage = (e) => {
+                const { type, result, error } = e.data;
+                
+                if (error) {
+                    this.cleanupWorker(taskId);
+                    reject(new Error(error));
+                    return;
+                }
+
+                if (result) {
+                    this.cleanupWorker(taskId);
+                    resolve(result);
+                }
+            };
+
+            // Handle worker errors
+            worker.onerror = (error) => {
+                this.cleanupWorker(taskId);
+                reject(error);
+            };
+
+            // Initialize the worker
+            worker.postMessage({ type: 'init' });
+
+            // Send the transcription task once worker is initialized
+            worker.onmessage = (e) => {
+                if (e.data.type === 'initialized') {
+                    // Send the actual transcription task
+                    worker.postMessage({
+                        type: 'transcribe',
+                        audioData,
+                        taskId
+                    });
+
+                    // Reset onmessage handler to the one that handles results
+                    worker.onmessage = (e) => {
+                        const { taskId, result, error } = e.data;
+                        
+                        if (error) {
+                            this.cleanupWorker(taskId);
+                            reject(new Error(error));
+                            return;
+                        }
+
+                        if (result) {
+                            this.cleanupWorker(taskId);
+                            resolve(result);
+                        }
+                    };
+                } else if (e.data.type === 'error') {
+                    this.cleanupWorker(taskId);
+                    reject(new Error(e.data.error));
+                }
+            };
         });
     }
 
+    private cleanupWorker(taskId: string) {
+        const worker = this.workers.get(taskId);
+        if (worker) {
+            worker.terminate();
+            this.workers.delete(taskId);
+        }
+    }
 
-    getActiveTranscriptions() {
-        return this.activeTranscriptions;
+    public cleanup() {
+        // Terminate all workers
+        for (const [taskId, worker] of this.workers) {
+            worker.terminate();
+        }
+        this.workers.clear();
+    }
+
+    public getActiveTranscriptionCount(): number {
+        return this.workers.size;
     }
 }

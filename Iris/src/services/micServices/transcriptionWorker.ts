@@ -1,4 +1,4 @@
-import { pipeline } from '@xenova/transformers'
+import { pipeline } from '@xenova/transformers';
 
 let recognizer: any = null;
 
@@ -6,7 +6,6 @@ let recognizer: any = null;
 self.onmessage = async (e) => {
     const { type, audioData, taskId } = e.data;
 
-    
     switch (type) {
         case 'init':
             try {
@@ -24,6 +23,11 @@ self.onmessage = async (e) => {
                         temperature: 0,
                         condition_on_previous_text: false,
                         no_speech_threshold: 0.8,
+
+                        batch_size: 8,              // Increase batch size for parallel processing
+                        num_workers: 4,             // Use multiple workers for processing
+                        enable_cpu_offload: true,   // Enable CPU offload for larger models
+                        quantized: true,            // Use quantized model if available
                     }
                 );
                 self.postMessage({ type: 'initialized' });

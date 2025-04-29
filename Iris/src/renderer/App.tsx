@@ -141,7 +141,7 @@ const App: React.FC<AppProps> = () => {
 
         </button>
 
-        {enabledModules.Spotify && (
+        {/* {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
             <SpotifyMain ViewState={viewState} />
           </div>
@@ -150,7 +150,8 @@ const App: React.FC<AppProps> = () => {
           <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
             <HoyoMain ViewState={viewState} />
           </div>
-        )}
+        )} */}
+        
       </div>
     </div>
   );
