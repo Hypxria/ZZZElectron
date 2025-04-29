@@ -243,23 +243,23 @@
 .module-toggles {
   display: flex;
   flex-direction: column;
-  gap: 24px;  // Increased gap between toggles
-  padding: 24px;  // Increased padding around toggles
+  gap: 24px; // Increased gap between toggles
+  padding: 24px; // Increased padding around toggles
   width: 100%;
 
   .module-toggle {
     display: flex;
     align-items: center;
-    gap: 16px;  // Increased gap between toggle and text
-    padding: 16px 24px;  // Increased padding inside each toggle
+    gap: 16px; // Increased gap between toggle and text
+    padding: 16px 24px; // Increased padding inside each toggle
     background-color: #1e1e20;
-    border-radius: 8px;  // Slightly larger border radius
+    border-radius: 8px; // Slightly larger border radius
     transition: background-color 0.2s ease;
 
     .module-name {
       font-size: 16px;
       color: white;
-      font-weight: 500;  // Make text a bit bolder
+      font-weight: 500; // Make text a bit bolder
     }
   }
 }
@@ -303,7 +303,7 @@
     &:before {
       position: absolute;
       content: "";
-      height: 28px;  
+      height: 28px;
       width: 28px;
       left: 4px;
       bottom: 4px;
@@ -318,7 +318,7 @@
   display: flex;
   flex-direction: column;
   padding: 30px;
-  
+
 
   .basic-details {
     display: flex;
@@ -349,8 +349,8 @@
     width: 30%;
     height: 100%;
     user-select: none;
-    
-  
+
+
     img {
       width: 100%;
       height: 100%;
@@ -362,7 +362,8 @@
 
   .iris-text {
     color: #fff;
-    white-space: pre-line; /* Preserves new lines and wraps text */
+    white-space: pre-line;
+    /* Preserves new lines and wraps text */
     overflow-y: auto;
     max-height: 60vh; // Adjust this value as needed
   }
@@ -431,6 +432,81 @@
 
     &:hover {
       background-color: #28282b;
+    }
+  }
+}
+
+// Settings.scss
+.license-text {
+  color: white !important;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  max-height: 70vh;
+  width: 100%;
+
+  // Add custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+.audio-settings {
+  width: 90%;
+
+  .sensitivity-slider-container {
+    width: 100%;
+
+    .sensitivity-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: #40a258; // Unfilled portion color
+      outline: none;
+      
+      // This creates the filled portion effect
+      &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(to right, #d8a35c 0%, #d8a35c var(--value, 0%), #40a258 var(--value, 0%));
+      }
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffffff;
+        cursor: pointer;
+        border: none;
+        margin-top: -6px; // Centers the thumb on the track
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 }
