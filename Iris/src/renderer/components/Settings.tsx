@@ -100,10 +100,11 @@ const Settings: React.FC<SettingsProps> = ({
         location.reload();
     };
 
-    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const percent = (Number(value) - Number(e.target.min)) /
             (Number(e.target.max) - Number(e.target.min)) * 100;
+        window.localStorage.setItem('sensitivity-value', String(percent));
         e.target.style.setProperty('--value', `${percent}%`);
     };
 
@@ -255,7 +256,8 @@ const Settings: React.FC<SettingsProps> = ({
 
                 {activeMenu === 'Audio Settings' && (
                     <Audio
-                        handleSliderChange={handleSliderChange}
+                        handleSliderChange={handleSensitivityChange}
+                        defaultValue={window.localStorage.getItem('sensitivity-value')}
                     />
                 )}
 
@@ -538,10 +540,12 @@ function Modules({ handleModuleSave,
 
 interface AudioProps {
     handleSliderChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    defaultValue: number;
 }
 
 function Audio({
-    handleSliderChange
+    handleSliderChange,
+    defaultValue
 }) {
     return (
         <div className='options-menu'>
@@ -555,7 +559,7 @@ function Audio({
                             type='range'
                             min="1"
                             max="100"
-                            defaultValue="50"
+                            defaultValue={defaultValue || '50'}
                             className='sensitivity-slider'
                             onChange={handleSliderChange}
                         ></input>
