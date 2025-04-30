@@ -1,6 +1,6 @@
 // Settings.tsx
 import { ArrowForwardIosRounded } from '@mui/icons-material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import secureLocalStorage from "react-secure-storage";
 import { LICENSE_TEXT } from '../../assets/lisense/lisense.ts';
 import './Settings.scss';
@@ -547,6 +547,25 @@ function Audio({
     handleSliderChange,
     defaultValue
 }) {
+
+    // Create a ref for the input element
+    const sliderRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (sliderRef.current && defaultValue) {
+            // Create a synthetic event
+            const event = {
+                target: sliderRef.current
+            } as React.ChangeEvent<HTMLInputElement>;
+            
+            // Set the initial value
+            sliderRef.current.value = defaultValue;
+            
+            // Trigger the handler
+            handleSliderChange(event);
+        }
+    }, [defaultValue]); // Depend on defaultValue
+
     return (
         <div className='options-menu'>
             <div className="settings-section">
@@ -556,6 +575,7 @@ function Audio({
                     </span>
                     <div className="sensitivity-slider-container">
                         <input
+                            ref={sliderRef}
                             type='range'
                             min="1"
                             max="100"

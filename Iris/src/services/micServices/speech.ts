@@ -36,15 +36,7 @@ export class SpeechRecognitionService {
     }> = new Map();
     private currentRecordingId: string | null = null;  // Track current active recording
 
-    // Recognition Calibration
-    private ambientNoiseLevel: number = 0;
-    private speakingThreshold: number = 30;
-    private isCalibrating: boolean = false;
-    private calibrationSamples: number[] = [];
-    private readonly CALIBRATION_DURATION = 3000; // 3 seconds
-    private readonly SAMPLE_SIZE = 100; // Number of samples to keep for rolling average
-    private rollingLevels: number[] = [];
-    private lastLevels: number[] = [];
+   
 
     constructor() {
         this.transcriptionManager = new TranscriptionManager();
