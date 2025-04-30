@@ -103,22 +103,7 @@ const Settings: React.FC<SettingsProps> = ({
     };
 
 
-    // Audio Handlers
-    const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const percent = (Number(value) - Number(e.target.min)) /
-            (Number(e.target.max) - Number(e.target.min)) * 100;
-        e.target.style.setProperty('--value', `${percent}%`);
-    };
-
-    const handleSensitivityRelease = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const percent = (Number(value) - Number(e.target.min)) /
-            (Number(e.target.max) - Number(e.target.min)) * 100;
-        window.localStorage.setItem('sensitivity-value', String(percent));
-    }
-
-
+    
     // Navigation Handlers
     const handleNavigationClick = (index: number) => {
         // If clicking on 'Settings', reset to main menu
@@ -268,8 +253,6 @@ const Settings: React.FC<SettingsProps> = ({
 
                 {activeMenu === 'Audio Settings' && (
                     <Audio
-                        handleSliderChange={handleSensitivityChange}
-                        handleSensitivityRelease={handleSensitivityRelease}
                         defaultValue={window.localStorage.getItem('sensitivity-value')}
                     />
                 )}
@@ -558,17 +541,38 @@ interface AudioProps {
 }
 
 function Audio({
-    handleSliderChange,
     defaultValue,
-    handleSensitivityRelease
 }) {
     const sliderRef = useRef<HTMLInputElement>(null);
+
     const [micVolume, setMicVolume] = useState<number>(0);
+    const [average, setMicAverage] = useState<number>(defaultValue)
+
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
     const animationFrameRef = useRef<number>(0);
     const streamRef = useRef<MediaStream | null>(null);
+
+    const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
+    const [selectedDevice, setSelectedDevice] = useState<string>('');
+
+    // Audio Handlers
+    const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const percent = (Number(value) - Number(e.target.min)) /
+            (Number(e.target.max) - Number(e.target.min)) * 100;
+        setMicAverage(percent);
+        e.target.style.setProperty('--value', `${percent}%`);
+    };
+
+    const handleSensitivityRelease = () => {
+        const e = sliderRef?.current
+        const value = e?.value;
+        const percent = (Number(value) - Number(e?.min)) /
+            (Number(e?.max) - Number(e?.min)) * 100;
+        window.localStorage.setItem('sensitivity-value', String(percent));
+    }
 
     const cleanup = () => {
         if (animationFrameRef.current) {
@@ -590,6 +594,30 @@ function Audio({
         streamRef.current = null;
     };
 
+    const getAudioDevices = async () => {
+        try {
+            // Request initial permission to access media devices
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            // Get all media devices
+            const devices = await navigator.mediaDevices.enumerateDevices();
+
+            // Filter for only audio input devices (microphones)
+            const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+
+            setAudioDevices(audioInputDevices);
+
+            // Set default device if none selected
+            if (!selectedDevice && audioInputDevices.length > 0) {
+                setSelectedDevice(audioInputDevices[0].deviceId);
+            }
+
+            console.log('Available audio devices:', audioInputDevices);
+        } catch (error) {
+            console.error('Error getting audio devices:', error);
+        }
+    };
+
     // Initial setup of the slider value and CSS property
     useEffect(() => {
         if (sliderRef.current && defaultValue) {
@@ -606,7 +634,7 @@ function Audio({
             const event = {
                 target: sliderRef.current
             } as React.ChangeEvent<HTMLInputElement>;
-            handleSliderChange(event);
+            handleSensitivityChange(event);
         }
     }, [defaultValue]);
 
@@ -614,6 +642,7 @@ function Audio({
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
+                    deviceId: selectedDevice ? { exact: selectedDevice } : undefined,
                     echoCancellation: true,
                     noiseSuppression: true
                 }
@@ -659,6 +688,24 @@ function Audio({
     };
 
     useEffect(() => {
+        getAudioDevices();
+
+        // Listen for device changes (e.g., plugging in/removing a mic)
+        navigator.mediaDevices.addEventListener('devicechange', getAudioDevices);
+
+        return () => {
+            navigator.mediaDevices.removeEventListener('devicechange', getAudioDevices);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (selectedDevice) {
+            setupAudioMonitoring();
+        }
+    }, [selectedDevice]);
+
+
+    useEffect(() => {
         setupAudioMonitoring();
 
         // Cleanup function
@@ -672,6 +719,21 @@ function Audio({
             <div className="settings-section">
                 <div className="audio-settings">
                     <span>
+                        <h3>Input Device</h3>
+                    </span>
+                    <select
+                        className="device-select"
+                        value={selectedDevice}
+                        onChange={(e) => setSelectedDevice(e.target.value)}
+                    >
+                        {audioDevices.map((device) => (
+                            <option key={device.deviceId} value={device.deviceId}>
+                                {device.label || `Microphone ${device.deviceId.slice(0, 5)}...`}
+                            </option>
+                        ))}
+                    </select>
+
+                    <span>
                         <h3>Input Sensitivity</h3>
                     </span>
                     <div className="sensitivity-slider-container">
@@ -682,7 +744,7 @@ function Audio({
                             max="100"
                             defaultValue={defaultValue || '50'}
                             className='sensitivity-slider'
-                            onChange={handleSliderChange}
+                            onChange={handleSensitivityChange}
                             onMouseUp={handleSensitivityRelease}
                         />
                         <div className="volume-indicator">
@@ -691,12 +753,17 @@ function Audio({
                                     className="volume-bar"
                                     style={{
                                         width: `${micVolume}%`,
-                                        backgroundColor: `hsl(${120 * (micVolume / 100)}, 70%, 50%)`
+                                        backgroundColor: `${micVolume <= average ? '#d92626': '#26d926' }`
                                     }}
-                                />
+                                >
+                                    <div className='average-indicator'></div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+
+
                 </div>
             </div>
         </div>

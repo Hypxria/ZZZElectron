@@ -475,6 +475,27 @@
 .audio-settings {
   width: 90%;
 
+  .device-select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #4a4a4a;
+    }
+
+    option {
+      background-color: #2a2a2a;
+      color: #ffffff;
+    }
+  }
+
   .sensitivity-slider-container {
     width: 100%;
 
@@ -493,8 +514,15 @@
 
       .volume-bar {
         height: 100%;
-        transition: width 0.1s ease-out;
+        transition: width 0.1s ease-out, background-color 0.3s ease-out; // Added color transition
         border-radius: 5px;
+
+        .average-indicator {
+          width: 2px;
+          height: 100%;
+          position: absolute;
+          left: --value;
+        }
       }
     }
 
