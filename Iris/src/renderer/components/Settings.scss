@@ -478,12 +478,32 @@
   .sensitivity-slider-container {
     width: 100%;
 
+    .volume-indicator {
+      margin-top: 2px;
+      width: 100%;
+      translate: 0.5% 0%;
+
+      .volume-bar-container {
+        width: 100%;
+        height: 5px;
+        background-color: #2a2a2a;
+        border-radius: 93748278px;
+        overflow: hidden;
+      }
+
+      .volume-bar {
+        height: 100%;
+        transition: width 0.1s ease-out;
+        border-radius: 5px;
+      }
+    }
+
     .sensitivity-slider {
       width: 100%;
       -webkit-appearance: none;
       appearance: none;
       height: 8px;
-      border-radius: 4px;
+      border-radius: 321723748px;
       background: #40a258; // Unfilled portion color
       outline: none;
 
@@ -491,13 +511,8 @@
       &::-webkit-slider-runnable-track {
         width: 100%;
         height: 8px;
-        border-radius: 4px;
-        background: linear-gradient(to right,
-            #d8a35c 0%,
-            #d8a35c var(--threshold, 0%),
-            brightness(60%) #d8a35c var(--threshold, 0%),
-            brightness(60%) #d8a35c var(--value, 0%),
-            #40a258 var(--value, 0%));
+        border-radius: 1283281px;
+        background: linear-gradient(to right, #d8a35c 0%, #d8a35c var(--value, 0%), #40a258 var(--value, 0%));
       }
 
       &::-webkit-slider-thumb {

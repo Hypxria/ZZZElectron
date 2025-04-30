@@ -59,6 +59,7 @@ const Settings: React.FC<SettingsProps> = ({
         }
     }, [isSettings]);
 
+    // Basic menu select
     const handleMenuSelect = (menu: string) => {
         window.electron.log(`Menu selected: ${menu}`)
         // Build the full path based on current navigation
@@ -82,6 +83,7 @@ const Settings: React.FC<SettingsProps> = ({
         setActiveMenu(menu);
     };
 
+    // Handling the module enabling/disabling
     const handleModuleToggle = (moduleName: keyof EnabledModules) => {
         // Update only the temporary state
         setTempModules(prev => ({
@@ -100,14 +102,24 @@ const Settings: React.FC<SettingsProps> = ({
         location.reload();
     };
 
+
+    // Audio Handlers
     const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const percent = (Number(value) - Number(e.target.min)) /
             (Number(e.target.max) - Number(e.target.min)) * 100;
-        window.localStorage.setItem('sensitivity-value', String(percent));
         e.target.style.setProperty('--value', `${percent}%`);
     };
 
+    const handleSensitivityRelease = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const percent = (Number(value) - Number(e.target.min)) /
+            (Number(e.target.max) - Number(e.target.min)) * 100;
+        window.localStorage.setItem('sensitivity-value', String(percent));
+    }
+
+
+    // Navigation Handlers
     const handleNavigationClick = (index: number) => {
         // If clicking on 'Settings', reset to main menu
         if (index === 0) {
@@ -124,7 +136,7 @@ const Settings: React.FC<SettingsProps> = ({
         }
     };
 
-
+    // Install spicetify extension
     const handleInstallExtension = async () => {
         try {
             setIsInstalling(true);
@@ -257,6 +269,7 @@ const Settings: React.FC<SettingsProps> = ({
                 {activeMenu === 'Audio Settings' && (
                     <Audio
                         handleSliderChange={handleSensitivityChange}
+                        handleSensitivityRelease={handleSensitivityRelease}
                         defaultValue={window.localStorage.getItem('sensitivity-value')}
                     />
                 )}
@@ -540,31 +553,119 @@ function Modules({ handleModuleSave,
 
 interface AudioProps {
     handleSliderChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleSensitivityRelease: (event: React.ChangeEvent<HTMLInputElement>) => void;
     defaultValue: number;
 }
 
 function Audio({
     handleSliderChange,
-    defaultValue
+    defaultValue,
+    handleSensitivityRelease
 }) {
-
-    // Create a ref for the input element
     const sliderRef = useRef<HTMLInputElement>(null);
+    const [micVolume, setMicVolume] = useState<number>(0);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+    const animationFrameRef = useRef<number>(0);
+    const streamRef = useRef<MediaStream | null>(null);
 
+    const cleanup = () => {
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+        }
+        if (sourceRef.current) {
+            sourceRef.current.disconnect();
+        }
+        if (audioContextRef.current) {
+            audioContextRef.current.close();
+        }
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        // Reset refs
+        audioContextRef.current = null;
+        analyserRef.current = null;
+        sourceRef.current = null;
+        streamRef.current = null;
+    };
+
+    // Initial setup of the slider value and CSS property
     useEffect(() => {
         if (sliderRef.current && defaultValue) {
-            // Create a synthetic event
+            // Set the input value
+            sliderRef.current.value = defaultValue;
+
+            // Calculate and set the CSS custom property
+            const percent = (Number(defaultValue) - Number(sliderRef.current.min)) /
+                (Number(sliderRef.current.max) - Number(sliderRef.current.min)) * 100;
+
+            sliderRef.current.style.setProperty('--value', `${percent}%`);
+
+            // Create and dispatch change event to maintain consistency
             const event = {
                 target: sliderRef.current
             } as React.ChangeEvent<HTMLInputElement>;
-            
-            // Set the initial value
-            sliderRef.current.value = defaultValue;
-            
-            // Trigger the handler
             handleSliderChange(event);
         }
-    }, [defaultValue]); // Depend on defaultValue
+    }, [defaultValue]);
+
+    const setupAudioMonitoring = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true
+                }
+            });
+
+            streamRef.current = stream;
+            audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            analyserRef.current = audioContextRef.current.createAnalyser();
+            analyserRef.current.fftSize = 256;
+            analyserRef.current.smoothingTimeConstant = 0.8;
+
+            sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+            sourceRef.current.connect(analyserRef.current);
+
+            monitorVolume();
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+        }
+    };
+
+    const monitorVolume = () => {
+        if (!analyserRef.current) return;
+
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+
+        const updateVolume = () => {
+            if (!analyserRef.current) return;
+
+            analyserRef.current.getByteFrequencyData(dataArray);
+
+            // Calculate average volume
+            const average = dataArray.reduce((acc, value) => acc + value, 0) / dataArray.length;
+
+            // Convert to 0-100 range and round to nearest integer
+            const normalizedVolume = Math.min(Math.round((average / 256) * 100), 100);
+            setMicVolume(normalizedVolume);
+
+            // Continue monitoring
+            animationFrameRef.current = requestAnimationFrame(updateVolume);
+        };
+
+        updateVolume();
+    };
+
+    useEffect(() => {
+        setupAudioMonitoring();
+
+        // Cleanup function
+        return () => {
+            cleanup();
+        };
+    }, []);
 
     return (
         <div className='options-menu'>
@@ -582,10 +683,23 @@ function Audio({
                             defaultValue={defaultValue || '50'}
                             className='sensitivity-slider'
                             onChange={handleSliderChange}
-                        ></input>
+                            onMouseUp={handleSensitivityRelease}
+                        />
+                        <div className="volume-indicator">
+                            <div className="volume-bar-container">
+                                <div
+                                    className="volume-bar"
+                                    style={{
+                                        width: `${micVolume}%`,
+                                        backgroundColor: `hsl(${120 * (micVolume / 100)}, 70%, 50%)`
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+
