@@ -1,12 +1,12 @@
 import React, { useState, useEffect, use } from 'react';
-import SpotifyMain from './components/spotify/SpotifyMain.tsx';
 import Titlebar from './components/Titlebar.tsx';
 import Settings, { EnabledModules, DEFAULT_MODULES } from './components/Settings.tsx';
 import '../index.scss';
 import { ViewState } from '../types/viewState.ts';
+import SpotifyMain from './components/spotify/SpotifyMain.tsx';
 import HoyoMain from './components/hoyo/HoyoMain.tsx';
-import AppSelector from './components/AppSelector.tsx';
 import DiscordMain from './components/discord/DiscordMain.tsx';
+import AppSelector from './components/AppSelector.tsx';
 import secureLocalStorage from 'react-secure-storage';
 import { SpeechRecognitionService } from '../services/micServices/speech.ts';
 
@@ -103,8 +103,7 @@ const App: React.FC<AppProps> = () => {
         setActiveDevice(e.newValue || '');
       }
       if (e.key === 'iris-enabled') {
-        setIsIrisEnabled(Boolean(e.newValue) || false);
-        console.log(Boolean(e.newValue))
+        setIsIrisEnabled(e.newValue === 'true' || false);
       }
       console.log('storage event')
     };
@@ -149,13 +148,6 @@ const App: React.FC<AppProps> = () => {
     };
   }, []);
 
-  const turnOnThing = () => {
-    const sensitivity = Number(window.localStorage.getItem('sensitivity-value'));
-    const device = String(window.localStorage.getItem('selected-device'));
-
-    speechService.startListening(sensitivity, device);
-  }
-
   useEffect(() => {
     if (isIrisEnabled) {
       speechService.stopListening();
@@ -163,10 +155,13 @@ const App: React.FC<AppProps> = () => {
     }
   }, [sensitivity, activeDevice])
 
-  const turnOffThing = () => {
-    speechService.stopListening();
-
-  }
+  useEffect(() => {
+    if (isIrisEnabled) {
+      speechService.startListening(sensitivity, activeDevice);
+    } else {
+      speechService.stopListening();
+    }
+  }, [isIrisEnabled])
 
   window.electron.log(`ViewState: ${viewState}`)
   return (
@@ -203,18 +198,7 @@ const App: React.FC<AppProps> = () => {
 
         )}
 
-        {isIrisEnabled === true && (
-          <div>
-            <button onClick={turnOnThing}>
-              ON
-            </button>
-
-            <button onClick={turnOffThing}>
-              OFF
-
-            </button>
-          </div>
-        )}
+        
 
         {/* {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>

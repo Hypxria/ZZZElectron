@@ -30,18 +30,6 @@ const Settings: React.FC<SettingsProps> = ({
 }) => {
     const [navigationPath, setNavigationPath] = useState<string[]>(['Settings']);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
-    const [installStatus, setInstallStatus] = useState<string>('');
-    const [isInstalling, setIsInstalling] = useState(false);
-
-    const modules: Array<keyof EnabledModules> = ['Spotify', 'Discord', 'Hoyolab'];
-    const [enabledModules, setEnabledModules] = useState<EnabledModules>(() => {
-        // Load saved module states from secure storage, defaulting to DEFAULT_MODULES
-        const savedModules = secureLocalStorage.getItem('enabled_modules');
-        if (savedModules) {
-            return JSON.parse(savedModules as string) as EnabledModules;
-        }
-        return DEFAULT_MODULES;
-    });
 
     const generalOptions = [
         'Spotify Settings',
@@ -50,14 +38,6 @@ const Settings: React.FC<SettingsProps> = ({
         'Audio Settings',
         'Modules',
     ];
-
-    const [tempModules, setTempModules] = useState<EnabledModules>(enabledModules);
-
-    useEffect(() => {
-        if (isSettings) {
-            setTempModules(enabledModules);
-        }
-    }, [isSettings]);
 
     // Basic menu select
     const handleMenuSelect = (menu: string) => {
@@ -83,27 +63,6 @@ const Settings: React.FC<SettingsProps> = ({
         setActiveMenu(menu);
     };
 
-    // Handling the module enabling/disabling
-    const handleModuleToggle = (moduleName: keyof EnabledModules) => {
-        // Update only the temporary state
-        setTempModules(prev => ({
-            ...prev,
-            [moduleName]: !prev[moduleName]
-        }));
-    };
-
-    const handleModuleSave = () => {
-        // Apply changes
-        setEnabledModules(tempModules);
-        secureLocalStorage.setItem('enabled_modules', JSON.stringify(tempModules));
-        window.electron.log('Module settings saved');
-        // Optionally close settings
-        setIsSettings(false);
-        location.reload();
-    };
-
-
-
     // Navigation Handlers
     const handleNavigationClick = (index: number) => {
         // If clicking on 'Settings', reset to main menu
@@ -122,73 +81,7 @@ const Settings: React.FC<SettingsProps> = ({
     };
 
     // Install spicetify extension
-    const handleInstallExtension = async () => {
-        try {
-            setIsInstalling(true);
-            const result = await window.spotify.spicetify.installExtension();
-            setInstallStatus(result.message);
-        } catch (error) {
-            setInstallStatus(`Installation failed: ${error.message}`);
-        } finally {
-            setIsInstalling(false);
-        }
-    };
-
-
-    const handleCredentialsHoyo = async () => {
-        const idInput = document.querySelector('.hoyo-input') as HTMLInputElement;
-        const secretInput = document.querySelector('.hoyo-input-secret') as HTMLInputElement;
-
-        const username = idInput.value;
-        const password = secretInput.value;
-
-        secureLocalStorage.setItem('hoyolab_username', username);
-        secureLocalStorage.setItem('hoyolab_password', password);
-
-
-        if (!username || !password) {
-            throw new Error('Username or password not found in storage');
-        }
-
-        const result = await window.hoyoAPI.login(username, password);
-        console.log('Login successful:', result);
-
-        const cookieString = [
-            `cookie_token_v2=${result.cookies.cookie_token_v2}`,
-            `account_mid_v2=${result.cookies.account_mid_v2}`,
-            `account_id_v2=${result.cookies.account_id_v2}`,
-            `ltoken_v2=${result.cookies.ltoken_v2}`,
-            `ltmid_v2=${result.cookies.ltmid_v2}`,
-            `ltuid_v2=${result.cookies.ltuid_v2}`,
-        ].join('; ');
-
-        window.hoyoAPI.initialize(cookieString, result.uid);
-    }
-
-    const handleCredentialsDiscord = () => {
-        const idInput = document.querySelector('.discord-input') as HTMLInputElement;
-        const secretInput = document.querySelector('.discord-input-secret') as HTMLInputElement;
-
-        const id = idInput.value;
-        const secret = secretInput.value;
-
-        secureLocalStorage.setItem('discord_client_id', id);
-        secureLocalStorage.setItem('discord_client_secret', secret);
-
-        // Refreshing discord connection with the new credentials
-        window.discord.disconnect();
-        window.discord.connect(String(id), String(secret))
-    }
-
-    const handleDiscordReset = async () => {
-        try {
-            await window.discord.revokeAllTokens();
-            window.discord.disconnect();
-            await window.electron.restart();
-        } catch (error) {
-            console.error('Error in the middle of discord reset:', error);
-        }
-    }
+    
 
     return (
         <div
@@ -253,7 +146,6 @@ const Settings: React.FC<SettingsProps> = ({
 
                 {activeMenu === 'Audio Settings' && (
                     <Audio
-                        defaultValue={window.localStorage.getItem('sensitivity-value')}
                     />
                 )}
 
@@ -273,9 +165,7 @@ const Settings: React.FC<SettingsProps> = ({
                 {/* Spotify Settings section */}
                 {activeMenu === 'Spotify Settings' && (
                     <Spotify
-                        handleInstallExtension={handleInstallExtension}
-                        installStatus={installStatus}
-                        isInstalling={isInstalling}
+
                     />
                 )}
 
@@ -285,7 +175,6 @@ const Settings: React.FC<SettingsProps> = ({
                 {activeMenu === 'Hoyolab Settings' && (
 
                     <Hoyo
-                        handleCredentialsHoyo={handleCredentialsHoyo}
                     />
                 )}
 
@@ -293,17 +182,13 @@ const Settings: React.FC<SettingsProps> = ({
                 {activeMenu === 'Discord Settings' && (
 
                     <Discord
-                        handleCredentialsDiscord={handleCredentialsDiscord}
-                        handleDiscordReset={handleDiscordReset}
                     />
                 )}
 
                 {activeMenu === 'Modules' && (
                     <Modules
-                        handleModuleSave={handleModuleSave}
-                        handleModuleToggle={handleModuleToggle}
-                        modules={modules}
-                        tempModules={tempModules}
+                        isSettings={isSettings}
+                        setIsSettings={setIsSettings}
                     />
                 )}
 
@@ -372,15 +257,27 @@ function License() {
 
 
 interface SpotifyProps {
-    handleInstallExtension: () => Promise<void>;
-    installStatus: string;
-    isInstalling: boolean;
+
 }
 
 
-function Spotify({ handleInstallExtension,
-    installStatus,
-    isInstalling }: SpotifyProps) {
+function Spotify({
+}: SpotifyProps) {
+
+    const [installStatus, setInstallStatus] = useState<string>('');
+    const [isInstalling, setIsInstalling] = useState(false);
+
+    const handleInstallExtension = async () => {
+        try {
+            setIsInstalling(true);
+            const result = await window.spotify.spicetify.installExtension();
+            setInstallStatus(result.message);
+        } catch (error) {
+            setInstallStatus(`Installation failed: ${error.message}`);
+        } finally {
+            setIsInstalling(false);
+        }
+    };
     return (
         <div className="options-menu">
             <div className="settings-section">
@@ -408,11 +305,42 @@ function Spotify({ handleInstallExtension,
 
 
 interface HoyoProps {
-    handleCredentialsHoyo: () => Promise<void>;
 }
 
 
-function Hoyo({ handleCredentialsHoyo }: HoyoProps) {
+function Hoyo({}: HoyoProps) {
+
+    const handleCredentialsHoyo = async () => {
+        const idInput = document.querySelector('.hoyo-input') as HTMLInputElement;
+        const secretInput = document.querySelector('.hoyo-input-secret') as HTMLInputElement;
+
+        const username = idInput.value;
+        const password = secretInput.value;
+
+        secureLocalStorage.setItem('hoyolab_username', username);
+        secureLocalStorage.setItem('hoyolab_password', password);
+
+
+        if (!username || !password) {
+            throw new Error('Username or password not found in storage');
+        }
+
+        const result = await window.hoyoAPI.login(username, password);
+        console.log('Login successful:', result);
+
+        const cookieString = [
+            `cookie_token_v2=${result.cookies.cookie_token_v2}`,
+            `account_mid_v2=${result.cookies.account_mid_v2}`,
+            `account_id_v2=${result.cookies.account_id_v2}`,
+            `ltoken_v2=${result.cookies.ltoken_v2}`,
+            `ltmid_v2=${result.cookies.ltmid_v2}`,
+            `ltuid_v2=${result.cookies.ltuid_v2}`,
+        ].join('; ');
+
+        window.hoyoAPI.initialize(cookieString, result.uid);
+    }
+
+
     return (
         <div className="options-menu">
             <div className="credentials">
@@ -445,13 +373,37 @@ function Hoyo({ handleCredentialsHoyo }: HoyoProps) {
 
 
 interface DiscordProps {
-    handleCredentialsDiscord: () => void;
-    handleDiscordReset: () => Promise<void>;
 }
 
 
-function Discord({ handleCredentialsDiscord,
-    handleDiscordReset }: DiscordProps) {
+function Discord({
+}: DiscordProps) {
+
+    const handleCredentialsDiscord = () => {
+        const idInput = document.querySelector('.discord-input') as HTMLInputElement;
+        const secretInput = document.querySelector('.discord-input-secret') as HTMLInputElement;
+
+        const id = idInput.value;
+        const secret = secretInput.value;
+
+        secureLocalStorage.setItem('discord_client_id', id);
+        secureLocalStorage.setItem('discord_client_secret', secret);
+
+        // Refreshing discord connection with the new credentials
+        window.discord.disconnect();
+        window.discord.connect(String(id), String(secret))
+    }
+
+    const handleDiscordReset = async () => {
+        try {
+            await window.discord.revokeAllTokens();
+            window.discord.disconnect();
+            await window.electron.restart();
+        } catch (error) {
+            console.error('Error in the middle of discord reset:', error);
+        }
+    }
+
     return (
         <div className="options-menu">
             <div className="credentials">
@@ -486,17 +438,52 @@ function Discord({ handleCredentialsDiscord,
 
 
 interface ModulesProps {
-    handleModuleSave: () => void;
-    handleModuleToggle: (moduleName: keyof EnabledModules) => void;
-    modules: (keyof EnabledModules)[];
-    tempModules: EnabledModules;
+    isSettings: boolean
+    setIsSettings: (value: boolean) => void
 }
 
 
-function Modules({ handleModuleSave,
-    handleModuleToggle,
-    modules,
-    tempModules }: ModulesProps) {
+function Modules({
+    isSettings,
+    setIsSettings
+}: ModulesProps) {
+    const modules: Array<keyof EnabledModules> = ['Spotify', 'Discord', 'Hoyolab'];
+    const [enabledModules, setEnabledModules] = useState<EnabledModules>(() => {
+        // Load saved module states from secure storage, defaulting to DEFAULT_MODULES
+        const savedModules = secureLocalStorage.getItem('enabled_modules');
+        if (savedModules) {
+            return JSON.parse(savedModules as string) as EnabledModules;
+        }
+        return DEFAULT_MODULES;
+    });
+    const [tempModules, setTempModules] = useState<EnabledModules>(enabledModules);
+
+    useEffect(() => {
+        if (isSettings) {
+            setTempModules(enabledModules);
+        }
+    }, [isSettings]);
+
+
+    const handleModuleToggle = (moduleName: keyof EnabledModules) => {
+        // Update only the temporary state
+        setTempModules(prev => ({
+            ...prev,
+            [moduleName]: !prev[moduleName]
+        }));
+    };
+
+    const handleModuleSave = () => {
+        // Apply changes
+        setEnabledModules(tempModules);
+        secureLocalStorage.setItem('enabled_modules', JSON.stringify(tempModules));
+        window.electron.log('Module settings saved');
+        // Optionally close settings
+        setIsSettings(false);
+        location.reload();
+    };
+
+
     return (
         <div className="options-menu">
             <div className="settings-section">
@@ -535,14 +522,11 @@ function Modules({ handleModuleSave,
 }
 
 interface AudioProps {
-    handleSliderChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    handleSensitivityRelease: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    defaultValue: number;
 }
 
 function Audio({
-    defaultValue,
 }) {
+    const defaultValue = Number(window.localStorage.getItem('sensitivity-value'))
     const sliderRef = useRef<HTMLInputElement>(null);
 
     const [micVolume, setMicVolume] = useState<number>(0);
@@ -631,7 +615,7 @@ function Audio({
     useEffect(() => {
         if (sliderRef.current && defaultValue) {
             // Set the input value
-            sliderRef.current.value = defaultValue;
+            sliderRef.current.value = String(defaultValue);
 
             // Calculate and set the CSS custom property
             const percent = (Number(defaultValue) - Number(sliderRef.current.min)) /
@@ -752,49 +736,55 @@ function Audio({
                             Toggle "Hey Iris!"
                         </span>
                     </div>
-                    <span>
-                        <h3>Input Device</h3>
-                    </span>
-                    <select
-                        className="device-select"
-                        value={selectedDevice}
-                        onChange={(e) => handleMicSelect(e.target.value)}
-                    >
-                        {audioDevices.map((device) => (
-                            <option key={device.deviceId} value={device.deviceId}>
-                                {device.label || `Microphone ${device.deviceId.slice(0, 5)}...`}
-                            </option>
-                        ))}
-                    </select>
 
-                    <span>
-                        <h3>Input Sensitivity</h3>
-                    </span>
-                    <div className="sensitivity-slider-container">
-                        <input
-                            ref={sliderRef}
-                            type='range'
-                            min="1"
-                            max="100"
-                            defaultValue={defaultValue || '50'}
-                            className='sensitivity-slider'
-                            onChange={handleSensitivityChange}
-                            onMouseUp={handleSensitivityRelease}
-                        />
-                        <div className="volume-indicator">
-                            <div className="volume-bar-container">
-                                <div
-                                    className="volume-bar"
-                                    style={{
-                                        width: `${micVolume}%`,
-                                        backgroundColor: `${micVolume <= average ? '#d92626' : '#26d926'}`
-                                    }}
-                                >
-                                    <div className='average-indicator'></div>
+                    {irisEnabled && (
+                        <>
+
+                            <span>
+                                <h3>Input Device</h3>
+                            </span>
+                            <select
+                                className="device-select"
+                                value={selectedDevice}
+                                onChange={(e) => handleMicSelect(e.target.value)}
+                            >
+                                {audioDevices.map((device) => (
+                                    <option key={device.deviceId} value={device.deviceId}>
+                                        {device.label || `Microphone ${device.deviceId.slice(0, 5)}...`}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <span>
+                                <h3>Input Sensitivity</h3>
+                            </span>
+                            <div className="sensitivity-slider-container">
+                                <input
+                                    ref={sliderRef}
+                                    type='range'
+                                    min="1"
+                                    max="100"
+                                    defaultValue={defaultValue || '50'}
+                                    className='sensitivity-slider'
+                                    onChange={handleSensitivityChange}
+                                    onMouseUp={handleSensitivityRelease}
+                                />
+                                <div className="volume-indicator">
+                                    <div className="volume-bar-container">
+                                        <div
+                                            className="volume-bar"
+                                            style={{
+                                                width: `${micVolume}%`,
+                                                backgroundColor: `${micVolume <= average ? '#d92626' : '#26d926'}`
+                                            }}
+                                        >
+                                            <div className='average-indicator'></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </>
+                    )}
 
 
 
