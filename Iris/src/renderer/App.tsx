@@ -53,11 +53,10 @@ const App: React.FC<AppProps> = () => {
 
   const speechService = new SpeechRecognitionService();
 
-
   useEffect(() => {
     // Usage example
     // Initialize the service
-    speechService.initialize();
+    if (isIrisEnabled) speechService.initialize();
   }, []);
 
   useEffect(() => {
@@ -86,13 +85,6 @@ const App: React.FC<AppProps> = () => {
       window.electron.window.removeFullScreenListener();
     };
   }, []);
-
-  const handleOutsideClick = (e: React.MouseEvent) => {
-    // Only close if clicking the container itself, not its children
-    if (e.target === e.currentTarget) {
-      setIsSettings(false);
-    }
-  };
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -163,7 +155,13 @@ const App: React.FC<AppProps> = () => {
     }
   }, [isIrisEnabled])
 
-  window.electron.log(`ViewState: ${viewState}`)
+  const handleOutsideClick = (e: React.MouseEvent) => {
+    // Only close if clicking the container itself, not its children
+    if (e.target === e.currentTarget) {
+      setIsSettings(false);
+    }
+  };
+
   return (
     <div
       className={`App ${isFullScreen ? 'fullscreen' : ''}`}
@@ -194,11 +192,10 @@ const App: React.FC<AppProps> = () => {
         )}
 
         {enabledModules.Discord && (
-          <DiscordMain />
-
+            <DiscordMain />
         )}
 
-        
+
 
         {/* {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>

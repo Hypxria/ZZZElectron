@@ -38,74 +38,102 @@ class DiscordRPC extends EventEmitter {
 
         this.CLIENT_ID = CLIENT_ID || ''
         this.CLIENT_SECRET = CLIENT_SECRET || ''
-        this.initializeStoreAndSetup();
 
         this.voice = new VoiceManager(this)
 
     }
-
-    private async initializeStoreAndSetup() {
-        try {
-            console.log(this.store.get('unicorn'));
-        } catch (error) {
-            console.error('Failed to initialize store:', error);
-        }
-    }
-
+    
     public generateNonce(): string {
         return Date.now().toString(36) + Math.random().toString(36).substring(2);
     }
 
-    private setupSocket() {
-        this.socket!
-            .on('ready', () => this.handleConnect())
-            .on('data', (data) => this.handleData(data))
-            .on('close', () => this.emit('close'))
-            .on('error', (err) => this.emit('error', err));
-    }
-
     async connect() {
-        if (this.CLIENT_ID === '' || this.CLIENT_SECRET === '') return
+        if (this.CLIENT_ID === '' || this.CLIENT_SECRET === '') return;
+        
         return new Promise((resolve, reject) => {
-            const ipcPath = process.platform === 'win32'
-                ? '\\\\?\\pipe\\discord-ipc-0'
-                : '/tmp/discord-ipc-0';
-
-            console.log('Attempting to connect to:', ipcPath);
-
-            // Try multiple pipe numbers if the first one fails
+            let currentPipe = 0;
+            const maxPipes = 10;
+            let connected = false;
+    
             const tryConnect = (pipeNum: number) => {
+                if (connected) return;
+                
+                // Create a new socket for each attempt
+                if (this.socket) {
+                    this.socket.removeAllListeners();
+                    this.socket.destroy();
+                }
+                this.socket = new net.Socket();
+                
+                // Setup socket listeners
+                this.socket.once('connect', () => {
+                    connected = true;
+                    console.log('Connected to Discord IPC pipe:', pipeNum);
+                    this.setupSocket(); // Only setup full listeners after successful connection
+                    resolve(true);
+                });
+    
+                this.socket.once('error', (err) => {
+                    console.log(`Failed to connect to pipe ${pipeNum}:`, err.message);
+                    
+                    // Clean up failed connection attempt
+                    this.socket?.removeAllListeners();
+                    this.socket?.destroy();
+                    
+                    // Try next pipe
+                    if (currentPipe < maxPipes - 1) {
+                        currentPipe++;
+                        tryConnect(currentPipe);
+                    } else {
+                        reject(new Error('Could not connect to any Discord IPC pipe. Please ensure Discord is running.'));
+                    }
+                });
+    
                 const currentPath = process.platform === 'win32'
                     ? `\\\\?\\pipe\\discord-ipc-${pipeNum}`
                     : `/tmp/discord-ipc-${pipeNum}`;
-
-                console.log(`Trying pipe ${pipeNum}:`, currentPath);
-
-                this.socket!.connect(currentPath);
-            };
-
-            let currentPipe = 0;
-            const maxPipes = 10;
-
-            this.socket!.on('error', (err) => {
-                console.log(`Failed to connect to pipe ${currentPipe}:`, err.message);
-                currentPipe++;
-                if (currentPipe < maxPipes) {
-                    tryConnect(currentPipe);
-                } else {
-                    reject(new Error('Failed to connect to Discord IPC'));
+    
+                console.log(`Attempting to connect to pipe ${pipeNum}:`, currentPath);
+                
+                try {
+                    this.socket.connect(currentPath);
+                } catch (err) {
+                    // If connect throws synchronously, clean up and try next pipe
+                    console.error(`Error connecting to pipe ${pipeNum}:`, err);
+                    this.socket?.removeAllListeners();
+                    this.socket?.destroy();
+                    
+                    if (currentPipe < maxPipes - 1) {
+                        currentPipe++;
+                        tryConnect(currentPipe);
+                    } else {
+                        reject(new Error('Could not connect to any Discord IPC pipe. Please ensure Discord is running.'));
+                    }
                 }
-            });
-
-            this.socket!.once('connect', () => {
-                console.log('Connected to Discord IPC pipe:', currentPipe);
-                resolve(true);
-            });
-
+            };
+    
+            // Start with pipe 0
+            console.log('Starting Discord IPC connection attempts');
             tryConnect(currentPipe);
         });
     }
-
+    
+    private setupSocket() {
+        if (!this.socket) return;
+        
+        this.socket
+            .on('ready', () => this.handleConnect())
+            .on('data', (data) => this.handleData(data))
+            .on('close', () => {
+                console.log('Socket closed');
+                this.emit('close');
+            })
+            .on('error', (err) => {
+                console.log('Socket error:', err);
+                this.emit('error', err);
+            });
+    }
+    
 
 
     private async handleConnect() {
@@ -184,7 +212,7 @@ class DiscordRPC extends EventEmitter {
             console.log('skippy')
             this.authenticate(tokens.access_token);
             return;
-        } else if (tokens.refresh_token !== undefined && tokens.expires_at < Date.now()) {
+        } else if (false || tokens.refresh_token !== undefined && tokens.expires_at < Date.now()) {
             console.log('refreshing')
             const response = await fetch("https://discord.com/api/v10//oauth2/token", {
                 method: 'POST',
@@ -227,7 +255,7 @@ class DiscordRPC extends EventEmitter {
             args: {
                 client_id: this.CLIENT_ID,
                 client_secret: this.CLIENT_SECRET,
-                scopes: ['rpc', 'messages.read', 'rpc.notifications.read', 'rpc.voice.write', 'rpc.voice.read'],
+                scopes: ['rpc', 'rpc.notifications.read', 'rpc.voice.write', 'rpc.voice.read', 'messages.read'],
                 v: 1
             }
         };

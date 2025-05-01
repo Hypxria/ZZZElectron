@@ -10,7 +10,7 @@ import DiscordNotification from './DiscordNotification.tsx';
 const DiscordMain: React.FC = ({
 
 }) => {
-    let logins: boolean = false
+    const [logins, setLogins] = React.useState<boolean>(false);
 
     useEffect(() => {
         let mounted = true;
@@ -21,12 +21,11 @@ const DiscordMain: React.FC = ({
 
                 if (!id || !secret) {
                     console.error('Discord client ID or secret not found in secure storage.');
-                    logins = false
+                    setLogins(false)
                     return;
                 } else {
-                    logins = true
+                    setLogins(true)
                 }
-
 
                 const result = await window.discord.connect(String(id), String(secret));
                 if (!mounted) return;
@@ -51,7 +50,7 @@ const DiscordMain: React.FC = ({
 
 
     return (
-        <div>
+        <div className='discord-container'>
             {logins && (
                 <>
                     <DiscordCall />

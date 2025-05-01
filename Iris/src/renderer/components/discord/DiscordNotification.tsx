@@ -10,10 +10,13 @@ interface NotificationProps {
   isVisible?: boolean;
 }
 
+type TextSegment = {
+  type: 'text' | 'bold' | 'italic' | 'bold-italic' | 'underline' | 'strikethrough' | 'code';
+  content: string;
+};
 
-
-const parseDiscordFormatting = (text: string) => {
-  // First handle double escapes - replace \\ with a temporary marker
+const parseDiscordFormatting = (text: string): TextSegment[] => {
+  // First handle double escapes
   text = text.replace(/\\\\/g, '{{DOUBLE_ESCAPE}}');
 
   // Handle escaped formatting characters
@@ -25,34 +28,95 @@ const parseDiscordFormatting = (text: string) => {
     .replace(/\\~~/g, '{{ESCAPED_STRIKETHROUGH}}')
     .replace(/\\`/g, '{{ESCAPED_CODE}}');
 
-  // Replace Discord markdown with HTML/React elements
-  text = text
-    // Bold and Italic (***text***)
-    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    // Bold (**text**)
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Italic (*text*)
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Underline (__text__)
-    .replace(/__(.*?)__/g, '<u>$1</u>')
-    // Strikethrough (~~text~~)
-    .replace(/~~(.*?)~~/g, '<s>$1</s>')
-    // Code blocks (```text```)
-    .replace(/```(.*?)```/g, '<code>$1</code>')
-    // Inline code (`text`)
-    .replace(/`(.*?)`/g, '<code>$1</code>');
+  const segments: TextSegment[] = [];
+  let currentIndex = 0;
+
+  // Regular expressions for different formatting
+  const patterns = [
+    { regex: /\*\*\*(.*?)\*\*\*/g, type: 'bold-italic' },
+    { regex: /\*\*(.*?)\*\*/g, type: 'bold' },
+    { regex: /\*(.*?)\*/g, type: 'italic' },
+    { regex: /__(.*?)__/g, type: 'underline' },
+    { regex: /~~(.*?)~~/g, type: 'strikethrough' },
+    { regex: /```(.*?)```/g, type: 'code' },
+    { regex: /`(.*?)`/g, type: 'code' }
+  ];
+
+  while (currentIndex < text.length) {
+    let match: RegExpExecArray | null = null;
+    let earliestMatch = { index: text.length, type: '', content: '' };
+
+    // Find the earliest matching pattern
+    for (const pattern of patterns) {
+      pattern.regex.lastIndex = currentIndex;
+      const m = pattern.regex.exec(text);
+      if (m && m.index < earliestMatch.index) {
+        earliestMatch = {
+          index: m.index,
+          type: pattern.type as TextSegment['type'],
+          content: m[1]
+        };
+        match = m;
+      }
+    }
+
+    if (match && earliestMatch.index === currentIndex) {
+      // Add the formatted segment
+      segments.push({
+        type: earliestMatch.type as TextSegment['type'],
+        content: earliestMatch.content
+      });
+      currentIndex = match.index + match[0].length;
+    } else {
+      // Add plain text up to the next match or end
+      const nextIndex = earliestMatch.index;
+      const plainText = text.slice(currentIndex, nextIndex);
+      if (plainText) {
+        segments.push({ type: 'text', content: plainText });
+      }
+      currentIndex = nextIndex;
+    }
+  }
 
   // Restore escaped characters
-  text = text
-    .replace(/{{DOUBLE_ESCAPE}}/g, '\\')
-    .replace(/{{ESCAPED_BOLD_ITALIC}}/g, '***')
-    .replace(/{{ESCAPED_BOLD}}/g, '**')
-    .replace(/{{ESCAPED_ITALIC}}/g, '*')
-    .replace(/{{ESCAPED_UNDERLINE}}/g, '__')
-    .replace(/{{ESCAPED_STRIKETHROUGH}}/g, '~~')
-    .replace(/{{ESCAPED_CODE}}/g, '`');
+  segments.forEach(segment => {
+    segment.content = segment.content
+      .replace(/{{DOUBLE_ESCAPE}}/g, '\\')
+      .replace(/{{ESCAPED_BOLD_ITALIC}}/g, '***')
+      .replace(/{{ESCAPED_BOLD}}/g, '**')
+      .replace(/{{ESCAPED_ITALIC}}/g, '*')
+      .replace(/{{ESCAPED_UNDERLINE}}/g, '__')
+      .replace(/{{ESCAPED_STRIKETHROUGH}}/g, '~~')
+      .replace(/{{ESCAPED_CODE}}/g, '`');
+  });
 
-  return text;
+  return segments;
+};
+
+// FormattedText component to render the segments
+const FormattedText: React.FC<{ segments: TextSegment[] }> = ({ segments }) => {
+  return (
+    <>
+      {segments.map((segment, index) => {
+        switch (segment.type) {
+          case 'bold':
+            return <strong key={index}>{segment.content}</strong>;
+          case 'italic':
+            return <em key={index}>{segment.content}</em>;
+          case 'bold-italic':
+            return <strong key={index}><em>{segment.content}</em></strong>;
+          case 'underline':
+            return <u key={index}>{segment.content}</u>;
+          case 'strikethrough':
+            return <s key={index}>{segment.content}</s>;
+          case 'code':
+            return <code key={index}>{segment.content}</code>;
+          default:
+            return <span key={index}>{segment.content}</span>;
+        }
+      })}
+    </>
+  );
 };
 
 const DiscordNotification: React.FC = ({
@@ -171,10 +235,9 @@ const DiscordNotification: React.FC = ({
 
         <div
           className="notification-message"
-          dangerouslySetInnerHTML={{
-            __html: parseDiscordFormatting(message)
-          }}
-        />
+        >
+          <FormattedText segments={parseDiscordFormatting(message)} />
+        </div>
       </div>
     </div>
   );

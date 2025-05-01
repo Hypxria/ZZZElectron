@@ -109,23 +109,6 @@ const Settings: React.FC<SettingsProps> = ({
                     ))}
                 </div>
 
-                {/* Sub menus */}
-                {activeMenu === 'General' && (
-                    <div className="options-menu">
-                        <div className="options-list">
-                            {generalOptions.map((option, index) => (
-                                <button
-                                    key={index}
-                                    className="option-button"
-                                    onClick={() => handleMenuSelect(option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
                 {/* Main menu */}
                 {navigationPath.length === 1 && (
                     <div className="main-buttons">
@@ -143,6 +126,24 @@ const Settings: React.FC<SettingsProps> = ({
                         </button>
                     </div>
                 )}
+
+                {/* Sub menus */}
+                {activeMenu === 'General' && (
+                    <div className="options-menu">
+                        <div className="options-list">
+                            {generalOptions.map((option, index) => (
+                                <button
+                                    key={index}
+                                    className="option-button"
+                                    onClick={() => handleMenuSelect(option)}
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
 
                 {activeMenu === 'Audio Settings' && (
                     <Audio
@@ -479,7 +480,6 @@ function Modules({
         secureLocalStorage.setItem('enabled_modules', JSON.stringify(tempModules));
         window.electron.log('Module settings saved');
         // Optionally close settings
-        setIsSettings(false);
         location.reload();
     };
 

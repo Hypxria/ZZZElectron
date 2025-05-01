@@ -413,7 +413,7 @@ Trademarks
 
 Trademark and Asset Acknowledgment - COGNOSPHERE
 
-The HoYoverse icon and the name "HoYoLAB" are trademarks and copyrighted materials owned by COGNOSPHERE PTE. LTD. (formerly known as miHoYo) and its affiliates. These assets are used in this application for identification purposes only. This project is not affiliated with, endorsed by, or sponsored by COGNOSPHERE PTE. LTD.
+The HoYoverse icon and the name "HoYoLAB," as well as their products are trademarks and copyrighted materials owned by COGNOSPHERE PTE. LTD. (formerly known as miHoYo) and its affiliates. These assets are used in this application for identification purposes only. This project is not affiliated with, endorsed by, or sponsored by COGNOSPHERE PTE. LTD.
 
 All rights to these trademarks and copyrighted materials remain the property of their respective owners. Their use in this application does not grant any rights or licenses to these trademarks and copyrighted materials beyond what is strictly necessary for identification purposes.
 
