@@ -47,9 +47,9 @@ const App: React.FC<AppProps> = () => {
     localStorage.getItem('selected-device') || ''
   );
 
-  const [isIrisEnabled, setIsIrisEnabled] = useState<boolean>(() =>
-    Boolean(localStorage.getItem('iris-enabled')) || false
-  )
+  const [isIrisEnabled, setIsIrisEnabled] = useState<boolean>(() => {
+    return localStorage.getItem('iris-enabled') === 'true' || false;
+  })
 
   const speechService = new SpeechRecognitionService();
 
@@ -135,11 +135,8 @@ const App: React.FC<AppProps> = () => {
         setActiveDevice(newValue || '');
       }
       if (key === 'iris-enabled') {
-        setIsIrisEnabled(Boolean(newValue) || false);
-        console.log(Boolean(newValue))
-
+        setIsIrisEnabled(newValue === 'true' || false);
       }
-      console.log('storage event')
     };
 
     window.addEventListener('localStorageChange', handleLocalChange);

@@ -557,9 +557,9 @@ function Audio({
     const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDevice, setSelectedDevice] = useState<string>('');
 
-    const [irisEnabled, setIrisEnabled] = useState<boolean>(() =>
-        Boolean(window.localStorage.getItem('iris-enabled'))
-    )
+    const [irisEnabled, setIrisEnabled] = useState<boolean>(() => {
+        return localStorage.getItem('iris-enabled') === 'true';
+    });
 
     // Audio Handlers
     const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -723,13 +723,14 @@ function Audio({
         };
     }, []);
 
-    const handleIrisToggle = (e) => {
-        console.log(`beofre change: ${irisEnabled}`)
-        setIrisEnabled(!irisEnabled)
-        console.log(`changed irisEnabled to${irisEnabled}`)
-        
-        window.localStorage.setItem('iris-enabled', String(irisEnabled))
-    }
+    const handleIrisToggle = () => {
+        setIrisEnabled(prevState => {
+            const newState = !prevState;
+            // Save to localStorage after state change
+            localStorage.setItem('iris-enabled', String(newState));
+            return newState;
+        });
+    };
 
     return (
         <div className='options-menu'>

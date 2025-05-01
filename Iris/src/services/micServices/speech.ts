@@ -217,7 +217,7 @@ export class SpeechRecognitionService {
 
                 analyser.getByteFrequencyData(dataArray);
                 const average = this.calculateWeightedAverage(dataArray);
-                console.log(average)
+                // console.log(average)
 
                 if (average > sensitivityMin) { // Adjust threshold as needed
                     if (!this.currentRecordingId) { // Check currentRecordingId instead of isSpeaking
