@@ -166,7 +166,7 @@ export class SpeechRecognitionService {
 
     
 
-    async startListening(): Promise<void> {
+    async startListening(sensitivityMin: number, deviceId: string): Promise<void> {
         if (this.isListening) return;
         this.isListening = true;
         this.isWakeWordDetected = false;
@@ -174,6 +174,7 @@ export class SpeechRecognitionService {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
+                    deviceId: deviceId,
                     channelCount: 1,
                     sampleRate: 16000,
                     sampleSize: 16,
@@ -218,7 +219,7 @@ export class SpeechRecognitionService {
                 const average = this.calculateWeightedAverage(dataArray);
                 console.log(average)
 
-                if (average > 50) { // Adjust threshold as needed
+                if (average > sensitivityMin) { // Adjust threshold as needed
                     if (!this.currentRecordingId) { // Check currentRecordingId instead of isSpeaking
                         this.handleSpeechStart();
                     }

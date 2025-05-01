@@ -103,7 +103,7 @@ const Settings: React.FC<SettingsProps> = ({
     };
 
 
-    
+
     // Navigation Handlers
     const handleNavigationClick = (index: number) => {
         // If clicking on 'Settings', reset to main menu
@@ -557,6 +557,10 @@ function Audio({
     const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDevice, setSelectedDevice] = useState<string>('');
 
+    const [irisEnabled, setIrisEnabled] = useState<boolean>(() =>
+        Boolean(window.localStorage.getItem('iris-enabled'))
+    )
+
     // Audio Handlers
     const handleSensitivityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -572,6 +576,11 @@ function Audio({
         const percent = (Number(value) - Number(e?.min)) /
             (Number(e?.max) - Number(e?.min)) * 100;
         window.localStorage.setItem('sensitivity-value', String(percent));
+    }
+
+    const handleMicSelect = (deviceId: string) => {
+        setSelectedDevice(deviceId);
+        window.localStorage.setItem('selected-device', deviceId);
     }
 
     const cleanup = () => {
@@ -714,17 +723,41 @@ function Audio({
         };
     }, []);
 
+    const handleIrisToggle = (e) => {
+        console.log(`beofre change: ${irisEnabled}`)
+        setIrisEnabled(!irisEnabled)
+        console.log(`changed irisEnabled to${irisEnabled}`)
+        
+        window.localStorage.setItem('iris-enabled', String(irisEnabled))
+    }
+
     return (
         <div className='options-menu'>
             <div className="settings-section">
                 <div className="audio-settings">
+                    <span>
+                        <h3>Voice Control Toggle</h3>
+                    </span>
+                    <div className='vc-toggle'>
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={irisEnabled}
+                                onChange={handleIrisToggle}
+                            />
+                            <span className="toggle-slider"></span>
+                        </label>
+                        <span className="module-name">
+                            Toggle "Hey Iris!"
+                        </span>
+                    </div>
                     <span>
                         <h3>Input Device</h3>
                     </span>
                     <select
                         className="device-select"
                         value={selectedDevice}
-                        onChange={(e) => setSelectedDevice(e.target.value)}
+                        onChange={(e) => handleMicSelect(e.target.value)}
                     >
                         {audioDevices.map((device) => (
                             <option key={device.deviceId} value={device.deviceId}>
@@ -753,7 +786,7 @@ function Audio({
                                     className="volume-bar"
                                     style={{
                                         width: `${micVolume}%`,
-                                        backgroundColor: `${micVolume <= average ? '#d92626': '#26d926' }`
+                                        backgroundColor: `${micVolume <= average ? '#d92626' : '#26d926'}`
                                     }}
                                 >
                                     <div className='average-indicator'></div>

@@ -40,17 +40,24 @@ const App: React.FC<AppProps> = () => {
     return false;
   });
 
+  const [sensitivity, setSensitivity] = useState<number>(() =>
+    Number(localStorage.getItem('sensitivity-value')) || 50
+  );
+  const [activeDevice, setActiveDevice] = useState<string>(() =>
+    localStorage.getItem('selected-device') || ''
+  );
+
+  const [isIrisEnabled, setIsIrisEnabled] = useState<boolean>(() =>
+    Boolean(localStorage.getItem('iris-enabled')) || false
+  )
+
   const speechService = new SpeechRecognitionService();
 
 
   useEffect(() => {
     // Usage example
-
     // Initialize the service
     speechService.initialize();
-
-
-
   }, []);
 
   useEffect(() => {
@@ -87,10 +94,77 @@ const App: React.FC<AppProps> = () => {
     }
   };
 
-  const turnOnThing = () => {
-    speechService.startListening();
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'sensitivity-value') {
+        setSensitivity(Number(e.newValue) || 50);
+      }
+      if (e.key === 'selected-device') {
+        setActiveDevice(e.newValue || '');
+      }
+      if (e.key === 'iris-enabled') {
+        setIsIrisEnabled(Boolean(e.newValue) || false);
+        console.log(Boolean(e.newValue))
+      }
+      console.log('storage event')
+    };
 
+
+    // For changes from other windows/tabs
+    window.addEventListener('storage', handleStorageChange);
+
+    // For changes within the same window
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function (key: string, value: string) {
+      const event = new Event('localStorageChange');
+      (event as any).key = key;
+      (event as any).newValue = value;
+      window.dispatchEvent(event);
+      originalSetItem.apply(this, [key, value]);
+    };
+
+    const handleLocalChange = (e: Event) => {
+      const key = (e as any).key;
+      const newValue = (e as any).newValue;
+      console.log(key, newValue)
+
+      if (key === 'sensitivity-value') {
+        setSensitivity(Number(newValue) || 50);
+      }
+      if (key === 'selected-device') {
+        setActiveDevice(newValue || '');
+      }
+      if (key === 'iris-enabled') {
+        setIsIrisEnabled(Boolean(newValue) || false);
+        console.log(Boolean(newValue))
+
+      }
+      console.log('storage event')
+    };
+
+    window.addEventListener('localStorageChange', handleLocalChange);
+
+    return () => {
+      // Cleanup
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleLocalChange);
+      localStorage.setItem = originalSetItem;
+    };
+  }, []);
+
+  const turnOnThing = () => {
+    const sensitivity = Number(window.localStorage.getItem('sensitivity-value'));
+    const device = String(window.localStorage.getItem('selected-device'));
+
+    speechService.startListening(sensitivity, device);
   }
+
+  useEffect(() => {
+    if (isIrisEnabled) {
+      speechService.stopListening();
+      speechService.startListening(sensitivity, activeDevice);
+    }
+  }, [sensitivity, activeDevice])
 
   const turnOffThing = () => {
     speechService.stopListening();
@@ -132,14 +206,18 @@ const App: React.FC<AppProps> = () => {
 
         )}
 
-        <button onClick={turnOnThing}>
-          ON
-        </button>
+        {isIrisEnabled === true && (
+          <div>
+            <button onClick={turnOnThing}>
+              ON
+            </button>
 
-        <button onClick={turnOffThing}>
-          OFF
+            <button onClick={turnOffThing}>
+              OFF
 
-        </button>
+            </button>
+          </div>
+        )}
 
         {/* {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
@@ -151,7 +229,7 @@ const App: React.FC<AppProps> = () => {
             <HoyoMain ViewState={viewState} />
           </div>
         )} */}
-        
+
       </div>
     </div>
   );
