@@ -38,6 +38,9 @@ class SpotifyService {
 
     private reconnectAttempts = 0;
     private readonly MAX_RECONNECT_ATTEMPTS = 5;
+    private token: string | undefined
+    private tokenExpire: number | undefined
+    private tokenTime: number | undefined
 
     private _currentProgress: {
         progress_ms: number;
@@ -63,7 +66,7 @@ class SpotifyService {
     private connectWebSocket() {
         try {
             this.ws = new WebSocket(this.WS_URL);
-            
+
             this.ws.onopen = () => {
                 console.log('SpotifyService WebSocket connected');
                 this.reconnectAttempts = 0; // Reset attempts on successful connection
@@ -86,7 +89,7 @@ class SpotifyService {
             this.ws.onmessage = (event) => {
                 try {
                     // This is for the progress update thingies)
-                    
+
                     // Use a try-catch block to handle potential JSON parsing errors
                     let response;
                     try {
@@ -187,8 +190,8 @@ class SpotifyService {
                                 album: response.data.album,
                                 duration_ms: response.data.duration_ms?.milliseconds,
                                 progress_ms: response.data.progress_ms,
-                                is_playing: response.data.is_playing, 
-                                volume: response.data.volume*100,
+                                is_playing: response.data.is_playing,
+                                volume: response.data.volume * 100,
                                 repeat_state: response.data.repeat_state,
                                 shuffle_state: response.data.shuffle_state,
                             };
@@ -372,7 +375,7 @@ class SpotifyService {
             console.error('Error toggling shuffle:', error);
             throw error;
         }
-    
+
     }
 
     async toggleRepeatMode(): Promise<void> {
@@ -387,12 +390,16 @@ class SpotifyService {
             throw error;
         }
     }
-    
-    
+
+
     /**
      * Set a specific repeat mode
      */
-    async setRepeatMode(mode: RepeatState): Promise<void> {
+    /**
+     * Change Repeat mode
+     * @param mode `0` No repeat. `1` Repeat all. `2` Repeat one track.
+     */
+    async setRepeatMode(mode: RepeatState | number): Promise<void> {
         try {
             this.sendWsMessage({
                 type: 'playback',
@@ -401,6 +408,59 @@ class SpotifyService {
             });
         } catch (error) {
             console.error('Error setting repeat mode:', error);
+            throw error;
+        }
+    }
+
+    async getToken(): Promise<string[]> {
+        try {
+            this.sendWsMessage({
+                type: 'info',
+                action: 'token'
+            })
+
+            return new Promise((resolve, reject) => {
+                const messageHandler = (event: MessageEvent) => {
+                    try {
+                        let response;
+                        try {
+                            response = JSON.parse(event.data);
+                        } catch (parseError) {
+                            console.error('Error parsing JSON:', parseError);
+                            return; // Skip this message if it's not valid JSON
+                        }
+
+                        // Check if this is the response we're waiting for
+                        if (response.type === 'response' && response.action === 'token') {
+
+                            // Remove the message handler
+                            this.ws?.removeEventListener('message', messageHandler);
+
+                            this.token = response.data.token
+                            this.tokenExpire = response.data.expiration
+                            this.tokenTime = Date.now()
+
+                            resolve([
+                                response.data.token,
+                                response.data.expiration
+                            ]);
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+
+                // Add temporary message handler
+                this.ws?.addEventListener('message', messageHandler);
+
+                // Add timeout to prevent hanging
+                setTimeout(() => {
+                    this.ws?.removeEventListener('message', messageHandler);
+                    reject(new Error('Timeout waiting for token'));
+                }, 5000); // 5 second timeout
+            })
+        } catch (error) {
+            console.error('Error getting token:', error);
             throw error;
         }
     }

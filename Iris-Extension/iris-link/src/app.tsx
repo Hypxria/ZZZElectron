@@ -257,7 +257,16 @@ class Iris {
             break;
           case 'info':
             switch (data.action) {
-
+              case 'token':
+                this.sendMessage(JSON.stringify({
+                  type: 'response',
+                  action: 'token',
+                  data: {
+                    token: Spicetify.Platform.Session.accessToken,
+                    expiration: Spicetify.Platform.Session.accessTokenExpirationTimestampMs
+                  }
+                }))
+                break;
               case 'next':
                 // Handle getting next track info
                 const nextTrack = Spicetify.Queue.nextTracks[0]['contextTrack']['metadata'];
