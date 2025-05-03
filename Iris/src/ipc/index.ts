@@ -5,13 +5,15 @@ import { setupSpotifyHandlers } from './handlers/spotify.ts';
 import { setupHoyoHandlers } from './handlers/hoyo.ts';
 import { setupSpicetifyHandlers } from './handlers/spicetify.ts';
 import { setupHoyoAuthHandlers } from './handlers/hoyoAuth.ts';
+import { setupSpeechHanlders } from './handlers/speech.ts';
 import DiscordRPC from '../services/discordServices/discordRPC.ts';
 
 export function setupIpcHandlers(mainWindow: BrowserWindow, discordRPC: DiscordRPC | null) {
     setupWindowHandlers(mainWindow);
-    setupDiscordHandlers(mainWindow, discordRPC);
+    setupDiscordHandlers(mainWindow);
     setupSpotifyHandlers();
     setupHoyoHandlers();
     setupSpicetifyHandlers();
     setupHoyoAuthHandlers();
+    // setupSpeechHanlders();
 }

@@ -57,6 +57,10 @@ const App: React.FC<AppProps> = () => {
     // Usage example
     // Initialize the service
     if (isIrisEnabled) speechService.initialize();
+
+    return () => {
+      speechService.cleanup();
+    };
   }, []);
 
   useEffect(() => {
@@ -142,15 +146,18 @@ const App: React.FC<AppProps> = () => {
 
   useEffect(() => {
     if (isIrisEnabled) {
+      console.log(isIrisEnabled, 'sens, active')
       speechService.stopListening();
       speechService.startListening(sensitivity, activeDevice);
     }
   }, [sensitivity, activeDevice])
 
   useEffect(() => {
-    if (isIrisEnabled) {
+    if (isIrisEnabled === true) {
+      console.log(isIrisEnabled, 'listening')
       speechService.startListening(sensitivity, activeDevice);
     } else {
+      console.log(isIrisEnabled, 'stopping')
       speechService.stopListening();
     }
   }, [isIrisEnabled])
@@ -192,12 +199,12 @@ const App: React.FC<AppProps> = () => {
         )}
 
         {enabledModules.Discord && (
-            <DiscordMain />
+          <DiscordMain />
         )}
 
 
 
-        {/* {enabledModules.Spotify && (
+        {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
             <SpotifyMain ViewState={viewState} />
           </div>
@@ -206,7 +213,7 @@ const App: React.FC<AppProps> = () => {
           <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
             <HoyoMain ViewState={viewState} />
           </div>
-        )} */}
+        )}
 
       </div>
     </div>

@@ -200,6 +200,11 @@ ipcMain.on('console-log', (_, message) => {
   console.log(message); // This will print to terminal
 });
 
+ipcMain.on('console-error', (_, message) => {
+  console.error(message); // This will print to terminal
+});
+
+
 
 app.whenReady().then(async () => {
   app.on('gpu-info-update', () => {

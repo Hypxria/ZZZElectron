@@ -1,12 +1,14 @@
-import DiscordRPC from '../../services/discordServices/discordRPC.ts';
+import DiscordRPC from '../../services/discordServices/discordRPC.ts'
 import { BrowserWindow, ipcMain } from 'electron';
 
-export function setupDiscordHandlers(mainWindow: BrowserWindow, discordRPC: DiscordRPC | null) {
+let discordRPC
+
+export function setupDiscordHandlers(mainWindow: BrowserWindow) {
     ipcMain.handle('discord:connect', async (_, id, secret) => {
         try {
             const client_id = id
             const client_secret = secret
-            console.log(client_id, client_secret)
+
             discordRPC = new DiscordRPC(String(client_id), String(client_secret));
             await discordRPC.connect();
 
@@ -29,7 +31,7 @@ export function setupDiscordHandlers(mainWindow: BrowserWindow, discordRPC: Disc
                 // Assuming your DiscordRPC class has these methods
                 discordRPC.removeAllListeners('notification');
                 await discordRPC.disconnect();
-                discordRPC = null;
+                discordRPC=null
             }
             return { success: true };
         } catch (error) {

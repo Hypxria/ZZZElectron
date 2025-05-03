@@ -3,6 +3,7 @@ interface ElectronAPI {
     log: (message: any) => void;
     restart: () => Promise<void>;
     getAppPath: () => Promise<string>;
+    deviceName: () => Promise<string>;  
     platform: {
         isWindows: () => Promise<boolean>;
     };
@@ -31,6 +32,11 @@ interface ElectronAPI {
 declare global {
     interface Window {
         electron: ElectronAPI;
+        speech: {
+            initialize: () => Promise<void>;
+            startListening: (sensitivity, device) => Promise<void>;
+            stopListening: () => Promise<void>;
+        };
         discord: {
             revokeAllTokens: () => Promise<void>; // Add this line
             connect: (id:string, secret:string) => Promise<{ success: boolean; error?: string }>;

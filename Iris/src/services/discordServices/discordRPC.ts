@@ -1,7 +1,6 @@
 import net from 'net';
 import { EventEmitter } from 'events';
 import { VoiceChannelSelectType } from './types.ts'
-import { ThumbUpSharp } from '@mui/icons-material';
 import Store from 'electron-store';
 
 

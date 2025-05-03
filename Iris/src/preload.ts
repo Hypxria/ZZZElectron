@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electron', {
   openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
   log: (message: any) => ipcRenderer.send('console-log', message),
   getAppPath: () => ipcRenderer.invoke('get-app-path'),
+  deviceName: () => ipcRenderer.invoke('device-name'),
   onNotification: (callback: (notification: any) => void) => {
     ipcRenderer.on('discord-notification', (_, notification) => {
       callback(notification);
@@ -84,6 +85,12 @@ contextBridge.exposeInMainWorld('hoyoAPI', {
     return await ipcRenderer.invoke('hoyo:initialize', cookie, user_id);
   },
 });
+
+contextBridge.exposeInMainWorld('speech', {
+  initialize: async() => ipcRenderer.invoke('speech:initialize'),
+  startListening: async (sensitivity:number, device:string) => ipcRenderer.invoke('speech:start-listening', sensitivity, device),
+  stopListening: async () => ipcRenderer.invoke('speech:stop-listening'),
+})
 
 contextBridge.exposeInMainWorld('lrc', {
   parseSyncedLyrics: (lyrics: string) => ipcRenderer.invoke('lrc:parse-lyrics', lyrics),

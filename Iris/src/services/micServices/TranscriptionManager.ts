@@ -2,12 +2,17 @@ export class TranscriptionManager {
     private workers: Map<string, Worker> = new Map();
     private taskQueue: string[] = [];
     private isProcessing: boolean = false;
+    private isShutdown: boolean = false;
 
     constructor() {
         // Constructor remains minimal - we'll create workers on demand
     }
 
     public async transcribe(audioData: Float64Array): Promise<string> {
+        if (this.isShutdown) {
+            return Promise.reject(new Error("TranscriptionManager has been shut down"));
+        }
+        
         // Generate a unique ID for this transcription task
         const taskId = crypto.randomUUID();
 
@@ -82,15 +87,29 @@ export class TranscriptionManager {
     private cleanupWorker(taskId: string) {
         const worker = this.workers.get(taskId);
         if (worker) {
-            worker.terminate();
-            this.workers.delete(taskId);
+            // Send terminate message before actually terminating
+            worker.postMessage({ type: 'terminate' });
+            
+            // Give the worker a small time to clean up
+            setTimeout(() => {
+                worker.terminate();
+                this.workers.delete(taskId);
+            }, 100);
         }
     }
 
     public cleanup() {
+        this.isShutdown = true;
+        
         // Terminate all workers
         for (const [taskId, worker] of this.workers) {
-            worker.terminate();
+            // Send terminate message before actually terminating
+            worker.postMessage({ type: 'terminate' });
+            
+            // Give the worker a small time to clean up
+            setTimeout(() => {
+                worker.terminate();
+            }, 100);
         }
         this.workers.clear();
     }

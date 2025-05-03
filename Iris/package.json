@@ -93,6 +93,7 @@
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^10.0.1",
     "file-loader": "^6.2.0",
+    "fs": "^0.0.1-security",
     "iris": "file:",
     "lucide-react": "^0.487.0",
     "net": "^1.0.2",

@@ -1,19 +1,32 @@
 import { pipeline } from '@xenova/transformers';
 
 let recognizer: any = null;
+let isTerminated = false;
 
 // Handle messages from main thread
 self.onmessage = async (e) => {
     const { type, audioData, taskId } = e.data;
 
+    // Check if terminated before processing any message
+    if (isTerminated && type !== 'terminate') {
+        return;
+    }
+
     switch (type) {
+        case 'terminate':
+            isTerminated = true;
+            // Clean up resources
+            recognizer = null;
+            self.postMessage({ type: 'terminated' });
+            break;
+            
         case 'init':
             try {
                 recognizer = await pipeline(
                     'automatic-speech-recognition',
                     'Xenova/whisper-tiny.en',
                     {
-                        //@ts-ignore
+                        // @ts-ignore
                         chunk_length_s: 3,
                         stride_length_s: 1.5,
                         language: 'english',
@@ -46,6 +59,10 @@ self.onmessage = async (e) => {
                 }
                 
                 const result = await recognizer(audioData);
+                
+                // Check if terminated during transcription
+                if (isTerminated) return;
+                
                 const cleanText = result.text
                     .toLowerCase()
                     .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
@@ -57,10 +74,12 @@ self.onmessage = async (e) => {
                     result: cleanText
                 });
             } catch (error) {
-                self.postMessage({
-                    taskId,
-                    error: error.message
-                });
+                if (!isTerminated) {
+                    self.postMessage({
+                        taskId,
+                        error: error.message
+                    });
+                }
             }
             break;
     }

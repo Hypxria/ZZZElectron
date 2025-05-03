@@ -43,15 +43,26 @@ class Iris {
     // Create a Blob containing the worker code
     const blob = new Blob([workerCode], { type: 'application/javascript' });
     const workerUrl = URL.createObjectURL(blob);
+    let timingSwitch: boolean
 
     // Create and start the worker
     this.progressWorker = new Worker(workerUrl);
+
+    Spicetify.Player.addEventListener('onplaypause', (event) => {
+      if (event?.data.isPaused) timingSwitch = true
+    })
+
+    Spicetify.Player.addEventListener('songchange', () => {
+      timingSwitch = false
+      this.wasAutoSwitchedThisSong = false
+      this.progress = 0
+    })
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
       console.log('message')
       let subtract
-      if (this.wasAutoSwitchedThisSong) {
+      if (this.wasAutoSwitchedThisSong && !timingSwitch) {
         subtract = 750
       } else {
         subtract = 0
@@ -174,6 +185,9 @@ class Iris {
                 break;
               case 'play':
                 Spicetify.Player.play();
+                break;
+              case 'play-uri':
+                Spicetify.Player.playUri(data.value)
                 break;
               case 'pause':
                 Spicetify.Player.pause();

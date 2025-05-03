@@ -1,6 +1,7 @@
 import { AudioUtils } from './AudioUtils.ts';
 import { AudioProcessor } from './AudioProcessor.ts';
 import { TranscriptionManager } from './TranscriptionManager.ts';
+import { executeCommand } from './commands/commands.ts';
 
 let pipeline: any;
 let read_audio: any;
@@ -35,8 +36,7 @@ export class SpeechRecognitionService {
         startTime: number
     }> = new Map();
     private currentRecordingId: string | null = null;  // Track current active recording
-
-   
+    private animationFrameId: number | null = null;
 
     constructor() {
         this.transcriptionManager = new TranscriptionManager();
@@ -54,11 +54,7 @@ export class SpeechRecognitionService {
 
                 read_audio = await initializeUtils();
 
-                // Initialize transformers when service is created
-                this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
-                    sampleRate: 16000, // Set fixed sample rate
-                    latencyHint: 'interactive'
-                });
+
 
                 this.isInitialized = true;
                 console.log('Speech recognition initialized successfully');
@@ -129,16 +125,16 @@ export class SpeechRecognitionService {
         // Focus on frequencies between 85Hz and 255Hz (where most speech occurs)
         const speechStart = Math.floor(85 * dataArray.length / (this.audioContext!.sampleRate / 2));
         const speechEnd = Math.floor(255 * dataArray.length / (this.audioContext!.sampleRate / 2));
-        
+
         let weightedSum = 0;
         let weightSum = 0;
-        
+
         for (let i = speechStart; i < speechEnd; i++) {
             const weight = 1 - Math.abs(i - (speechStart + speechEnd) / 2) / (speechEnd - speechStart);
             weightedSum += dataArray[i] * weight;
             weightSum += weight;
         }
-        
+
         // Get the raw average
         const rawAverage = weightedSum / weightSum;
 
@@ -155,22 +151,25 @@ export class SpeechRecognitionService {
     ): number {
         // Ensure value is within the old range
         const clampedValue = Math.max(oldMin, Math.min(oldMax, value));
-        
+
         // Calculate scaling
         const scale = (newMax - newMin) / (oldMax - oldMin);
         const scaledValue = newMin + (clampedValue - oldMin) * scale;
-        
+
         // Round to 2 decimal places and ensure within 0-100
         return Math.min(100, Math.max(0, Math.round(scaledValue * 100) / 100));
     }
 
-    
+
 
     async startListening(sensitivityMin: number, deviceId: string): Promise<void> {
         if (this.isListening) return;
+        
+        // Reset state
         this.isListening = true;
         this.isWakeWordDetected = false;
-
+        this.animationFrameId = null;
+    
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -183,20 +182,19 @@ export class SpeechRecognitionService {
                     echoCancellation: true,
                 }
             });
-
+    
             // Create audio processing pipeline
             const sourceNode = this.audioContext!.createMediaStreamSource(stream);
             const analyser = this.audioContext!.createAnalyser();
             analyser.fftSize = 512;
             analyser.smoothingTimeConstant = 0.1;
             sourceNode.connect(analyser);
-
+    
             this.mediaRecorder = new MediaRecorder(stream, {
                 mimeType: 'audio/webm',
                 audioBitsPerSecond: 16000
             });
-
-
+    
             this.mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0 && this.currentRecordingId) {
                     const currentRecording = this.activeRecordings.get(this.currentRecordingId);
@@ -206,69 +204,114 @@ export class SpeechRecognitionService {
                     }
                 }
             };
-
+    
             // Set up voice activity detection
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             let silenceStart = Date.now();
-
-            const checkAudioLevel = () => {
-                if (!this.isListening) return;
-
+    
+            // Define the audio check function as a class method to maintain proper scope
+            const runAudioCheck = () => {
+                // Exit if we're no longer listening
+                if (!this.isListening) {
+                    console.log('Audio check stopped - no longer listening');
+                    return;
+                }
+    
                 analyser.getByteFrequencyData(dataArray);
                 const average = this.calculateWeightedAverage(dataArray);
-                // console.log(average)
-
-                if (average > sensitivityMin) { // Adjust threshold as needed
-                    if (!this.currentRecordingId) { // Check currentRecordingId instead of isSpeaking
+    
+                if (average > sensitivityMin) {
+                    if (!this.currentRecordingId) {
                         this.handleSpeechStart();
                     }
                     silenceStart = Date.now();
                 } else if (this.currentRecordingId && Date.now() - silenceStart > 250) {
                     this.handleSpeechEnd();
                 }
+    
+                // Schedule next frame only if still listening
+                if (this.isListening) {
+                    // Store the ID in the class property
+                    this.animationFrameId = window.requestAnimationFrame(runAudioCheck);
+                }
             };
-
-            const runAudioCheck = () => {
-                // console.log('ran animation')
-                checkAudioLevel();
-
-                // Always schedule next frame while listening
-                requestAnimationFrame(runAudioCheck);
-            };
-
-            requestAnimationFrame(() => {
-                runAudioCheck();
-            });
-
-
-            console.log('Started listening for wake word...');
+    
+            // Start the animation frame loop
+            this.animationFrameId = window.requestAnimationFrame(runAudioCheck);
+            console.log('Started listening with animation frame ID:', this.animationFrameId);
+    
         } catch (error) {
+            this.isListening = false;
             console.error('Error starting recording:', error);
             throw error;
         }
     }
-
+        
     stopListening(): void {
+        console.log('Stopping speech recognition...');
+        
+        // Set isListening to false first to prevent new frames from being scheduled
         this.isListening = false;
+        
+        // Cancel the animation frame
+        if (this.animationFrameId !== null) {
+            console.log('Cancelling animation frame:', this.animationFrameId);
+            window.cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        } else {
+            console.log('No animation frame ID to cancel');
+        }
+        
         this.isWakeWordDetected = false;
         this.isSpeaking = false;
-
+    
+        // Clear all timeouts
         if (this.commandTimeout) {
             clearTimeout(this.commandTimeout);
+            this.commandTimeout = null;
         }
-
+    
         if (this.silenceTimeout) {
             clearTimeout(this.silenceTimeout);
+            this.silenceTimeout = null;
         }
-
+    
+        // Stop media recorder
         if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-            this.mediaRecorder.stop();
-            const tracks = this.mediaRecorder.stream.getTracks();
-            tracks.forEach(track => track.stop());
+            try {
+                this.mediaRecorder.stop();
+            } catch (e) {
+                console.warn('Error stopping media recorder:', e);
+            }
         }
-        console.log('Stopped listening');
+    
+        // Stop all media tracks
+        if (this.mediaRecorder && this.mediaRecorder.stream) {
+            const tracks = this.mediaRecorder.stream.getTracks();
+            console.log('Stopping', tracks.length, 'media tracks');
+            tracks.forEach(track => {
+                try {
+                    track.stop();
+                    console.log('Stopped track:', track.kind, track.id);
+                } catch (e) {
+                    console.warn('Error stopping media track:', e);
+                }
+            });
+        }
+    
+        // Clean up transcription manager
+        if (this.transcriptionManager) {
+            this.transcriptionManager.cleanup();
+        }
+    
+        // Clear any pending recordings
+        this.activeRecordings.clear();
+        this.currentRecordingId = null;
+    
+        console.log('Speech recognition stopped completely');
     }
+    
 
 
     private async handleTranscription(text: string): Promise<void> {
@@ -302,10 +345,19 @@ export class SpeechRecognitionService {
     }
 
     private async processCommand(command: string): Promise<void> {
-        if (command.includes('stop listening')) {
+        if (command === 'stop listening') {
             this.stopListening();
+            return;
+        }
+
+        // Use the commands.ts executeCommand function to process the command
+        const commandExecuted = executeCommand(command);
+
+        if (commandExecuted) {
+            console.log(`Command "${command}" executed successfully`);
         } else {
-            console.log('Command received:', command);
+            console.log(`Unknown command: "${command}"`);
+            // Optionally handle unknown commands here
         }
     }
 
@@ -323,16 +375,36 @@ export class SpeechRecognitionService {
                 console.error('Transcription error:', error, recordingId);
             });
     }
-    
-    
+
+
 
 
     cleanup() {
         this.stopListening();
+
+        // Close audio context
         if (this.audioContext) {
-            this.audioContext.close();
+            try {
+                this.audioContext.close();
+            } catch (e) {
+                console.warn('Error closing audio context:', e);
+            }
             this.audioContext = null;
         }
+
+        // Reset all state
+        this.isInitialized = false;
+        this.mediaRecorder = null;
+        this.isWakeWordDetected = false;
+        this.isListening = false;
+        this.commandTimeout = null;
+        this.silenceTimeout = null;
+        this.isSpeaking = false;
+        this.activeRecordings = new Map();
+        this.currentRecordingId = null;
+        this.animationFrameId = null;
+
+        console.log('Speech recognition service cleaned up');
     }
 }
 

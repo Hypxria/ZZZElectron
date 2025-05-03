@@ -19,6 +19,12 @@ export interface Song {
 
 }
 
+export interface Token {
+    token: string
+    tokenExpire:number
+    tokenTime:number
+}
+
 // export interface LyricsResponse {
 //     lyrics: string;
 //     error?: string;
@@ -38,15 +44,17 @@ class SpotifyService {
 
     private reconnectAttempts = 0;
     private readonly MAX_RECONNECT_ATTEMPTS = 5;
-    private token: string | undefined
-    private tokenExpire: number | undefined
-    private tokenTime: number | undefined
+    private token: string = ''
+    private tokenExpire: number = 0
+    private tokenTime: number = 0
 
     private _currentProgress: {
         progress_ms: number;
         duration_ms: number;
         percentage: number;
     } | null = null;
+
+    private prevVolume
 
     get currentProgress() {
         try {
@@ -286,6 +294,23 @@ class SpotifyService {
     and sends the appropriate response for what I need.
     */
 
+    async increaseVolume(): Promise<void> {
+        const track = await this.getCurrentTrack();
+
+        const volume = track?.volume;
+
+        if (volume) this.setVolume(volume + 10);
+    }
+
+    async decreaseVolume(): Promise<void> {
+        const track = await this.getCurrentTrack();
+
+        const volume = track?.volume;
+
+        if (volume) this.setVolume(volume - 10);
+    }
+
+
     async playNextSong(): Promise<void> {
         try {
             this.sendWsMessage({
@@ -294,6 +319,19 @@ class SpotifyService {
             });
         } catch (error) {
             console.error('Error playing next song:', error);
+            throw error;
+        }
+    }
+
+    async playUri(uri: string): Promise<void> {
+        try {
+            this.sendWsMessage({
+                type: 'playback',
+                action: 'play-uri',
+                value: uri
+            });
+        } catch (error) {
+            console.error('Error playing URI:', error);
             throw error;
         }
     }
@@ -323,6 +361,14 @@ class SpotifyService {
         }
     }
 
+    async muteVolume(): Promise<void> {
+        this.prevVolume = (await this.getCurrentTrack()).volume;
+        this.setVolume(0)
+    }
+
+    async unmuteVolume(): Promise<void> {
+        this.setVolume(this.prevVolume)
+    }
 
     async resumePlayback(): Promise<void> {
         try {
@@ -412,7 +458,9 @@ class SpotifyService {
         }
     }
 
-    async getToken(): Promise<string[]> {
+    
+
+    async getToken(): Promise<Token> {
         try {
             this.sendWsMessage({
                 type: 'info',
@@ -420,6 +468,16 @@ class SpotifyService {
             })
 
             return new Promise((resolve, reject) => {
+
+                if (this.token && ((this.tokenTime + this.tokenExpire) >= Date.now())) {
+                    resolve({
+                        token: this.token,
+                        tokenExpire: this.tokenExpire,
+                        tokenTime: this.tokenTime
+                    });
+                    return;
+                }
+
                 const messageHandler = (event: MessageEvent) => {
                     try {
                         let response;
@@ -438,12 +496,14 @@ class SpotifyService {
 
                             this.token = response.data.token
                             this.tokenExpire = response.data.expiration
-                            this.tokenTime = Date.now()
+                            this.tokenTime = Date.now() * 1000
 
-                            resolve([
-                                response.data.token,
-                                response.data.expiration
-                            ]);
+                            resolve({
+                                token: this.token,
+                                tokenExpire: this.tokenExpire,
+                                tokenTime: this.tokenTime
+                            });
+    
                         }
                     } catch (error) {
                         reject(error);
