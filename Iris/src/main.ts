@@ -66,8 +66,6 @@ const createWindow = async (x: number, y: number): Promise<void> => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     ...windowState.bounds,
-    height: 600,
-    width: 800,
     minWidth: 500,
     minHeight: 390,
     title: 'Iris', // Add this line

@@ -86,12 +86,6 @@ contextBridge.exposeInMainWorld('hoyoAPI', {
   },
 });
 
-contextBridge.exposeInMainWorld('speech', {
-  initialize: async() => ipcRenderer.invoke('speech:initialize'),
-  startListening: async (sensitivity:number, device:string) => ipcRenderer.invoke('speech:start-listening', sensitivity, device),
-  stopListening: async () => ipcRenderer.invoke('speech:stop-listening'),
-})
-
 contextBridge.exposeInMainWorld('lrc', {
   parseSyncedLyrics: (lyrics: string) => ipcRenderer.invoke('lrc:parse-lyrics', lyrics),
   searchLyrics: (params: any) => ipcRenderer.invoke('lrc:search', params)

@@ -8,7 +8,7 @@ import HoyoMain from './components/hoyo/HoyoMain.tsx';
 import DiscordMain from './components/discord/DiscordMain.tsx';
 import AppSelector from './components/AppSelector.tsx';
 import secureLocalStorage from 'react-secure-storage';
-import { SpeechRecognitionService } from '../services/micServices/speech.ts';
+import SpeechRecognitionService from '../services/micServices/speech.ts';
 
 interface AppProps {
 }
@@ -25,6 +25,7 @@ const App: React.FC<AppProps> = () => {
     }
     return DEFAULT_MODULES;
   });
+
   const [viewState, setViewState] = useState<ViewState>(() => {
     if (!enabledModules.Hoyolab) {
       return ViewState.SPOTIFY_FULL;
@@ -33,6 +34,7 @@ const App: React.FC<AppProps> = () => {
     }
     return ViewState.NEUTRAL;
   });
+
   const [hide, setHide] = useState<boolean>(() => {
     if (!enabledModules.Hoyolab || !enabledModules.Spotify) {
       return true;
@@ -43,6 +45,7 @@ const App: React.FC<AppProps> = () => {
   const [sensitivity, setSensitivity] = useState<number>(() =>
     Number(localStorage.getItem('sensitivity-value')) || 50
   );
+
   const [activeDevice, setActiveDevice] = useState<string>(() =>
     localStorage.getItem('selected-device') || ''
   );
@@ -50,18 +53,10 @@ const App: React.FC<AppProps> = () => {
   const [isIrisEnabled, setIsIrisEnabled] = useState<boolean>(() => {
     return localStorage.getItem('iris-enabled') === 'true' || false;
   })
+  const [irisStarted, setIrisStarted] = useState<boolean>(false)
 
-  const speechService = new SpeechRecognitionService();
 
-  useEffect(() => {
-    // Usage example
-    // Initialize the service
-    if (isIrisEnabled) speechService.initialize();
-
-    return () => {
-      speechService.cleanup();
-    };
-  }, []);
+  const speechService = SpeechRecognitionService;
 
   useEffect(() => {
     const savedModules = secureLocalStorage.getItem('enabled_modules');
@@ -70,7 +65,7 @@ const App: React.FC<AppProps> = () => {
       setEnabledModules(JSON.parse(savedModules as string));
     }
   }, []);
-
+  
   useEffect(() => {
     const handleFullscreenChange = () => {
       const isDocFullscreen = !!document.fullscreenElement;
@@ -78,18 +73,17 @@ const App: React.FC<AppProps> = () => {
         setIsFullScreen(isDocFullscreen || isElectronFullscreen);
       });
     };
-
+    
     window.electron.window.onFullScreen(handleFullscreenChange);
-
+    
     // Initial check
     handleFullscreenChange();
-
+    
     return () => {
-
       window.electron.window.removeFullScreenListener();
     };
   }, []);
-
+  
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'sensitivity-value') {
@@ -103,11 +97,11 @@ const App: React.FC<AppProps> = () => {
       }
       console.log('storage event')
     };
-
-
+    
+    
     // For changes from other windows/tabs
     window.addEventListener('storage', handleStorageChange);
-
+    
     // For changes within the same window
     const originalSetItem = localStorage.setItem;
     localStorage.setItem = function (key: string, value: string) {
@@ -117,12 +111,12 @@ const App: React.FC<AppProps> = () => {
       window.dispatchEvent(event);
       originalSetItem.apply(this, [key, value]);
     };
-
+    
     const handleLocalChange = (e: Event) => {
       const key = (e as any).key;
       const newValue = (e as any).newValue;
       console.log(key, newValue)
-
+      
       if (key === 'sensitivity-value') {
         setSensitivity(Number(newValue) || 50);
       }
@@ -133,9 +127,9 @@ const App: React.FC<AppProps> = () => {
         setIsIrisEnabled(newValue === 'true' || false);
       }
     };
-
+    
     window.addEventListener('localStorageChange', handleLocalChange);
-
+    
     return () => {
       // Cleanup
       window.removeEventListener('storage', handleStorageChange);
@@ -145,8 +139,16 @@ const App: React.FC<AppProps> = () => {
   }, []);
 
   useEffect(() => {
+    // Initialize the service
+    if (isIrisEnabled) speechService.initialize();
+
+    return () => {
+      speechService.cleanup();
+    };
+  }, []);
+  
+  useEffect(() => {
     if (isIrisEnabled) {
-      console.log(isIrisEnabled, 'sens, active')
       speechService.stopListening();
       speechService.startListening(sensitivity, activeDevice);
     }
@@ -154,11 +156,13 @@ const App: React.FC<AppProps> = () => {
 
   useEffect(() => {
     if (isIrisEnabled === true) {
-      console.log(isIrisEnabled, 'listening')
+      setIrisStarted(true)
       speechService.startListening(sensitivity, activeDevice);
     } else {
-      console.log(isIrisEnabled, 'stopping')
-      speechService.stopListening();
+      if (irisStarted) {
+        speechService.stopListening();
+        setIrisStarted(false)
+      };
     }
   }, [isIrisEnabled])
 
@@ -174,8 +178,6 @@ const App: React.FC<AppProps> = () => {
       className={`App ${isFullScreen ? 'fullscreen' : ''}`}
       onClick={isSettings ? handleOutsideClick : undefined}
     >
-
-
       <Titlebar
         isSettings={isSettings}
         setIsSettings={setIsSettings}
@@ -202,8 +204,6 @@ const App: React.FC<AppProps> = () => {
           <DiscordMain />
         )}
 
-
-
         {enabledModules.Spotify && (
           <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
             <SpotifyMain ViewState={viewState} />
@@ -214,7 +214,6 @@ const App: React.FC<AppProps> = () => {
             <HoyoMain ViewState={viewState} />
           </div>
         )}
-
       </div>
     </div>
   );

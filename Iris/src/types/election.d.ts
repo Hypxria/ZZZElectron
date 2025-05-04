@@ -32,11 +32,6 @@ interface ElectronAPI {
 declare global {
     interface Window {
         electron: ElectronAPI;
-        speech: {
-            initialize: () => Promise<void>;
-            startListening: (sensitivity, device) => Promise<void>;
-            stopListening: () => Promise<void>;
-        };
         discord: {
             revokeAllTokens: () => Promise<void>; // Add this line
             connect: (id:string, secret:string) => Promise<{ success: boolean; error?: string }>;

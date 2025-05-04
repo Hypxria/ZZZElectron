@@ -5,6 +5,7 @@ import { executeCommand } from './commands/commands.ts';
 
 let pipeline: any;
 let read_audio: any;
+let intervalId: number;
 
 async function initializeTransformers() {
     const { pipeline: pipelineImport } = await import('@xenova/transformers');
@@ -21,22 +22,21 @@ async function initializeUtils() {
 
 }
 
-export class SpeechRecognitionService {
+class SpeechRecognitionService {
     private isInitialized: boolean = false;
     private mediaRecorder: MediaRecorder | null = null;
     private audioContext: AudioContext | null = null;
     private isWakeWordDetected: boolean = false;
     private isListening: boolean = false;
     private commandTimeout: NodeJS.Timeout | null = null;
-    private silenceTimeout: NodeJS.Timeout | null = null;
     private isSpeaking: boolean = false;
-    private transcriptionManager: TranscriptionManager;
+    private transcriptionManager: TranscriptionManager | null;
     private activeRecordings: Map<string, {
         chunks: Blob[],
         startTime: number
     }> = new Map();
     private currentRecordingId: string | null = null;  // Track current active recording
-    private animationFrameId: number | null = null;
+    public intervalId: number | null = null;
 
     constructor() {
         this.transcriptionManager = new TranscriptionManager();
@@ -164,12 +164,15 @@ export class SpeechRecognitionService {
 
     async startListening(sensitivityMin: number, deviceId: string): Promise<void> {
         if (this.isListening) return;
-        
+
         // Reset state
         this.isListening = true;
         this.isWakeWordDetected = false;
-        this.animationFrameId = null;
-    
+        // Create a custom event target for signaling
+        const eventTarget = new EventTarget();
+        const stopEvent = new Event('stop');
+        let intervalId: number | null = null;
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -182,19 +185,19 @@ export class SpeechRecognitionService {
                     echoCancellation: true,
                 }
             });
-    
+
             // Create audio processing pipeline
             const sourceNode = this.audioContext!.createMediaStreamSource(stream);
             const analyser = this.audioContext!.createAnalyser();
             analyser.fftSize = 512;
             analyser.smoothingTimeConstant = 0.1;
             sourceNode.connect(analyser);
-    
+
             this.mediaRecorder = new MediaRecorder(stream, {
                 mimeType: 'audio/webm',
                 audioBitsPerSecond: 16000
             });
-    
+
             this.mediaRecorder.ondataavailable = (event) => {
                 if (event.data.size > 0 && this.currentRecordingId) {
                     const currentRecording = this.activeRecordings.get(this.currentRecordingId);
@@ -204,23 +207,20 @@ export class SpeechRecognitionService {
                     }
                 }
             };
-    
+
             // Set up voice activity detection
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             let silenceStart = Date.now();
-    
+
             // Define the audio check function as a class method to maintain proper scope
-            const runAudioCheck = () => {
-                // Exit if we're no longer listening
-                if (!this.isListening) {
-                    console.log('Audio check stopped - no longer listening');
-                    return;
-                }
-    
+            let lastFrameTime = 0;
+            const frameInterval = 100; // Process audio every 100ms instead of every frame
+
+            const intervalHandler = () => {
                 analyser.getByteFrequencyData(dataArray);
                 const average = this.calculateWeightedAverage(dataArray);
-    
+
                 if (average > sensitivityMin) {
                     if (!this.currentRecordingId) {
                         this.handleSpeechStart();
@@ -229,54 +229,38 @@ export class SpeechRecognitionService {
                 } else if (this.currentRecordingId && Date.now() - silenceStart > 250) {
                     this.handleSpeechEnd();
                 }
-    
-                // Schedule next frame only if still listening
-                if (this.isListening) {
-                    // Store the ID in the class property
-                    this.animationFrameId = window.requestAnimationFrame(runAudioCheck);
-                }
             };
-    
-            // Start the animation frame loop
-            this.animationFrameId = window.requestAnimationFrame(runAudioCheck);
-            console.log('Started listening with animation frame ID:', this.animationFrameId);
-    
+
+            this.intervalId = window.setInterval(intervalHandler, 100);
+            console.log('Interval set:', this.intervalId); // Add this line
+            
         } catch (error) {
             this.isListening = false;
             console.error('Error starting recording:', error);
             throw error;
         }
     }
-        
-    stopListening(): void {
+
+    async stopListening(): Promise<void> {
         console.log('Stopping speech recognition...');
-        
+        console.log('stopListening called, timeoutId:', this.intervalId);
+
         // Set isListening to false first to prevent new frames from being scheduled
         this.isListening = false;
-        
+
         // Cancel the animation frame
-        if (this.animationFrameId !== null) {
-            console.log('Cancelling animation frame:', this.animationFrameId);
-            window.cancelAnimationFrame(this.animationFrameId);
-            this.animationFrameId = null;
+        if (this.intervalId !== null) {
+            console.log('Clearing interval:', this.intervalId);
+            window.clearInterval(this.intervalId);
+            this.intervalId = null; // Set to null AFTER clearing the interval
         } else {
-            console.log('No animation frame ID to cancel');
-        }
-        
+            console.log('No interval to clear');
+        }        
+
         this.isWakeWordDetected = false;
         this.isSpeaking = false;
-    
-        // Clear all timeouts
-        if (this.commandTimeout) {
-            clearTimeout(this.commandTimeout);
-            this.commandTimeout = null;
-        }
-    
-        if (this.silenceTimeout) {
-            clearTimeout(this.silenceTimeout);
-            this.silenceTimeout = null;
-        }
-    
+
+        
         // Stop media recorder
         if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
             try {
@@ -285,7 +269,7 @@ export class SpeechRecognitionService {
                 console.warn('Error stopping media recorder:', e);
             }
         }
-    
+
         // Stop all media tracks
         if (this.mediaRecorder && this.mediaRecorder.stream) {
             const tracks = this.mediaRecorder.stream.getTracks();
@@ -299,19 +283,19 @@ export class SpeechRecognitionService {
                 }
             });
         }
-    
+
         // Clean up transcription manager
         if (this.transcriptionManager) {
             this.transcriptionManager.cleanup();
         }
-    
+
         // Clear any pending recordings
         this.activeRecordings.clear();
         this.currentRecordingId = null;
-    
+
         console.log('Speech recognition stopped completely');
     }
-    
+
 
 
     private async handleTranscription(text: string): Promise<void> {
@@ -363,7 +347,7 @@ export class SpeechRecognitionService {
 
     private transcribeAudio(audioData: Float64Array, recordingId: string): void {
         // Fire and forget - don't await the transcription
-        this.transcriptionManager.transcribe(audioData)
+        this.transcriptionManager?.transcribe(audioData)
             .then(text => {
                 // Handle the transcription result when it's ready
                 return this.handleTranscription(text);
@@ -398,13 +382,14 @@ export class SpeechRecognitionService {
         this.isWakeWordDetected = false;
         this.isListening = false;
         this.commandTimeout = null;
-        this.silenceTimeout = null;
         this.isSpeaking = false;
         this.activeRecordings = new Map();
         this.currentRecordingId = null;
-        this.animationFrameId = null;
+        this.intervalId = null;
 
         console.log('Speech recognition service cleaned up');
     }
 }
 
+const speech = new SpeechRecognitionService()
+export default speech;
