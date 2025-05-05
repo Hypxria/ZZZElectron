@@ -232,7 +232,7 @@ class SpeechRecognitionService {
                 }
             };
 
-            this.intervalId = window.setInterval(intervalHandler, 10);
+            this.intervalId = window.setInterval(intervalHandler, 5);
             console.log('Interval set:', this.intervalId); // Add this line
             
         } catch (error) {
