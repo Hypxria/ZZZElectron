@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import './AppSelector.scss'
+import './styles/AppSelector.scss'
 
 import { LibraryMusicRounded } from '@mui/icons-material';
 

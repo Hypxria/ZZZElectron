@@ -11,28 +11,24 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-
-  /* Optional: adds a semi-transparent overlay */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  overflow-y: auto; /* Allow scrolling if content is too tall */
 }
 
 .settings {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  position: fixed;
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
-  width: 50vw;
-  max-height: 80vh;
+  position: relative; /* Change from fixed to relative */
+  padding: 0; /* Remove padding as it's handled by settings-container */
+  width: 90%; /* Use percentage of parent (which is centered) */
+  max-width: 800px; /* Keep max-width */
+  max-height: 80vh; /* Use viewport height instead of percentage */
   opacity: 0;
   z-index: 1000;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
+  margin: auto; /* Center within the backdrop */
 
   &.show {
     opacity: 1;
@@ -41,12 +37,14 @@
 }
 
 .settings-container {
-  background-color: #fff;
+  background-color: #121214;
   border-radius: 12px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  max-height: 80vh; /* Limit height */
+  overflow-y: auto; /* Enable scrolling for tall content */
 }
 
 .navigation-header {
@@ -114,9 +112,10 @@
 .options-menu {
   flex-grow: 1;
   animation: fadeIn 0.3s ease-out;
-  max-height: 80vh;
+  max-height: 70vh; /* Slightly smaller than container */
+  overflow-y: auto; /* Enable scrolling */
+  padding: 0 16px; /* Add horizontal padding */
 }
-
 .options-list {
   display: flex;
   flex-direction: column;
@@ -576,3 +575,36 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .settings {
+    width: 95%; /* Wider on small screens */
+    max-height: 85vh; /* Slightly taller on small screens */
+  }
+  
+  .settings-section {
+    padding: 15px 10px; /* Reduce padding on small screens */
+  }
+  
+  /* Make input fields responsive */
+  #input-bar {
+    width: 90%; /* Wider input on small screens */
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 480px) {
+  .settings {
+    width: 98%; /* Almost full width on very small screens */
+  }
+  
+  .navigation-header {
+    padding: 15px; /* Reduce padding */
+    flex-wrap: wrap; /* Allow wrapping for long navigation paths */
+  }
+  
+  .nav-item {
+    font-size: 14px; /* Smaller font */
+  }
+}
+

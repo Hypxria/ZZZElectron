@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Titlebar.scss';
+import './styles/Titlebar.scss';
 import { MinimizeRounded, CropSquare, CloseRounded, SettingsRounded, FullscreenRounded, FullscreenExitRounded } from '@mui/icons-material';
 
 import iris from '../../assets/icons/IrisTransparent.png'

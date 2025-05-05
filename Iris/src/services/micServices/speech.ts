@@ -5,22 +5,7 @@ import { executeCommand } from './commands/commands.ts';
 
 let pipeline: any;
 let read_audio: any;
-let intervalId: number;
 
-async function initializeTransformers() {
-    const { pipeline: pipelineImport } = await import('@xenova/transformers');
-    pipeline = pipelineImport;
-
-    return pipeline;
-}
-
-async function initializeUtils() {
-    const { read_audio: read_audioImport } = await import('@xenova/transformers');
-    read_audio = read_audioImport
-
-    return read_audio;
-
-}
 
 class SpeechRecognitionService {
     private isInitialized: boolean = false;
@@ -49,12 +34,6 @@ class SpeechRecognitionService {
         this.transcriptionManager = new TranscriptionManager();
         if (!this.isInitialized) {
             try {
-                pipeline = await initializeTransformers();
-
-                read_audio = await initializeUtils();
-
-
-
                 this.isInitialized = true;
                 console.log('Speech recognition initialized successfully');
             } catch (error) {
@@ -231,7 +210,7 @@ class SpeechRecognitionService {
                 }
             };
 
-            this.intervalId = window.setInterval(intervalHandler, 5);
+            this.intervalId = window.setInterval(intervalHandler, 20);
             console.log('Interval set:', this.intervalId); // Add this line
             
         } catch (error) {

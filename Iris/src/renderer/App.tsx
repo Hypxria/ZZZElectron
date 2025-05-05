@@ -10,12 +10,16 @@ import AppSelector from './components/AppSelector.tsx';
 import secureLocalStorage from 'react-secure-storage';
 import SpeechRecognitionService from '../services/micServices/speech.ts';
 
+import { LoadingProvider, useLoading } from './context/LoadingContext.tsx';
+import LoadingScreen from './components/LoadingScreen.tsx';
+
+
 interface AppProps {
 }
 
 
 
-const App: React.FC<AppProps> = () => {
+function AppContent() {
   const [isSettings, setIsSettings] = useState<boolean>(false);
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [enabledModules, setEnabledModules] = useState<EnabledModules>(() => {
@@ -55,6 +59,7 @@ const App: React.FC<AppProps> = () => {
   })
   const [irisStarted, setIrisStarted] = useState<boolean>(false)
 
+  const { isLoading, progress, message } = useLoading();
 
   const speechService = SpeechRecognitionService;
 
@@ -65,7 +70,7 @@ const App: React.FC<AppProps> = () => {
       setEnabledModules(JSON.parse(savedModules as string));
     }
   }, []);
-  
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       const isDocFullscreen = !!document.fullscreenElement;
@@ -73,17 +78,17 @@ const App: React.FC<AppProps> = () => {
         setIsFullScreen(isDocFullscreen || isElectronFullscreen);
       });
     };
-    
+
     window.electron.window.onFullScreen(handleFullscreenChange);
-    
+
     // Initial check
     handleFullscreenChange();
-    
+
     return () => {
       window.electron.window.removeFullScreenListener();
     };
   }, []);
-  
+
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'sensitivity-value') {
@@ -97,11 +102,11 @@ const App: React.FC<AppProps> = () => {
       }
       console.log('storage event')
     };
-    
-    
+
+
     // For changes from other windows/tabs
     window.addEventListener('storage', handleStorageChange);
-    
+
     // For changes within the same window
     const originalSetItem = localStorage.setItem;
     localStorage.setItem = function (key: string, value: string) {
@@ -111,12 +116,12 @@ const App: React.FC<AppProps> = () => {
       window.dispatchEvent(event);
       originalSetItem.apply(this, [key, value]);
     };
-    
+
     const handleLocalChange = (e: Event) => {
       const key = (e as any).key;
       const newValue = (e as any).newValue;
       console.log(key, newValue)
-      
+
       if (key === 'sensitivity-value') {
         setSensitivity(Number(newValue) || 50);
       }
@@ -127,9 +132,9 @@ const App: React.FC<AppProps> = () => {
         setIsIrisEnabled(newValue === 'true' || false);
       }
     };
-    
+
     window.addEventListener('localStorageChange', handleLocalChange);
-    
+
     return () => {
       // Cleanup
       window.removeEventListener('storage', handleStorageChange);
@@ -140,15 +145,16 @@ const App: React.FC<AppProps> = () => {
 
   useEffect(() => {
     // Initialize the service
-    if (isIrisEnabled){
+    if (isIrisEnabled) {
       console.log('isIrisEnabled', isIrisEnabled)
-       speechService.initialize()};
+      speechService.initialize()
+    };
 
     return () => {
       speechService.cleanup();
     };
   }, []);
-  
+
   useEffect(() => {
     console.log('Sens, Activedevice changed')
     if (isIrisEnabled) {
@@ -163,7 +169,7 @@ const App: React.FC<AppProps> = () => {
       speechService.startListening(sensitivity, activeDevice);
     } else {
       if (irisStarted) {
-        speechService.stopListening();
+        speechService.cleanup();
         setIrisStarted(false)
       };
     }
@@ -177,49 +183,64 @@ const App: React.FC<AppProps> = () => {
   };
 
   return (
-    <div
-      className={`App ${isFullScreen ? 'fullscreen' : ''}`}
-      onClick={isSettings ? handleOutsideClick : undefined}
-    >
-      <Titlebar
-        isSettings={isSettings}
-        setIsSettings={setIsSettings}
+    <>
+      <LoadingScreen
+        isVisible={isLoading}
+        progress={progress}
+        message={message}
       />
+      <div
+        className={`App ${isFullScreen ? 'fullscreen' : ''}`}
+        onClick={isSettings ? handleOutsideClick : undefined}
+      >
+        <Titlebar
+          isSettings={isSettings}
+          setIsSettings={setIsSettings}
+        />
 
-      <div className={`content-wrapper ${viewState}`}>
-        {enabledModules.Hoyolab && enabledModules.Spotify && (
-          <AppSelector
-            viewState={viewState}
-            setViewState={setViewState}
-            hide={hide}
-          />
-        )}
-        {isSettings && (
-          <div
-            className="settings-backdrop"
-            onClick={handleOutsideClick}
-          >
-            <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
-          </div>
-        )}
+        <div className={`content-wrapper ${viewState}`}>
+          {enabledModules.Hoyolab && enabledModules.Spotify && (
+            <AppSelector
+              viewState={viewState}
+              setViewState={setViewState}
+              hide={hide}
+            />
+          )}
+          {isSettings && (
+            <div
+              className="settings-backdrop"
+              onClick={handleOutsideClick}
+            >
+              <Settings isSettings={isSettings} setIsSettings={setIsSettings} />
+            </div>
+          )}
 
-        {enabledModules.Discord && (
-          <DiscordMain />
-        )}
+          {enabledModules.Discord && (
+            <DiscordMain />
+          )}
 
-        {enabledModules.Spotify && (
-          <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
-            <SpotifyMain ViewState={viewState} />
-          </div>
-        )}
-        {enabledModules.Hoyolab && (
-          <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
-            <HoyoMain ViewState={viewState} />
-          </div>
-        )}
+          {enabledModules.Spotify && (
+            <div className={`spotify-section ${viewState === ViewState.SPOTIFY_FULL ? 'full' : ''}`}>
+              <SpotifyMain ViewState={viewState} />
+            </div>
+          )}
+          {enabledModules.Hoyolab && (
+            <div className={`right-section ${viewState === ViewState.RIGHT_FULL ? 'full' : viewState === ViewState.SPOTIFY_FULL ? 'hidden' : ''}`}>
+              <HoyoMain ViewState={viewState} />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
+
+export function App({ }: AppProps) {
+  return (
+    <LoadingProvider>
+      <AppContent />
+    </LoadingProvider>
+  );
+}
 
 export default App;

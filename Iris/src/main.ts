@@ -48,18 +48,19 @@ const buildCsp = (directives: Record<string, string[]>) => {
 const createWindow = async (x: number, y: number): Promise<void> => {
   const windowState = await restoreWindowState();
 
-  // Optimizations
+  // Optimizations - keep only what's necessary for smooth operation
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
   app.commandLine.appendSwitch('enable-hardware-overlays');
   app.commandLine.appendSwitch('enable-accelerated-2d-canvas');
   app.commandLine.appendSwitch('enable-accelerated-video-decode');
-  app.commandLine.appendSwitch('ignore-gpu-blocklist');
-  app.commandLine.appendSwitch('enable-native-gpu-memory-buffers');
-  app.commandLine.appendSwitch('force-gpu-rasterization');
-  app.commandLine.appendSwitch('disable-frame-rate-limit');
-  app.commandLine.appendSwitch('disable-gpu-vsync'); // Can help with choppy animations
-  app.commandLine.appendSwitch('enable-high-resolution-time');
+  
+  // Add these power-saving switches
+  app.commandLine.appendSwitch('enable-gpu-memory-buffer-compositor-resources');
+  app.commandLine.appendSwitch('enable-oop-rasterization');
+  app.commandLine.appendSwitch('enable-gpu-memory-buffer-video-frames');
+  
+  // Keep these for WebGL support
   app.commandLine.appendSwitch('enable-webgl');
   app.commandLine.appendSwitch('enable-webgl2');
 
@@ -79,11 +80,33 @@ const createWindow = async (x: number, y: number): Promise<void> => {
       sandbox: true,
       webgl: true,
       offscreen: false,
-      backgroundThrottling: false, // Add this to prevent throttling when in background
+      backgroundThrottling: true, // Add this to prevent throttling when in background
+      enablePreferredSizeMode: true,
     },
     paintWhenInitiallyHidden: true,
+    show: false,
   });
 
+  mainWindow.once('ready-to-show', () => {
+    mainWindow?.webContents.send('loading:update', 0, 'Starting Iris...');
+    mainWindow?.show();
+    
+    // Simulate loading process (replace with actual initialization tasks)
+    let progress = 0;
+    const loadingInterval = setInterval(() => {
+      progress += 10;
+      mainWindow?.webContents.send('loading:update', progress, 
+        progress < 30 ? 'Loading resources...' :
+        progress < 60 ? 'Initializing services...' :
+        progress < 90 ? 'Almost ready...' : 'Ready!'
+      );
+      
+      if (progress >= 100) {
+        clearInterval(loadingInterval);
+      }
+    }, 300);
+  });
+    
   mainWindow.setTitle('Iris');
 
   if (windowState.isMaximized) {
@@ -110,7 +133,7 @@ const createWindow = async (x: number, y: number): Promise<void> => {
   
   
 
-  setupIpcHandlers(mainWindow, discordRPC);
+  setupIpcHandlers(mainWindow);
 
   mainWindow.on('maximize', () => {
     if (mainWindow) saveWindowState(mainWindow);
@@ -141,8 +164,6 @@ const createWindow = async (x: number, y: number): Promise<void> => {
       mainWindow.webContents.send('display-metrics-changed');
     }
   });
-
-  mainWindow.webContents.setFrameRate(60); // Set desired frame rate
 
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({

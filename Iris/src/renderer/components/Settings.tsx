@@ -3,7 +3,7 @@ import { ArrowForwardIosRounded } from '@mui/icons-material';
 import React, { useEffect, useState, useRef } from 'react';
 import secureLocalStorage from "react-secure-storage";
 import { LICENSE_TEXT } from '../../assets/lisense/lisense.ts';
-import './Settings.scss';
+import './styles/Settings.scss';
 
 import Iris from '../../assets/icons/IrisWideTransparent.png';
 

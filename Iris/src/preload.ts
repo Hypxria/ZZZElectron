@@ -91,3 +91,15 @@ contextBridge.exposeInMainWorld('lrc', {
   searchLyrics: (params: any) => ipcRenderer.invoke('lrc:search', params)
 })
 
+contextBridge.exposeInMainWorld('loading', {
+  // For showing/hiding the loading screen
+  showLoading: (message?: string) => ipcRenderer.invoke('loading:show', message),
+  updateLoading: (progress: number, message?: string) => ipcRenderer.invoke('loading:update', progress, message),
+  hideLoading: () => ipcRenderer.invoke('loading:hide'),
+  
+  // For listening to loading events
+  onLoadingUpdate: (callback: (progress: number, message: string) => void) => {
+    ipcRenderer.on('loading:update', (_, progress, message) => callback(progress, message));
+    return () => ipcRenderer.removeAllListeners('loading:update');
+  }
+});
