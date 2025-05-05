@@ -19,28 +19,42 @@ self.onmessage = function(e) {
       this.ws = null;
       this.reconnectAttempts = 0;
       this.maxReconnectAttempts = 5;
-      this.reconnectDelay = 10;
+      this.reconnectDelay = 1e3;
       this.isServerCheckInProgress = false;
       this.progressWorker = null;
       this.wasAutoSwitchedThisSong = false;
-      this.progress = 0;
+      this.progress = {
+        progress: 0,
+        prevProgress: 0
+      };
       this.main();
     }
     setupProgressWorker() {
       const blob = new Blob([workerCode], { type: "application/javascript" });
       const workerUrl = URL.createObjectURL(blob);
+      let timingSwitch;
       this.progressWorker = new Worker(workerUrl);
+      Spicetify.Player.addEventListener("onplaypause", (event) => {
+        if (event == null ? void 0 : event.data.isPaused)
+          timingSwitch = true;
+      });
+      Spicetify.Player.addEventListener("songchange", (event) => {
+        timingSwitch = false;
+        this.wasAutoSwitchedThisSong = false;
+        this.progress.progress = 0;
+      });
       this.progressWorker.onmessage = () => {
         console.log("message");
         let subtract;
-        if (this.wasAutoSwitchedThisSong) {
+        if (this.wasAutoSwitchedThisSong && !timingSwitch) {
           subtract = 750;
         } else {
           subtract = 0;
         }
         const progress = Math.max(Spicetify.Player.getProgress() - subtract, 0);
         const duration = Spicetify.Player.getDuration();
-        this.progress = progress;
+        this.progress.prevProgress = this.progress.progress;
+        this.progress.progress = progress;
         console.log(JSON.stringify({
           type: "progress",
           data: {
@@ -127,6 +141,9 @@ self.onmessage = function(e) {
                 case "play":
                   Spicetify.Player.play();
                   break;
+                case "play-uri":
+                  Spicetify.Player.playUri(data.value);
+                  break;
                 case "pause":
                   Spicetify.Player.pause();
                   break;
@@ -197,6 +214,16 @@ self.onmessage = function(e) {
               break;
             case "info":
               switch (data.action) {
+                case "token":
+                  this.sendMessage(JSON.stringify({
+                    type: "response",
+                    action: "token",
+                    data: {
+                      token: Spicetify.Platform.Session.accessToken,
+                      expiration: Spicetify.Platform.Session.accessTokenExpirationTimestampMs
+                    }
+                  }));
+                  break;
                 case "next":
                   const nextTrack = Spicetify.Queue.nextTracks[0]["contextTrack"]["metadata"];
                   const nextAlbumId = (_a = nextTrack.album_uri) == null ? void 0 : _a.split(":")[2];
@@ -286,7 +313,7 @@ self.onmessage = function(e) {
       }
       await this.connectWebSocket();
       await this.establishListeners();
-      Spicetify.showNotification("Hello from ZZZElectron!");
+      Spicetify.showNotification("Hello from Iris!");
     }
     async sendMessage(message) {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -302,11 +329,10 @@ self.onmessage = function(e) {
     }
     async listenForSongChange() {
       let previousDuration = Spicetify.Player.getDuration();
-      ;
       Spicetify.Player.addEventListener("songchange", (event) => {
         var _a;
-        console.log(`song: ${Spicetify.Player.getProgress()}`);
-        if (this.progress > previousDuration - 3550 && Spicetify.Player.getRepeat() !== 2) {
+        console.log(`song: ${this.progress.prevProgress}`);
+        if (this.progress.prevProgress > previousDuration - 3550 && Spicetify.Player.getRepeat() !== 2) {
           console.log("Song ended naturally");
           this.wasAutoSwitchedThisSong = true;
           setTimeout(() => {
@@ -344,8 +370,8 @@ self.onmessage = function(e) {
       }
     }
   };
-  var zzzElectron = new Iris();
-  var app_default = zzzElectron;
+  var iris = new Iris();
+  var app_default = iris;
 
   // C:/Users/vivip/AppData/Local/Temp/spicetify-creator/index.jsx
   (async () => {

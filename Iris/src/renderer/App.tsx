@@ -148,8 +148,9 @@ const App: React.FC<AppProps> = () => {
   }, []);
   
   useEffect(() => {
+    console.log('Sens, Activedevice changed')
     if (isIrisEnabled) {
-      speechService.stopListening();
+      if (irisStarted) speechService.stopListening();
       speechService.startListening(sensitivity, activeDevice);
     }
   }, [sensitivity, activeDevice])

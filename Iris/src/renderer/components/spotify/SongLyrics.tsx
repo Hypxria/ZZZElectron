@@ -1,5 +1,4 @@
 import './Styles/SongLyrics.scss';
-import { LrcLibApi } from '../../../services/spotifyServices/LrcLibService.ts';
 import React, { useState, useEffect } from 'react';
 import { ViewState } from '../../../types/viewState.ts'
 
@@ -26,6 +25,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
+  const [prevLyricIndex, setPrevLyricIndex] = useState(-1);
 
   const lyricsStyle = {
     '--average-color': colors?.[0] || '#ffffff',
@@ -91,6 +91,9 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
 
   useEffect(() => {
     if (lyrics.length > 0) {
+      // Store previous index before updating
+      setPrevLyricIndex(currentLyricIndex);
+      
       const index = lyrics.findIndex((lyric, i) => {
         const nextLyric = lyrics[i + 1];
         return (
@@ -106,7 +109,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
     return (
       <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`}> 
         <div className="lyrics-menu">
-          <div className="current-lyric">
+          <div className="lyric current-lyric">
             Loading lyrics...
           </div>
         </div>
@@ -118,7 +121,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
     return (
       <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`}> 
         <div className="lyrics-menu">
-          <div className="current-lyric">
+          <div className="lyric current-lyric">
             {error}
           </div>
         </div>
@@ -126,15 +129,14 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
     );
   }
   
-  
-
   return (
     <div className={`lyrics-container ${viewState === ViewState.SPOTIFY_FULL ? 'shown' : ''}`} 
          style={lyricsStyle}>
       <div className="lyrics-menu">
         {currentLyricIndex > 0 && (
           <div 
-            className="prev-lyric clickable" 
+            key={`prev-${currentLyricIndex}`}
+            className="lyric prev-lyric clickable" 
             onClick={() => handleLyricClick(lyrics[currentLyricIndex - 1].time)}
           >
             {lyrics[currentLyricIndex - 1].text}
@@ -142,7 +144,8 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
         )}
         
         <div 
-          className="current-lyric clickable"
+          key={`current-${currentLyricIndex}`}
+          className="lyric current-lyric clickable"
           onClick={() => currentLyricIndex >= 0 && handleLyricClick(lyrics[currentLyricIndex].time)}
         >
           {currentLyricIndex >= 0 ? lyrics[currentLyricIndex].text : '♪'}
@@ -150,7 +153,8 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
         
         {currentLyricIndex < lyrics.length - 1 && (
           <div 
-            className="next-lyric clickable"
+            key={`next-${currentLyricIndex}`}
+            className="lyric next-lyric clickable"
             onClick={() => handleLyricClick(lyrics[currentLyricIndex + 1].time)}
           >
             {lyrics[currentLyricIndex + 1].text}

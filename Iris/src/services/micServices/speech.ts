@@ -172,14 +172,15 @@ class SpeechRecognitionService {
         const eventTarget = new EventTarget();
         const stopEvent = new Event('stop');
         let intervalId: number | null = null;
+        this.transcriptionManager?.init()
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     deviceId: deviceId,
                     channelCount: 1,
-                    sampleRate: 16000,
-                    sampleSize: 16,
+                    sampleRate: 44100,
+                    sampleSize: 24,
                     noiseSuppression: true,
                     autoGainControl: true,
                     echoCancellation: true,
@@ -226,12 +227,12 @@ class SpeechRecognitionService {
                         this.handleSpeechStart();
                     }
                     silenceStart = Date.now();
-                } else if (this.currentRecordingId && Date.now() - silenceStart > 250) {
+                } else if (this.currentRecordingId && Date.now() - silenceStart > 500) {
                     this.handleSpeechEnd();
                 }
             };
 
-            this.intervalId = window.setInterval(intervalHandler, 100);
+            this.intervalId = window.setInterval(intervalHandler, 10);
             console.log('Interval set:', this.intervalId); // Add this line
             
         } catch (error) {
@@ -296,16 +297,18 @@ class SpeechRecognitionService {
         console.log('Speech recognition stopped completely');
     }
 
-
-
     private async handleTranscription(text: string): Promise<void> {
         const normalizedText = await AudioUtils.cleanTranscription(text);
         console.log('Transcribed:', normalizedText);
 
         if (!this.isWakeWordDetected) {
-            if (normalizedText.includes('hey iris')) {
+            if (normalizedText.includes('iris')) {
                 console.log('Wake word detected!');
                 this.isWakeWordDetected = true;
+
+                normalizedText.replace('iris', '')
+
+                await this.processCommand(normalizedText)
                 if (this.commandTimeout) {
                     clearTimeout(this.commandTimeout);
                 }

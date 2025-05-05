@@ -22,7 +22,7 @@
     "useUnknownInCatchVariables": false,
     "allowImportingTsExtensions": true,
     "noImplicitAny": false,
-    "noImplicitThis": false,
+    "noImplicitThis": false
   },
   "exclude": ["node_modules"]
 }

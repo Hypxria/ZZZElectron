@@ -21,8 +21,8 @@ export class AudioUtils {
     }
 
     static async resampleAudio(
-        audioData: Float32Array, 
-        fromSampleRate: number, 
+        audioData: Float32Array,
+        fromSampleRate: number,
         toSampleRate: number
     ): Promise<Float32Array> {
         if (fromSampleRate === toSampleRate) {
@@ -33,7 +33,7 @@ export class AudioUtils {
         const newLength = Math.round(audioData.length * ratio);
         const result = new Float32Array(newLength);
         const step = fromSampleRate / toSampleRate;
-        
+
         for (let i = 0; i < newLength; i++) {
             result[i] = audioData[Math.floor(i * step)];
         }
@@ -42,11 +42,27 @@ export class AudioUtils {
     }
 
     static async cleanTranscription(text: string) {
-        const cleanText = text
+        let cleanText = text
             .toLowerCase()
             .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
             .replace(/\s{2,}/g, '')
             .trim();
+
+        cleanText = cleanText
+            .replace(/\bires\b/g, 'iris')
+            .replace(/\biris\b/g, 'iris')
+            .replace(/\birs\b/g, 'iris')
+            .replace(/\bi r i s\b/g, 'iris')
+            .replace(/\bhey i r i s\b/g, 'iris')
+
+            .replace('i am a virus', 'iris')
+
+        cleanText = cleanText
+            .replace('on mute', 'unmute')
+            .replace('deafin', 'deafen')
+            .replace('deafened', 'deafen')
+            .replace('i am a virus', 'iris')
+
 
         return cleanText;
 

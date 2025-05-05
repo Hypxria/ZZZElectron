@@ -15,6 +15,11 @@ Hyperiya comments are back
 This worker is just to get the song progress *really* often because (as stated far below) get onsongprogress is slow when tabbed out.
 */
 
+interface progressManager {
+  progress: number
+  prevProgress:number
+}
+
 class Iris {
   // Websocket to send info back to the app
   private ws: WebSocket | null = null;
@@ -29,7 +34,10 @@ class Iris {
   
   private wasAutoSwitchedThisSong: boolean = false;
 
-  private progress: number = 0
+  private progress: progressManager = {
+    progress: 0,
+    prevProgress: 0
+  }
 
   private songyear: number | null | undefined
 
@@ -52,11 +60,13 @@ class Iris {
       if (event?.data.isPaused) timingSwitch = true
     })
 
-    Spicetify.Player.addEventListener('songchange', () => {
+    Spicetify.Player.addEventListener('songchange', (event) => {
       timingSwitch = false
       this.wasAutoSwitchedThisSong = false
-      this.progress = 0
+      this.progress.progress = 0
     })
+
+    
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
@@ -69,7 +79,8 @@ class Iris {
       }
       const progress = Math.max((Spicetify.Player.getProgress() - subtract), 0);
       const duration = Spicetify.Player.getDuration();
-      this.progress = progress
+      this.progress.prevProgress = this.progress.progress
+      this.progress.progress = progress
 
       console.log(JSON.stringify({
         type: 'progress',
@@ -536,13 +547,16 @@ class Iris {
   }
 
   private async listenForSongChange() {
-    let previousDuration = Spicetify.Player.getDuration();;
+    interface durationManager {
+      
+    }
+    let previousDuration = Spicetify.Player.getDuration();
 
     Spicetify.Player.addEventListener('songchange', (event) => {
       // Check if previous song ended naturally (within 1.5s of its end)
 
-      console.log(`song: ${Spicetify.Player.getProgress()}`)
-      if (this.progress > (previousDuration - 3550) && Spicetify.Player.getRepeat() !== 2) {
+      console.log(`song: ${this.progress.prevProgress}`)
+      if (this.progress.prevProgress > (previousDuration - 3550) && Spicetify.Player.getRepeat() !== 2) {
         console.log('Song ended naturally')
         this.wasAutoSwitchedThisSong = true;
         setTimeout(() => {
@@ -569,7 +583,9 @@ class Iris {
         }
       }).then(response => response.json())
         .then(albumData => {
+          console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`)
           this.songyear = albumData.album?.release_date?.split('-')[0];
+          console.log(`Song year: ${this.songyear}`)
         })
 
       console.log(`Song ended: Previous Duration: ${previousDuration}`)

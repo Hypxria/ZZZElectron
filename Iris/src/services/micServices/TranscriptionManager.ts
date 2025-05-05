@@ -5,7 +5,10 @@ export class TranscriptionManager {
     private isShutdown: boolean = false;
 
     constructor() {
-        // Constructor remains minimal - we'll create workers on demand
+    }
+
+    public async init() {
+        this.isShutdown = false
     }
 
     public async transcribe(audioData: Float64Array): Promise<string> {
@@ -99,6 +102,7 @@ export class TranscriptionManager {
     }
 
     public cleanup() {
+        console.log('Cleaning up TranscriptionManager')
         this.isShutdown = true;
         
         // Terminate all workers

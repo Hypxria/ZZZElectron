@@ -41,13 +41,14 @@ export const commands: Record<string, CommandHandler> = {
         
         return spotifyCommands.playSong(cleanedQuery, token);
       }
-      console.error('Play command requires both query and token parameters');
+      console.error('Play command requires both query and token parameters', args, token);
       return Promise.resolve();
     },
     patterns: [
       /^play\s+(?:\w+\s+)*song$/i,
       /^play\s+(?:\w+\s+)*track$/i,
-      /^play\s+(?:\w+\s+)*music$/i
+      /^play\s+(?:\w+\s+)*music$/i,
+      /^play\s+.+$/i, // Match "play" followed by anything
     ]
   },
   'next': {

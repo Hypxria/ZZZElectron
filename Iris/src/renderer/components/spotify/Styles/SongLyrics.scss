@@ -37,50 +37,98 @@
   width: 70vw;
   max-width: 600px;
   margin: 0 auto;
+  overflow: hidden; /* Hide overflowing content during animations */
+  height: auto; /* Allow height to adjust to content */
 }
 
-.prev-lyric, .current-lyric, .next-lyric {
-  transition: all 0.3s ease;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.prev-lyric, .current-lyric, .next-lyric {
+.lyric {
   /* Add these to prevent layout shifts */
   position: relative;
   width: fit-content;
   transform-origin: center center;
+  opacity: 1;
 
-  /* Keep your existing styles but modify transitions */
-  transition: all 0.3s ease, transform 0.1s ease;
+  /* Improved transitions for sliding effect */
+  transition: 
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s ease;
+
+  &.prev-lyric {
+    color: var(--dimmer-color);
+    font-size: calc(1.4vw + 0.3rem);
+    transform: translateY(-50%);
+    opacity: 0.7;
+    mask-image: linear-gradient(0deg, var(--dimmer-color), transparent 150%);
+    font-family: Urbanist;
+    animation: slideFromTop 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  &.current-lyric {
+    color: var(--average-color);
+    font-size: calc(1.7vw + 0.3rem);
+    font-weight: bold;
+    margin: 0.5rem 0;
+    font-family: urbanist;
+    animation: slideIntoView 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    
+    &.current {
+      animation: pulse 1.5s infinite alternate;
+    }
+  }
+
+  &.next-lyric {
+    color: var(--dimmer-color);
+    font-size: calc(1.4vw + 0.3rem);
+    transform: translateY(50%);
+    opacity: 0.7;
+    mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150%);
+    font-family: Urbanist;
+    animation: slideFromBottom 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
 }
 
-.prev-lyric {
-  color: var(--dimmer-color);
-  font-size: calc(1.4vw + 0.3rem);
-  transform: scale(1);
-  translate: 0% -100%;
-  mask-image: linear-gradient(0deg, var(--dimmer-color), transparent 150%);
-  font-family: Urbanist;
+@keyframes pulse {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.current-lyric {
-  color: var(--average-color);
-  // font-size: 1.7rem;
-  font-size: calc(1.7vw + 0.3rem);
-
-  font-weight: bold;
-  margin: -0.5rem 0;
-  font-family: urbanist;
+/* Add new animations for sliding effects */
+@keyframes slideFromTop {
+  from {
+    transform: translateY(-60%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-50%);
+    opacity: 0.7;
+  }
 }
 
-.next-lyric {
-  color: var(--dimmer-color);
-  font-size: calc(1.4vw + 0.3rem);
-  transform: scale(1);
-  translate: 0% 100%;
-  mask-image: linear-gradient(180deg, var(--dimmer-color), transparent 150%);
-  font-family: Urbanist;
+@keyframes slideIntoView {
+  from {
+    transform: translateY(50%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromBottom {
+  from {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(50%);
+    opacity: 0.7;
+  }
 }
 
 .loading {
