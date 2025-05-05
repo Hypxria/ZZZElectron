@@ -30,7 +30,7 @@ class SpeechRecognitionService {
     private isListening: boolean = false;
     private commandTimeout: NodeJS.Timeout | null = null;
     private isSpeaking: boolean = false;
-    private transcriptionManager: TranscriptionManager | null;
+    private transcriptionManager: TranscriptionManager | undefined | null;
     private activeRecordings: Map<string, {
         chunks: Blob[],
         startTime: number
@@ -39,15 +39,14 @@ class SpeechRecognitionService {
     public intervalId: number | null = null;
 
     constructor() {
-        this.transcriptionManager = new TranscriptionManager();
-        // Initialize transformers when service is created
+    }
+
+    async initialize() {
         this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
             sampleRate: 16000, // Set fixed sample rate
             latencyHint: 'interactive'
         });
-    }
-
-    async initialize() {
+        this.transcriptionManager = new TranscriptionManager();
         if (!this.isInitialized) {
             try {
                 pipeline = await initializeTransformers();

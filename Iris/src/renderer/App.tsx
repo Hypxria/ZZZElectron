@@ -140,7 +140,9 @@ const App: React.FC<AppProps> = () => {
 
   useEffect(() => {
     // Initialize the service
-    if (isIrisEnabled) speechService.initialize();
+    if (isIrisEnabled){
+      console.log('isIrisEnabled', isIrisEnabled)
+       speechService.initialize()};
 
     return () => {
       speechService.cleanup();
