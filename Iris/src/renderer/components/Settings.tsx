@@ -79,8 +79,6 @@ const Settings: React.FC<SettingsProps> = ({
             window.electron.log(`Navigation path: ${newPath}`)
         }
     };
-
-    // Install spicetify extension
     
 
     return (
@@ -134,7 +132,7 @@ const Settings: React.FC<SettingsProps> = ({
                             {generalOptions.map((option, index) => (
                                 <button
                                     key={index}
-                                    className="option-button"
+                                    className="settings-button"
                                     onClick={() => handleMenuSelect(option)}
                                 >
                                     {option}
@@ -228,7 +226,7 @@ function About({ handleMenuSelect }: AboutProps) {
                     Iris © 2025 is licensed under CC BY-NC-SA 4.0 (Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License). <br />
                 </p>
                 <button
-                    className="option-button"
+                    className="settings-button"
                     onClick={() => handleMenuSelect('License')}
                 >
                     License
