@@ -2,6 +2,8 @@
 import React from 'react';
 import './styles/LoadingScreen.scss';
 
+import Iris from '../../assets/icons/IrisWideTransparent.png'
+
 interface LoadingScreenProps {
   isVisible: boolean;
   progress: number;
@@ -20,7 +22,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ isVisible, progress, mess
       <div className="loading-container">
         <div className="loading-logo">
           {/* Replace with your actual logo path */}
-          <img src="./assets/icons/Iris.png" alt="Iris" />
+          <img src={Iris} alt="Iris" />
         </div>
         <div className="loading-progress-container">
           <div className="loading-progress-bar">

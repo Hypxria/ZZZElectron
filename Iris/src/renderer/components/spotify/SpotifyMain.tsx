@@ -5,7 +5,8 @@ import SongControls from "./SongControls.tsx";
 import SongUpcoming from "./SongUpcoming.tsx";
 import SongBackground from "./SongBackground.tsx";
 import SongLyrics from "./SongLyrics.tsx";
-import SongVolume from "./SongVolume.tsx";
+
+import Iris from '../../../assets/icons/Iris.png'
 
 import "./Styles/Main.scss";
 import { spotifyService, Song } from "../../../services/spotifyServices/SpotifyService.ts";
@@ -107,14 +108,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     const updateProgress = async () => {
       const timeSinceManualUpdate = Date.now() - manualStateUpdateRef.current;
 
-      // console.log('Update Progress Check:', {
-      //   currentTime: Date.now(),
-      //   manualStateUpdateTime: manualStateUpdateRef.current,
-      //   timeSinceManualUpdate,
-      //   shouldSkip: timeSinceManualUpdate < 200
-      // });
-
-      if (timeSinceManualUpdate < 200) {
+      if (timeSinceManualUpdate < 1000) {
         const remainingWait = 200 - timeSinceManualUpdate;
         console.log(`Waiting for ${remainingWait}ms before resuming updates`);
 
@@ -128,20 +122,10 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       } else {
         if (justInTimeout) {
           justInTimeout = false
-          // console.log('Resuming updates');
         }
       }
 
-      // console.log('updating')
-
       const serviceProgress = spotifyService.currentProgress?.progress_ms ?? 0;
-
-      // console.log('Progress Update:', {
-      // serviceProgress,
-      // currentLocalProgress: localProgress,
-      // refProgress: progressRef.current,
-      // stateUpdateTriggered: serviceProgress !== progressRef.current
-      // });
 
       if (serviceProgress !== progressRef.current) {
         progressRef.current = serviceProgress;
@@ -158,18 +142,6 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []); // Remove localProgress from dependencies
-
-
-
-  useEffect(() => {
-    // console.log('Local progress state updated:', {
-    // newValue: localProgress,
-    // refValue: progressRef.current
-    // });
-  }, [localProgress]);
-
-
-
 
   // NextTrack tracking
   const initialNextTrack = useCallback(async () => {
@@ -212,20 +184,14 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
     }
   };
 
-
-
-
-
-
   // Getting Avg Colors
   const [colors, setColors] = useState<string[]>([]);
 
   useEffect(() => {
     const getColors = async () => {
-      if (!currentTrackData.album_cover) return; // Early return if no album cover
 
       try {
-        const palette = await ColorExtractor.from(currentTrackData.album_cover);
+        const palette = await ColorExtractor.from(currentTrackData.album_cover || Iris);
         const extractedColors = [
           palette.Vibrant?.hex, // [0]
           palette.LightVibrant?.hex, // [1]
@@ -248,14 +214,14 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
 
   return (
     <div className="spotify">
-      <SongBackground coverUrl={currentTrackData.album_cover || ""} />
+      <SongBackground coverUrl={currentTrackData.album_cover || Iris} />
       <div className="section-content">
         <div className="song-info">
           <SongInfo
             currentSong={{
               name: currentTrackData.name || "No track playing",
               artist: currentTrackData.artist || "No artist",
-              album_cover: currentTrackData.album_cover || "sex",
+              album_cover: currentTrackData.album_cover || Iris,
               year: currentTrackData.year || "N/A",
             }}
             colors={colors}
@@ -330,7 +296,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
               setCurrentTrackData((prev) => ({ ...prev, volume }));
               await spotifyService.setVolume(volume);
             }}
-            albumCover={currentTrackData.album_cover || "sex"}
+            albumCover={currentTrackData.album_cover || Iris}
             colors={colors}
             shuffle={currentTrackData.shuffle_state || false}
             loop={currentTrackData.repeat_state || 0}
@@ -341,7 +307,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
             id: "1",
             title: nextTrackData.name || "No upcoming track",
             artist: nextTrackData.artist || "None",
-            albumCover: nextTrackData.album_cover || "sex",
+            albumCover: nextTrackData.album_cover || Iris,
           }}
         />
         {hasInitialData && (
