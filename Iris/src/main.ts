@@ -1,4 +1,6 @@
 // src/main.ts
+import 'v8-compile-cache';
+
 import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC.ts';
 
@@ -45,7 +47,7 @@ const buildCsp = (directives: Record<string, string[]>) => {
     .join(' ');
 };
 
-const createWindow = async (x: number, y: number): Promise<void> => {
+const createWindow = async (): Promise<void> => {
   const windowState = await restoreWindowState();
 
   // Optimizations - keep only what's necessary for smooth operation
@@ -63,6 +65,8 @@ const createWindow = async (x: number, y: number): Promise<void> => {
   // Keep these for WebGL support
   app.commandLine.appendSwitch('enable-webgl');
   app.commandLine.appendSwitch('enable-webgl2');
+
+  console.log(app.getGPUFeatureStatus())
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -242,14 +246,10 @@ app.whenReady().then(async () => {
     return a.bounds.y - b.bounds.y;
   });
 
-  const x = primaryDisplay.bounds.x + (primaryDisplay.bounds.width - 800) / 2;
-  const y = primaryDisplay.bounds.y + (primaryDisplay.bounds.height - 600) / 2;
-
-
-  createWindow(x, y);
+  createWindow();
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow(x, y);
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 

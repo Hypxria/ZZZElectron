@@ -52,6 +52,7 @@ const config = {
       name: "@electron-forge/plugin-webpack",
       config: {
         mainConfig: {
+          devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
           entry: "./src/main.ts",
           experiments: {
             outputModule: true,
@@ -127,6 +128,7 @@ const config = {
           }
         },
         renderer: {
+          devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
           config: {
             module: {
               rules: [
@@ -140,6 +142,9 @@ const config = {
                     loader: "ts-loader",
                     options: {
                       transpileOnly: true,
+                      compilerOptions: {
+                        sourceMap: false
+                      }
                     },
                   },
                 },

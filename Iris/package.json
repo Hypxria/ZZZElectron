@@ -110,6 +110,7 @@
     "tough-cookie": "^5.1.2",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
+    "v8-compile-cache": "^2.4.0",
     "ws": "^8.18.1"
   }
 }
