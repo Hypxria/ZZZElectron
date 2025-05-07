@@ -149,7 +149,6 @@ const config = {
                   test: /\.tsx?$/,
                   exclude: [
                     /(node_modules|\.webpack)/,
-                    /src\/services/  // Exclude services from renderer
                   ],
                   use: {
                     loader: "ts-loader",
