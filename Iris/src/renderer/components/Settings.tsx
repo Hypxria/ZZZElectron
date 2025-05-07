@@ -35,7 +35,7 @@ const Settings: React.FC<SettingsProps> = ({
         'Spotify Settings',
         'Hoyolab Settings',
         'Discord Settings',
-        'Audio Settings',
+        'Audio Settings (BETA)',
         'Modules',
     ];
 
@@ -143,7 +143,7 @@ const Settings: React.FC<SettingsProps> = ({
                 )}
 
 
-                {activeMenu === 'Audio Settings' && (
+                {activeMenu === 'Audio Settings (BETA)' && (
                     <Audio
                     />
                 )}
@@ -720,7 +720,7 @@ function Audio({
             <div className="settings-section">
                 <div className="audio-settings">
                     <span>
-                        <h3>Voice Control Toggle</h3>
+                        <h3>Voice Control Toggle (Unstable, high resource intensity!)</h3>
                     </span>
                     <div className='vc-toggle'>
                         <label className="toggle-switch">

@@ -254,6 +254,7 @@ self.onmessage = function(e) {
                 case "current":
                   const currentTrack = Spicetify.Player.data.item;
                   console.log(`current track: ${currentTrack}`);
+                  console.log(this.songyear);
                   this.sendMessage(JSON.stringify({
                     type: "response",
                     action: "current",
@@ -314,6 +315,8 @@ self.onmessage = function(e) {
       await this.connectWebSocket();
       await this.establishListeners();
       Spicetify.showNotification("Hello from Iris!");
+      const currentTrack = Spicetify.Player.data.item;
+      this.getSongYear(currentTrack);
     }
     async sendMessage(message) {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -327,10 +330,24 @@ self.onmessage = function(e) {
       this.listenForSongChange();
       this.listenForPlayPause();
     }
+    async getSongYear(currentTrack) {
+      var _a;
+      const accessToken = Spicetify.Platform.Session.accessToken;
+      const trackId = (_a = currentTrack == null ? void 0 : currentTrack.uri) == null ? void 0 : _a.split(":")[2];
+      fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
+      }).then((response) => response.json()).then((albumData) => {
+        var _a2, _b;
+        console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`);
+        this.songyear = (_b = (_a2 = albumData.album) == null ? void 0 : _a2.release_date) == null ? void 0 : _b.split("-")[0];
+        console.log(`Song year: ${this.songyear}`);
+      });
+    }
     async listenForSongChange() {
       let previousDuration = Spicetify.Player.getDuration();
       Spicetify.Player.addEventListener("songchange", (event) => {
-        var _a;
         console.log(`song: ${this.progress.prevProgress}`);
         if (this.progress.prevProgress > previousDuration - 3550 && Spicetify.Player.getRepeat() !== 2) {
           console.log("Song ended naturally");
@@ -342,17 +359,8 @@ self.onmessage = function(e) {
           console.log("Song ended abruptly");
         }
         const currentTrack = Spicetify.Player.data.item;
-        const accessToken = Spicetify.Platform.Session.accessToken;
-        const trackId = (_a = currentTrack == null ? void 0 : currentTrack.uri) == null ? void 0 : _a.split(":")[2];
         console.log(JSON.stringify(currentTrack, null, 2));
-        fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-          headers: {
-            "Authorization": `Bearer ${accessToken}`
-          }
-        }).then((response) => response.json()).then((albumData) => {
-          var _a2, _b;
-          this.songyear = (_b = (_a2 = albumData.album) == null ? void 0 : _a2.release_date) == null ? void 0 : _b.split("-")[0];
-        });
+        this.getSongYear(currentTrack);
         console.log(`Song ended: Previous Duration: ${previousDuration}`);
         console.log(`Song ended: Previous Progress: ${this.progress}`);
         previousDuration = Spicetify.Player.getDuration();
