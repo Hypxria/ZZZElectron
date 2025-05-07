@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './Styles/DiscordCall.scss';
+import './styles/DiscordCall.scss';
 
 import { MicOffRounded, HeadsetRounded, HeadsetOffRounded, PhoneDisabledRounded, PhoneRounded, CloseRounded, MicRounded } from '@mui/icons-material';
 

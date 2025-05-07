@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './Styles/DiscordNotification.scss';
+import './styles/DiscordNotification.scss';
 import { DiscordNotificationType } from './../../../services/discordServices/types.ts';
 
 interface NotificationProps {
