@@ -1,75 +1,133 @@
-# Iris
+![Iris](https://github.com/Hyperiya/Iris/blob/350b11a1268595e40dbd0e3094945166cdad0aca/Iris/src/assets/icons/IrisWideTransparent.png "Iris")
+# Iris: A Modern Desktop Integration Hub for Discord, Spotify, and Hoyoverse Games
 
-Music & Game Stat Displayer
+Iris is an Electron-based desktop application that seamlessly integrates Discord, Spotify, and Hoyoverse game services into an interface. It provides real-time music controls, game status tracking, and Discord voice chat management with a sleek, modern design.
 
-## Building with Electron Builder
+Features:
+- Spotify integration with real-time playback controls, lyrics display, and dynamic background theming based on album artwork
+- Discord voice chat management with mute/deafen controls and user status tracking
+- Hoyoverse game tracking for Genshin Impact, Honkai: Star Rail, and Zenless Zone Zero with real-time resin/stamina monitoring
+- Customizable modular interface that allows users to enable/disable specific features
+- System-native window controls with frameless design
 
-### Prerequisites
-
-- Node.js 18+ installed
-- npm 9+ installed
-
-### Install Dependencies
-
-```bash
-npm install
+## Repository Structure
+```
+.
+├── App/                          # Main application directory
+│   ├── src/                      # Source code directory
+│   │   ├── main.ts               # Electron main process entry point
+│   │   ├── preload.ts            # Preload script for IPC bridge
+│   │   ├── renderer/             # React renderer components
+│   │   │   ├── components/       # UI components organized by feature
+│   │   │   └── App.tsx           # Main React application component
+│   │   ├── services/             # Service layer for external integrations
+│   │   │   ├── discordServices/  # Discord RPC and voice chat integration
+│   │   │   ├── hoyoServices/     # Hoyoverse API integration
+│   │   │   └── spotifyServices/  # Spotify playback and control
+│   │   ├── ipc/ 
+│   │   │   ├── handlers/         # Files for functions that create IPC for each different service
+│   │   │   └── index.ts          # Combines all functions into one for main.ts to call
+│   │   └── utils/                # Utility functions and helpers
+│   ├── forge.config.js           # Electron Forge build configuration
+│   └── package.json              # Project dependencies and scripts
+└── extension/                    # Spicetify extension for Spotify integration
 ```
 
-### Development
+## Usage Instructions
+### Prerequisites
+- Spotify desktop client with Spicetify installed*
+- Discord desktop client*
+- Valid Hoyoverse account*
+
+(*- If you don't have any of these at all, this app won't be of any use for you whatsoever.)
+
+### Compiling the Application yourself
+```bash
+# Clone the repository
+git clone https://github.com/Hyperiya/Iris
+cd Iris/Iris
+
+# Install dependencies
+npm install
+
+# Compile application
+npm run make
+```
 
 ```bash
+# Install Spicetify extension
+cd Iris-Extension/iris-link
+npm install
+
+# Compile the extention yourself
+npm run build
+```
+
+### Quick Start
+1. (If applicable) Start the application in development mode:
+```bash
+cd App
 npm start
 ```
 
-### Building with V8 Snapshot for Faster Loading
+2. Enable desired modules in the settings menu (accessible via the gear icon in the titlebar)
 
-To build the application with V8 snapshot support for faster startup:
+3. Connect your accounts:
+   - Spotify: Click the button to install the extention, ensuring you have Spicetify, and that it works properly. If you compiled the extention yourself, make sure that the extention is applied.
+   - Discord: Enter in your client ID and client Secret from https://discord.com/developers/applications (Make a new application) and grant permissions when prompted
+   - Hoyoverse: Log in through the settings menu
 
-```bash
-# For Windows
-npm run build:snapshot
-
-# For all platforms
-npm run dist
+### More Detailed Examples
+#### Spotify Controls
+```typescript
+// Control playback
+await spotifyService.playPause();
+await spotifyService.seek(timeInMs);
+await spotifyService.setVolume(volumeLevel);
 ```
 
-### Platform-Specific Builds
+#### Discord Voice Integration
+```typescript
+// Join voice channel
+window.discord.voice.join(channelId);
 
-```bash
-# Windows only
-npm run dist:win
-
-# macOS only
-npm run dist:mac
-
-# Linux only
-npm run dist:linux
+// Toggle audio states
+window.discord.voice.mute();
+window.discord.voice.deafen();
 ```
 
-### macOS Notarization
+### Troubleshooting
+#### Common Issues
+1. Spotify Connection Failed
+   - Ensure Spicetify is properly installed
+   - Check if the Spotify client is running
+   - Verify the extension is built and installed correctly
 
-For notarizing macOS builds, set the following environment variables:
+2. Discord RPC Not Working
+   - Restart Discord client
+   - Check if Discord is running with proper permissions
+   - Verify the Discord application ID is correct
 
-```bash
-export APPLE_ID=your.apple.id@example.com
-export APPLE_ID_PASSWORD=your-app-specific-password
-export APPLE_TEAM_ID=your-team-id
+3. Hoyoverse API Errors
+   - Verify login credentials
+   - Check network connectivity
+   - Ensure correct server region is selected
+
+## Data Flow
+Iris manages real-time data flow between multiple services through WebSocket connections and IPC channels.
+
+```ascii
+[Spotify Client] <-> [Spicetify Extension] <-> [WebSocket] <-> [Electron Main] <-> [React UI]
+[Discord Client] <-> [Discord RPC] <-> [IPC Bridge] <-> [Electron Main] <-> [React UI]
+[Hoyoverse API] <-> [HTTP Client] <-> [Service Layer] <-> [Electron Main] <-> [React UI]
 ```
 
-Then run:
+Key interactions:
+- Spotify playback state is synchronized through WebSocket connection
+- Discord voice states are managed through RPC and IPC channels
+- Hoyoverse game data is fetched through authenticated HTTP requests
+- UI updates are managed through React state management
+- Theme colors are dynamically extracted from album artwork
 
-```bash
-npm run dist:mac
-```
-
-## Configuration
-
-The build configuration is defined in:
-
-- `electron-builder.yml` - Base configuration
-- `electron-builder.js` - JavaScript configuration that extends the YAML file
-- `package.json` - Contains the `build` field for additional configuration
-
-## License
-
-MIT
+# Lisense
+Iris © 2025 is licensed under CC BY-NC-SA 4.0 
