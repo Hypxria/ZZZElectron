@@ -72,7 +72,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@electron-forge/publisher-github": "^7.8.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.4",

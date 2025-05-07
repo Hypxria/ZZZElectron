@@ -10,12 +10,12 @@ jobs:
         with:
           node-version: 22
       - name: install dependencies
-        working-directory: ./Iris
+        
         run: npm install
       - name: publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
+        
         run: npm run publish
 
   publish_on_mac:
@@ -26,12 +26,12 @@ jobs:
         with:
           node-version: 22
       - name: install dependencies
-        working-directory: ./Iris
+        
         run: npm install
       - name: publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
+        
         run: npm run publish
 
   publish_on_win:
@@ -42,10 +42,10 @@ jobs:
         with:
           node-version: 22
       - name: install dependencies
-        working-directory: ./Iris
+        
         run: npm install
       - name: publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
+        
         run: npm run publish
