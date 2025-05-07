@@ -201,7 +201,9 @@ const Settings: React.FC<SettingsProps> = ({
 export default Settings;
 
 
+function Snapshot({}) {
 
+}
 
 interface AboutProps {
     handleMenuSelect: (menu: string) => void;

@@ -3,6 +3,7 @@ import 'v8-compile-cache';
 
 import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC.ts';
+import { SnapshotManager } from './utils/snapshotUtil.ts';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -14,6 +15,7 @@ import { saveWindowState, restoreWindowState } from './utils/windowState.ts';
 
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
+let snapshotManager: SnapshotManager | null = null;
 
 ipcMain.setMaxListeners(20); // Or whatever number is appropriate
 
@@ -96,24 +98,15 @@ const createWindow = async (): Promise<void> => {
     show: false,
   });
 
+  // Initialize snapshot manager early
+  snapshotManager = new SnapshotManager();
+  
   mainWindow.once('ready-to-show', () => {
     mainWindow?.webContents.send('loading:update', 0, 'Starting Iris...');
     mainWindow?.show();
     
-    // Simulate loading process (replace with actual initialization tasks)
-    let progress = 0;
-    const loadingInterval = setInterval(() => {
-      progress += 10;
-      mainWindow?.webContents.send('loading:update', progress, 
-        progress < 30 ? 'Loading resources...' :
-        progress < 60 ? 'Initializing services...' :
-        progress < 90 ? 'Almost ready...' : 'Ready!'
-      );
-      
-      if (progress >= 100) {
-        clearInterval(loadingInterval);
-      }
-    }, 300);
+    // Start loading process
+    startLoadingProcess();
   });
     
   mainWindow.setTitle('Iris');
@@ -140,8 +133,6 @@ const createWindow = async (): Promise<void> => {
     });
   }
   
-  
-
   setupIpcHandlers(mainWindow);
 
   mainWindow.on('maximize', () => {
@@ -217,8 +208,45 @@ const createWindow = async (): Promise<void> => {
   }
 };
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// Function to handle the loading process with snapshot support
+const startLoadingProcess = () => {
+  if (!mainWindow) return;
+  
+  // Initialize snapshot manager if not already done
+  if (!snapshotManager) {
+    snapshotManager = new SnapshotManager();
+  }
+  
+  // Try to load from snapshot first
+  const snapshotLoaded = snapshotManager.loadSnapshot();
+  let startProgress = snapshotLoaded ? 30 : 0; // Start at 30% if snapshot was loaded
+  
+  let progress = startProgress;
+  const loadingInterval = setInterval(() => {
+    // Faster progress if snapshot was loaded
+    const increment = snapshotLoaded ? 15 : 10;
+    progress += increment;
+    
+    mainWindow?.webContents.send('loading:update', progress, 
+      progress < 30 ? 'Loading resources...' :
+      progress < 60 ? 'Initializing services...' :
+      progress < 90 ? 'Almost ready...' : 'Ready!'
+    );
+    
+    if (progress >= 100) {
+      clearInterval(loadingInterval);
+      
+      // Create a new snapshot if one wasn't loaded or is outdated
+      if (!snapshotLoaded) {
+        // In a real implementation, you'd collect the loaded modules
+        const loadedModules = ['main', 'renderer', 'preload']; // Example
+        snapshotManager?.createSnapshot(loadedModules);
+      }
+    }
+  }, snapshotLoaded ? 200 : 300); // Faster interval if snapshot was loaded
+};
 
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 
 ipcMain.handle('get-app-path', () => {
   return app.getAppPath();
@@ -232,7 +260,33 @@ ipcMain.on('console-error', (_, message) => {
   console.error(message); // This will print to terminal
 });
 
+// Add IPC handlers for snapshot management
+ipcMain.handle('snapshot:create', () => {
+  if (snapshotManager) {
+    const loadedModules = ['main', 'renderer', 'preload']; // Example
+    snapshotManager.createSnapshot(loadedModules);
+    return true;
+  }
+  return false;
+});
 
+ipcMain.handle('snapshot:delete', () => {
+  if (snapshotManager) {
+    snapshotManager.deleteSnapshot();
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle('snapshot:status', () => {
+  if (snapshotManager) {
+    return {
+      exists: snapshotManager.hasValidSnapshot(),
+      info: snapshotManager.getSnapshotInfo ? snapshotManager.getSnapshotInfo() : null
+    };
+  }
+  return { exists: false, info: null };
+});
 
 app.whenReady().then(async () => {
   app.on('gpu-info-update', () => {
@@ -283,4 +337,3 @@ if (process.env.NODE_ENV === 'development') {
     }
   });
 }
-

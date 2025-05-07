@@ -35,6 +35,12 @@ contextBridge.exposeInMainWorld('electron', {
   },
 });
 
+contextBridge.exposeInMainWorld('snapshot', {
+  create: () => ipcRenderer.invoke('snapshot:create'),
+  delete: () => ipcRenderer.invoke('snapshot:delete'),
+  getStatus: () => ipcRenderer.invoke('snapshot:status'),
+});
+
 contextBridge.exposeInMainWorld('spotify', {
   spicetify: {
     installExtension: () => ipcRenderer.invoke('install-spicetify-extension')
