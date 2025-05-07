@@ -5,6 +5,7 @@ import secureLocalStorage from "react-secure-storage";
 import { LICENSE_TEXT } from '../../assets/license/license.ts';
 import './styles/Settings.scss';
 
+
 import Iris from '../../assets/icons/IrisWideTransparent.png';
 
 export interface EnabledModules {
