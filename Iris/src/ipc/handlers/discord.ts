@@ -67,6 +67,7 @@ export function setupDiscordHandlers(mainWindow: BrowserWindow) {
     })
 
     ipcMain.handle('discord:text', async (_, { action }, args?) => {
+        return;
         if (!discordRPC) {
             throw new Error('Discord RPC not initialized');
         }

@@ -284,13 +284,16 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
       try {
         await fetchBaseInfo()
         const zzzBattery: zenlessBattery.zenlessBattery = await window.hoyoAPI.callMethod('zenless.getBattery', '');
+        console.log(zzzBattery)
         // const zzzInfo: zenlessInfo.zenlessInfo = await window.hoyoAPI.callMethod('zenless.getInfo', '');
 
         // const starrailInfo: starrailInfo.starrailInfo = await window.hoyoAPI.callMethod('starrail.getInfo', '');
         const starrailBattery: starrailBattery.starrailBattery = await window.hoyoAPI.callMethod('starrail.getStamina', '');
+        console.log(starrailBattery)
 
         // const genshinInfo: genshinInfo.genshinInfo = await window.hoyoAPI.callMethod('genshin.getInfo', '');
         const genshinNotes: genshinNotes.genshinNotes = await window.hoyoAPI.callMethod('genshin.getNotes', '');
+        console.log(genshinNotes)
 
         const games: Game[] = [];
 
@@ -301,9 +304,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
             accent: "#6B46C1",
             stats: [
               { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
-              { label: "Battery", value: `${zzzBattery.data.energy?.progress.current}/240`, icon: <Battery size={18} /> },
-              { label: "Engagement", value: `${zzzBattery.data.vitality?.current}/${zzzBattery.data.vitality?.max}`, icon: <Coins size={18} /> },
-              { label: "Ridu Weekly", value: `${zzzBattery.data.weekly_task?.cur_point || 0}/${zzzBattery.data.weekly_task?.max_point || 1300}`, icon: <Clock size={18} /> },
+              { label: "Battery", value: `${zzzBattery?.data?.energy?.progress?.current || 0}/240`, icon: <Battery size={18} /> },
+              { label: "Engagement", value: `${zzzBattery.data?.vitality?.current || 0}/${zzzBattery?.data?.vitality?.max || 400}`, icon: <Coins size={18} /> },
+              { label: "Ridu Weekly", value: `${zzzBattery?.data?.weekly_task?.cur_point || 0}/${zzzBattery?.data?.weekly_task?.max_point || 1300}`, icon: <Clock size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(zzzRg)} hours`, icon: <Clock size={18} /> },
             ],
           });
@@ -316,9 +319,9 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
             accent: "#3182CE",
             stats: [
               { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
-              { label: "Stamina", value: `${starrailBattery?.data?.current_stamina}/${starrailBattery?.data?.max_stamina}`, icon: <Battery size={18} /> },
-              { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina}/${starrailBattery?.data?.current_reserve_stamina}`, icon: <Coins size={18} /> },
-              { label: "Echoes Of War", value: `${starrailBattery?.data?.current_rogue_score}/${starrailBattery?.data?.max_rogue_score}`, icon: <Clock size={18} /> },
+              { label: "Stamina", value: `${starrailBattery?.data?.current_stamina || 0}/${starrailBattery?.data?.max_stamina || 400}`, icon: <Battery size={18} /> },
+              { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina || 0}/${starrailBattery?.data?.current_reserve_stamina || 2000}`, icon: <Coins size={18} /> },
+              { label: "Echoes Of War", value: `${starrailBattery?.data?.current_rogue_score || 0 }/${starrailBattery?.data?.max_rogue_score || 0}`, icon: <Clock size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
             ]
           });
@@ -331,8 +334,8 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
             accent: "#48BB78",
             stats: [
               { label: "Adventure Rank", value: `${genshinLevel}`, icon: <Star size={18} /> },
-              { label: "Resin", value: `${genshinNotes.data.current_resin}/${genshinNotes.data.max_resin}`, icon: <Battery size={18} /> },
-              { label: "Commisions", value: `${genshinNotes.data.daily_task.finished_num}/${genshinNotes.data.daily_task.total_num}`, icon: <Coins size={18} /> },
+              { label: "Resin", value: `${genshinNotes?.data?.current_resin || 0}/${genshinNotes?.data?.max_resin || 200}`, icon: <Battery size={18} /> },
+              { label: "Commisions", value: `${genshinNotes?.data?.daily_task?.finished_num || 0}/${genshinNotes?.data?.daily_task?.total_num || 4}`, icon: <Coins size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(genshinRg)} hours`, icon: <Clock size={18} /> },
             ],
           });

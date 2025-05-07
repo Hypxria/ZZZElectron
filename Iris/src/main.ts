@@ -77,6 +77,10 @@ const createWindow = async (): Promise<void> => {
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
     icon: './assets/icons/Iris.png',
+
+    useContentSize: true,
+    autoHideMenuBar: true,
+  
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -86,6 +90,7 @@ const createWindow = async (): Promise<void> => {
       offscreen: false,
       backgroundThrottling: true, // Add this to prevent throttling when in background
       enablePreferredSizeMode: true,
+      spellcheck: false, // Disable if you don't need it
     },
     paintWhenInitiallyHidden: true,
     show: false,

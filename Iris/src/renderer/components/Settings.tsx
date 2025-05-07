@@ -79,7 +79,7 @@ const Settings: React.FC<SettingsProps> = ({
             window.electron.log(`Navigation path: ${newPath}`)
         }
     };
-    
+
 
     return (
         <div
@@ -307,9 +307,11 @@ interface HoyoProps {
 }
 
 
-function Hoyo({}: HoyoProps) {
+function Hoyo({ }: HoyoProps) {
 
     const handleCredentialsHoyo = async () => {
+        let result
+
         const idInput = document.querySelector('.hoyo-input') as HTMLInputElement;
         const secretInput = document.querySelector('.hoyo-input-secret') as HTMLInputElement;
 
@@ -324,41 +326,44 @@ function Hoyo({}: HoyoProps) {
             throw new Error('Username or password not found in storage');
         }
 
-        const result = await window.hoyoAPI.login(username, password);
-        console.log('Login successful:', result);
+        try {
+            result = await window.hoyoAPI.login(username, password);
+            console.log('Login successful:', result);
 
-        const cookieString = [
-            `cookie_token_v2=${result.cookies.cookie_token_v2}`,
-            `account_mid_v2=${result.cookies.account_mid_v2}`,
-            `account_id_v2=${result.cookies.account_id_v2}`,
-            `ltoken_v2=${result.cookies.ltoken_v2}`,
-            `ltmid_v2=${result.cookies.ltmid_v2}`,
-            `ltuid_v2=${result.cookies.ltuid_v2}`,
-        ].join('; ');
+            const cookieString = [
+                `cookie_token_v2=${result.cookies.cookie_token_v2}`,
+                `account_mid_v2=${result.cookies.account_mid_v2}`,
+                `account_id_v2=${result.cookies.account_id_v2}`,
+                `ltoken_v2=${result.cookies.ltoken_v2}`,
+                `ltmid_v2=${result.cookies.ltmid_v2}`,
+                `ltuid_v2=${result.cookies.ltuid_v2}`,
+            ].join('; ');
+    
+            window.hoyoAPI.initialize(cookieString, result.uid);
+        } catch (error) {
+            console.error('Error during login:', error);
+            throw error;
+        }
 
-        window.hoyoAPI.initialize(cookieString, result.uid);
+        
     }
 
 
     return (
         <div className="options-menu">
             <div className="credentials">
-                <div className="input-group">
-                    <input
-                        type="text"
-                        placeholder="Hoyolab Username/Email"
-                        className="hoyo-input"
-                        id='input-bar'
-                    />
-                </div>
-                <div className="input-group">
-                    <input
-                        type="password"
-                        placeholder="Hoyolab Password"
-                        className="hoyo-input-secret"
-                        id='input-bar'
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Hoyolab Username/Email"
+                    className="hoyo-input"
+                    id='input-bar'
+                />
+                <input
+                    type="password"
+                    placeholder="Hoyolab Password"
+                    className="hoyo-input-secret"
+                    id='input-bar'
+                />
                 <div className="save-input">
                     <button id='input-button' className="save-button" onClick={handleCredentialsHoyo}>Save</button>
                 </div>
@@ -406,22 +411,18 @@ function Discord({
     return (
         <div className="options-menu">
             <div className="credentials">
-                <div className="input-group">
-                    <input
-                        type="text"
-                        placeholder="Discord Client ID"
-                        className="discord-input"
-                        id='input-bar'
-                    />
-                </div>
-                <div className="input-group">
-                    <input
-                        type="text"
-                        placeholder="Discord Client Secret"
-                        className="discord-input-secret"
-                        id='input-bar'
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Discord Client ID"
+                    className="discord-input"
+                    id='input-bar'
+                />
+                <input
+                    type="text"
+                    placeholder="Discord Client Secret"
+                    className="discord-input-secret"
+                    id='input-bar'
+                />
 
                 <div className="save-input">
                     <button id='input-button' className="save-button" onClick={handleCredentialsDiscord}>Save</button>

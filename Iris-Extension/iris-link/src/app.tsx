@@ -17,7 +17,7 @@ This worker is just to get the song progress *really* often because (as stated f
 
 interface progressManager {
   progress: number
-  prevProgress:number
+  prevProgress: number
 }
 
 class Iris {
@@ -31,7 +31,7 @@ class Iris {
   private isServerCheckInProgress = false;
 
   private progressWorker: Worker | null = null;
-  
+
   private wasAutoSwitchedThisSong: boolean = false;
 
   private progress: progressManager = {
@@ -66,7 +66,7 @@ class Iris {
       this.progress.progress = 0
     })
 
-    
+
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
@@ -449,6 +449,7 @@ class Iris {
                 const currentTrack = Spicetify.Player.data.item;
 
                 console.log(`current track: ${currentTrack}`)
+                console.log(this.songyear)
                 this.sendMessage(JSON.stringify({
                   type: 'response',
                   action: 'current',
@@ -522,6 +523,9 @@ class Iris {
     await this.establishListeners()
     // Show initial message
     Spicetify.showNotification("Hello from Iris!");
+
+    const currentTrack = Spicetify.Player.data.item;
+    this.getSongYear(currentTrack)
   }
 
   // Method to safely send messages
@@ -546,9 +550,27 @@ class Iris {
     this.listenForPlayPause();
   }
 
+  private async getSongYear(currentTrack:any) {
+    const accessToken = Spicetify.Platform.Session.accessToken;
+
+    // Get album ID from the current track
+    const trackId = currentTrack?.uri?.split(':')[2];
+
+    fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }).then(response => response.json())
+      .then(albumData => {
+        console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`)
+        this.songyear = albumData.album?.release_date?.split('-')[0];
+        console.log(`Song year: ${this.songyear}`)
+      })
+  }
+
   private async listenForSongChange() {
     interface durationManager {
-      
+
     }
     let previousDuration = Spicetify.Player.getDuration();
 
@@ -568,25 +590,13 @@ class Iris {
       }
 
       const currentTrack = Spicetify.Player.data.item;
-      const accessToken = Spicetify.Platform.Session.accessToken;
-
-      // Get album ID from the current track
-      const trackId = currentTrack?.uri?.split(':')[2];
 
       console.log(JSON.stringify(currentTrack, null, 2))
 
 
       // Fetch album details to get release date
-      fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      }).then(response => response.json())
-        .then(albumData => {
-          console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`)
-          this.songyear = albumData.album?.release_date?.split('-')[0];
-          console.log(`Song year: ${this.songyear}`)
-        })
+      this.getSongYear(currentTrack)
+
 
       console.log(`Song ended: Previous Duration: ${previousDuration}`)
       console.log(`Song ended: Previous Progress: ${this.progress}`)
