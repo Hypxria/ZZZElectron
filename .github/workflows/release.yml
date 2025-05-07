@@ -9,16 +9,47 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 22
-      - name: install dependencies
-        working-directory: ./Iris
+      - name: Debug directory structure
         run: |
-         ls
-         npm install
-      - name: publish
+          ls -la
+          find . -maxdepth 3 -type d | sort
+      - name: Install dependencies
+        id: install
+        run: npm install
+        continue-on-error: true
+      - name: Debug on install failure
+        if: steps.install.outcome == 'failure'
+        run: |
+          echo "Installation failed, checking environment..."
+          node --version
+          npm --version
+          ls -la node_modules || echo "No node_modules directory"
+      - name: Build app
+        id: build
+        run: npm run package
+        continue-on-error: true
+      - name: Debug on build failure
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "Build failed, checking webpack configuration..."
+          cat forge.config.mjs || echo "No forge.config.mjs file"
+          find . -name "*.scss" | grep -i discord
+          find ./src -type d -name "styles" | xargs ls -la
+          find ./src -type d -name "Styles" | xargs ls -la
+      - name: Publish
+        id: publish
+        if: steps.build.outcome == 'success'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
         run: npm run publish
+      - name: Debug on publish failure
+        if: steps.publish.outcome == 'failure'
+        run: |
+          echo "Publish failed, checking build artifacts..."
+          find . -name "*.js" -path "*/.webpack/*" | head -n 10
+          find ./dist -type f 2>/dev/null || echo "No dist directory"
+          ls
+          ls ./.webpack
 
   publish_on_mac:
     runs-on: macos-latest
@@ -27,16 +58,45 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 22
-      - name: install dependencies
-        working-directory: ./Iris
+      - name: Debug directory structure
         run: |
-         ls
-         npm install
-      - name: publish
+          ls -la
+          find . -maxdepth 3 -type d | sort
+      - name: Install dependencies
+        id: install
+        run: npm install
+        continue-on-error: true
+      - name: Debug on install failure
+        if: steps.install.outcome == 'failure'
+        run: |
+          echo "Installation failed, checking environment..."
+          node --version
+          npm --version
+          ls -la node_modules || echo "No node_modules directory"
+      - name: Build app
+        id: build
+        run: npm run package
+        continue-on-error: true
+      - name: Debug on build failure
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "Build failed, checking webpack configuration..."
+          cat forge.config.mjs || echo "No forge.config.mjs file"
+          find . -name "*.scss" | grep -i discord
+          find ./src -type d -name "styles" | xargs ls -la
+          find ./src -type d -name "Styles" | xargs ls -la
+      - name: Publish
+        id: publish
+        if: steps.build.outcome == 'success'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
         run: npm run publish
+      - name: Debug on publish failure
+        if: steps.publish.outcome == 'failure'
+        run: |
+          echo "Publish failed, checking build artifacts..."
+          find . -name "*.js" -path "*/.webpack/*" | head -n 10
+          find ./dist -type f 2>/dev/null || echo "No dist directory"
 
   publish_on_win:
     runs-on: windows-latest
@@ -45,13 +105,42 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: 22
-      - name: install dependencies
-        working-directory: ./Iris
-        run: | 
-         ls
-         npm install
-      - name: publish
+      - name: Debug directory structure
+        run: |
+          dir
+          Get-ChildItem -Depth 3 -Directory | Select-Object FullName
+      - name: Install dependencies
+        id: install
+        run: npm install
+        continue-on-error: true
+      - name: Debug on install failure
+        if: steps.install.outcome == 'failure'
+        run: |
+          echo "Installation failed, checking environment..."
+          node --version
+          npm --version
+          if (Test-Path node_modules) { dir node_modules } else { echo "No node_modules directory" }
+      - name: Build app
+        id: build
+        run: npm run package
+        continue-on-error: true
+      - name: Debug on build failure
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "Build failed, checking webpack configuration..."
+          if (Test-Path forge.config.mjs) { cat forge.config.mjs } else { echo "No forge.config.mjs file" }
+          Get-ChildItem -Recurse -Filter "*.scss" | Where-Object { $_.FullName -like "*discord*" } | Select-Object FullName
+          Get-ChildItem -Recurse -Directory -Filter "styles" | ForEach-Object { Get-ChildItem -Path $_.FullName }
+          Get-ChildItem -Recurse -Directory -Filter "Styles" | ForEach-Object { Get-ChildItem -Path $_.FullName }
+      - name: Publish
+        id: publish
+        if: steps.build.outcome == 'success'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./Iris
         run: npm run publish
+      - name: Debug on publish failure
+        if: steps.publish.outcome == 'failure'
+        run: |
+          echo "Publish failed, checking build artifacts..."
+          Get-ChildItem -Recurse -Filter "*.js" -Path ".webpack" | Select-Object -First 10 FullName
+          if (Test-Path dist) { Get-ChildItem -Recurse -Path dist } else { echo "No dist directory" }
