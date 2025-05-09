@@ -216,7 +216,7 @@ const DiscordNotification: React.FC = ({
   }
 
   return (
-    <div className={`notification-container ${isVisible ? 'visible' : 'visible'}`} onMouseEnter={handleMouseEnter}
+    <div className={`notification-container ${isVisible ? 'visible' : ''}`} onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="profile-picture">
