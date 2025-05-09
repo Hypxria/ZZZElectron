@@ -287,13 +287,13 @@ const SongControls: React.FC<SongControlsProps> = ({
       </div>
       <div className="song-button-container">
         <div className="main-controls-row">
+          {shuffleButton}
           {backButton}
           {songButton}
           {skipButton}
+          {loopButton}
         </div>
         <div className="secondary-controls-row">
-          {shuffleButton}
-          {loopButton}
         </div>
       </div>
     </div>

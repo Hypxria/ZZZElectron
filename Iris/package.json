@@ -28,7 +28,7 @@
     "package": "electron-forge package",
     "make": "set DEBUG=electron-packager && electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "knip": "knip"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.6.1",
@@ -41,13 +41,12 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
     "@electron-forge/plugin-fuses": "^7.6.1",
     "@electron-forge/plugin-webpack": "^7.6.1",
-    "@electron-forge/publisher-github": "^7.8.0",
     "@electron/fuses": "^1.8.0",
     "@electron/rebuild": "^3.7.1",
     "@types/axios": "^0.9.36",
     "@types/electron": "^1.4.38",
     "@types/electron-squirrel-startup": "^1.0.2",
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.15.16",
     "@types/react": "^19.0.9",
     "@types/react-dom": "^19.0.3",
     "@types/tough-cookie": "^4.0.5",
@@ -56,11 +55,12 @@
     "autoprefixer": "^10.4.21",
     "electron": "34.2.0",
     "file-loader": "^6.2.0",
+    "knip": "^5.55.1",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.2",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.3",
     "util": "^0.12.5"
   },
   "browser": {
@@ -103,7 +103,6 @@
     "style-loader": "^4.0.0",
     "tough-cookie": "^5.1.2",
     "ts-loader": "^9.5.2",
-    "typescript": "^5.7.3",
     "v8-compile-cache": "^2.4.0",
     "ws": "^8.18.1"
   }

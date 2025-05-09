@@ -222,7 +222,7 @@ a. Attribution.
           reasonably practicable.
 
 b. ShareAlike.
-
+   
      In addition to the conditions in Section 3(a), if You Share
      Adapted Material You produce, the following conditions also apply.
 

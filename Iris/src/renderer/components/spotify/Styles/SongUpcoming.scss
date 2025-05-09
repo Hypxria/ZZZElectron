@@ -2,14 +2,36 @@
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 12px;
-  width: 13vmax;
+  width: 25vw;
   min-width: 50px;
-  max-width: 300px;
+  max-width: 250px;
   position: fixed;
   top: 2vmin;
   left: 2vmin;
   z-index: 1000;
   transition: all 0.3s ease;
+
+  &.collapsed {
+    background-color: rgba(255, 255, 255, 0.1);
+    min-width: none;
+  
+    /* Remove min-width constraint */
+    width: fit-content;
+    max-width: none;
+  
+    /* Override the max-width if needed */
+    padding-right: 12px;
+    padding-left: 12px;
+    padding-top: 12px;
+  
+    .upcoming-content {
+      transition: all 0.3s ease-in-out;
+      width: 0;
+      height: 0;
+      margin-top: 0;
+      opacity: 0;
+    }
+  }
 }
 
 .upcoming-header {
@@ -58,27 +80,6 @@
   margin-top: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-}
-
-.upcoming-song-container.collapsed {
-  background-color: rgba(255, 255, 255, 0.1);
-  min-width: none;
-
-  /* Remove min-width constraint */
-  width: fit-content;
-  max-width: none;
-
-  /* Override the max-width if needed */
-  padding-right: 12px;
-  padding-left: 12px;
-  padding-top: 12px;
-
-  .upcoming-content {
-    width: 0;
-    height: 0;
-    margin-top: 0;
-    opacity: 0;
-  }
 }
 
 .next-song-card {

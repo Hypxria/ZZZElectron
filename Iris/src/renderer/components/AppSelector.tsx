@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import './styles/AppSelector.scss'
 
-import { LibraryMusicRounded } from '@mui/icons-material';
+import { LibraryMusicRounded, AccessTimeRounded } from '@mui/icons-material';
+
 
 
 import { ViewState } from '../../types/viewState.ts';
@@ -19,6 +20,26 @@ const AppSelector: React.FC<TitlebarProps> = ({
   setViewState,
   hide,
 }) => {
+  const [currentTime, setCurrentTime] = useState<string>('');
+
+  useEffect(() => {
+    // Function to update time
+    const updateTime = () => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setCurrentTime(`${hours}:${minutes}`);
+    };
+
+    // Update time immediately
+    updateTime();
+
+    // Set interval to update time every minute
+    const intervalId = setInterval(updateTime, 60000);
+
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleLeftButtonClick = () => {
     if (viewState === ViewState.SPOTIFY_FULL) {
@@ -42,17 +63,15 @@ const AppSelector: React.FC<TitlebarProps> = ({
 
 
   return (
-    <div className={`selector-wrapper ${hide ? 'hide': ''}`}>
-      <div
-        id="selector"
-      >
+    <div className={`selector-wrapper ${hide ? 'hide' : ''}`}>
+      <div id="selector">
         <div className="button-container">
           <div className="button-wrapper">
             <div className="main-buttons">
               <div className='spotify-button'>
                 <button className="selector-button" onClick={handleLeftButtonClick} >
                   <div className='music-icon'>
-                    <LibraryMusicRounded  />
+                    <LibraryMusicRounded />
                   </div>
                 </button>
               </div>
@@ -72,8 +91,13 @@ const AppSelector: React.FC<TitlebarProps> = ({
               </div>
             </div>
           </div>
+
         </div>
+        
       </div>
+      <div className='time-display'>
+          {currentTime}
+        </div>
     </div>
   );
 };

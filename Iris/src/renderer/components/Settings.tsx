@@ -615,6 +615,7 @@ function Audio({
 
     // Initial setup of the slider value and CSS property
     useEffect(() => {
+        if (!irisEnabled) return;
         if (sliderRef.current && defaultValue) {
             // Set the input value
             sliderRef.current.value = String(defaultValue);
@@ -683,6 +684,7 @@ function Audio({
     };
 
     useEffect(() => {
+        if (!irisEnabled) return;
         getAudioDevices();
 
         // Listen for device changes (e.g., plugging in/removing a mic)
@@ -701,6 +703,7 @@ function Audio({
 
 
     useEffect(() => {
+        if (!irisEnabled) return;
         setupAudioMonitoring();
 
         // Cleanup function
