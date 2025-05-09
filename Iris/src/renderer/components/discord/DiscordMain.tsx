@@ -49,10 +49,15 @@ const DiscordMain: React.FC = ({
 
 
     return (
+        <>
+            {logins && (
                 <>
-                    <DiscordCall />
-                    <DiscordNotification />
+                <DiscordCall />
+                <DiscordNotification />
                 </>
+            )}
+        </>
+
 
     );
 };
