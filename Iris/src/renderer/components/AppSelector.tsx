@@ -25,10 +25,8 @@ const AppSelector: React.FC<TitlebarProps> = ({
   useEffect(() => {
     // Function to update time
     const updateTime = () => {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      setCurrentTime(`${hours}:${minutes}`);
+      const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      setCurrentTime(`${now}`);
     };
 
     // Update time immediately

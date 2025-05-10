@@ -301,7 +301,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           games.push({
             title: "Zenless Zone Zero",
             logo: zzzIcon,
-            accent: "#6B46C1",
+            accent: "#fc8b3d",
             stats: [
               { label: "Proxy Level", value: `${zzzLevel}`, icon: <Star size={18} /> },
               { label: "Battery", value: `${zzzBattery?.data?.energy?.progress?.current || 0}/240`, icon: <Battery size={18} /> },
@@ -316,7 +316,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           games.push({
             title: "Honkai Star Rail",
             logo: honkaiIcon,
-            accent: "#3182CE",
+            accent: "#e5c0cc",
             stats: [
               { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
               { label: "Stamina", value: `${starrailBattery?.data?.current_stamina || 0}/${starrailBattery?.data?.max_stamina || 400}`, icon: <Battery size={18} /> },
@@ -331,7 +331,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
           games.push({
             title: "Genshin Impact",
             logo: genshinIcon,
-            accent: "#48BB78",
+            accent: "#ffffff",
             stats: [
               { label: "Adventure Rank", value: `${genshinLevel}`, icon: <Star size={18} /> },
               { label: "Resin", value: `${genshinNotes?.data?.current_resin || 0}/${genshinNotes?.data?.max_resin || 200}`, icon: <Battery size={18} /> },

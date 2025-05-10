@@ -2,12 +2,12 @@
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 12px;
-  width: 25vw;
+  width: calc(25vmin + 50px);
   min-width: 50px;
   max-width: 250px;
   position: fixed;
-  top: 2vmin;
-  left: 2vmin;
+  top: 10px;
+  left: 10px;
   z-index: 1000;
   transition: all 0.3s ease;
 

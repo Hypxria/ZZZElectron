@@ -5,9 +5,10 @@
   "scripts": {
     "build": "spicetify-creator",
     "build-local": "spicetify-creator --out=dist --minify",
+    "build-iris": "spicetify-creator --out=../../Iris/src/assets/extension --minify",
     "watch": "spicetify-creator --watch"
   },
-  "license": "MIT",
+  "license": "CC BY-NC-SA 4.0",
   "devDependencies": {
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",

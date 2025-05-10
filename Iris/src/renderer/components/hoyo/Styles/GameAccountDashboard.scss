@@ -180,7 +180,7 @@
 /* Game info section styles */
 .game-info-section {
     justify-content: center;
-    padding: 4%;
+    padding: 0%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -217,6 +217,7 @@
 }
 
 .update-time {
+    text-align: center;
     font-size: 12px;
     color: #a1a1aa; // Muted text color
     margin-top: 4px;
