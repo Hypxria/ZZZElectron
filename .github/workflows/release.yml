@@ -1,5 +1,7 @@
 name: Release
-on: workflow_dispatch
+on: 
+  release:
+    types: [published, created, prereleased, released]
 
 jobs:
   publish_on_linux:
