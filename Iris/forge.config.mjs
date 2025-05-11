@@ -5,6 +5,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config = {
   publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "Hyperiya",
+          name: "Iris",
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
   ],
   packagerConfig: {
     derefSymlinks: true,
@@ -32,11 +43,13 @@ const config = {
       },
     },
     {
+      executableName: "Iris",
       name: "@electron-forge/maker-zip",
       platforms: ["darwin"],
     },
     {
       name: "@electron-forge/maker-deb",
+      executableName: "Iris",
       config: {
         options: {
           icon: "src/assets/icons/Iris.png",
@@ -44,9 +57,24 @@ const config = {
       },
     },
     {
+      executableName: "Iris",
       name: "@electron-forge/maker-rpm",
       config: {},
     },
+    {
+      name: "@electron-forge/maker-dmg",
+      config: {
+        format: "ULFO",
+        name: "Iris",
+        executableName: "Iris",
+        icon: path.join(process.cwd(), "src", "assets", "icons", "Iris.icns"),
+        background: path.join(process.cwd(), "src", "assets", "dmg-background.png"), // Optional: Add if you have a background image
+        contents: [
+          { x: 448, y: 344, type: "link", path: "/Applications" },
+          { x: 192, y: 344, type: "file", path: "${APPNAME}.app" }
+        ]
+      }
+    }
   ],
   plugins: [
     {
