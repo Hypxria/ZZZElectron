@@ -459,7 +459,7 @@ class Iris {
                     album: currentTrack?.album?.name || 'Unknown',
                     duration_ms: currentTrack?.duration || 0,
                     album_cover: this.convertSpotifyImageUriToUrl(currentTrack.metadata.image_xlarge_url),
-                    year: this.songyear || 'Unknown Year',
+                    year: currentTrack.album.name || 'Unknown',
                     volume: Spicetify.Player.getVolume(),
                     is_playing: Spicetify.Player.isPlaying(),
                     repeat_state: Spicetify.Player.getRepeat(),

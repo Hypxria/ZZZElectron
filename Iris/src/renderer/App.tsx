@@ -165,8 +165,9 @@ function AppContent() {
 
   useEffect(() => {
     if (isIrisEnabled === true) {
-      setIrisStarted(true)
+      speechService.initialize()
       speechService.startListening(sensitivity, activeDevice);
+      setIrisStarted(true)
     } else {
       if (irisStarted) {
         speechService.cleanup();

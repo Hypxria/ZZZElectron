@@ -13,7 +13,6 @@ export class TranscriptionManager {
 
     constructor() {
         // Pre-initialize worker pool if needed
-        this.initWorkerPool();
     }
 
     private initWorkerPool() {
@@ -37,6 +36,7 @@ export class TranscriptionManager {
     }
 
     public async init() {
+        this.initWorkerPool();
         this.isShutdown = false;
         
         // Make sure worker pool is initialized

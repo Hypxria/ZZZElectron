@@ -97,12 +97,28 @@ export class LrcLibApi {
           });
           throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         console.log('Found lyrics with primary artist!');
         return data;
       }
+      
+      const url = `${this.baseUrl}/get?track_name=${cleanTrack}`
 
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      } else {
+        return response.json()
+      }
+      
       // If we get here, throw error from last attempt
       throw new Error('No lyrics found after all attempts');
       

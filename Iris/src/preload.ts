@@ -2,8 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 // src/preload.ts
-import { subscribe, unsubscribe } from 'diagnostics_channel';
-import { contextBridge, shell, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('versions', {
   node: () => process.versions.node,

@@ -13,6 +13,7 @@ const SongVolume: React.FC<SongVolumeProps> = ({
     onVolumeChange,
 }) => {
     const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('volume changed, ' , Number(event.target.value));
         onVolumeChange(Number(event.target.value));
     };
 

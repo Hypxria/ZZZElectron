@@ -60,8 +60,6 @@ const config = {
             topLevelAwait: true,
           },
           output: {
-            filename: "[name].js",
-            path: path.resolve(process.cwd(), ".webpack"),
             module: true,
             libraryTarget: "module",
             chunkFormat: "module",

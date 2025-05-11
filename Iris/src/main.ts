@@ -58,12 +58,12 @@ const createWindow = async (): Promise<void> => {
   app.commandLine.appendSwitch('enable-hardware-overlays');
   app.commandLine.appendSwitch('enable-accelerated-2d-canvas');
   app.commandLine.appendSwitch('enable-accelerated-video-decode');
-  
+
   // Add these power-saving switches
   app.commandLine.appendSwitch('enable-gpu-memory-buffer-compositor-resources');
   app.commandLine.appendSwitch('enable-oop-rasterization');
   app.commandLine.appendSwitch('enable-gpu-memory-buffer-video-frames');
-  
+
   // Keep these for WebGL support
   app.commandLine.appendSwitch('enable-webgl');
   app.commandLine.appendSwitch('enable-webgl2');
@@ -82,7 +82,7 @@ const createWindow = async (): Promise<void> => {
 
     useContentSize: true,
     autoHideMenuBar: true,
-  
+
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -98,17 +98,26 @@ const createWindow = async (): Promise<void> => {
     show: false,
   });
 
+  // Add this after creating the mainWindow and before loading the URL
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    // Check for Ctrl+W keyboard shortcut
+    if (input.control && input.key.toLowerCase() === 'w') {
+      console.log('Prevented Ctrl+W from closing the window');
+      event.preventDefault();
+    }
+  });
+
   // Initialize snapshot manager early
   snapshotManager = new SnapshotManager();
-  
+
   mainWindow.once('ready-to-show', () => {
     mainWindow?.webContents.send('loading:update', 0, 'Starting Iris...');
     mainWindow?.show();
-    
+
     // Start loading process
     startLoadingProcess();
   });
-    
+
   mainWindow.setTitle('Iris');
 
   if (windowState.isMaximized) {
@@ -123,16 +132,16 @@ const createWindow = async (): Promise<void> => {
     mainWindow.on('resize', () => {
       if (mainWindow) saveWindowState(mainWindow);
     });
-  
+
     mainWindow.on('move', () => {
       if (mainWindow) saveWindowState(mainWindow);
     });
-  
+
     mainWindow.on('close', () => {
       if (mainWindow) saveWindowState(mainWindow);
     });
   }
-  
+
   setupIpcHandlers(mainWindow);
 
   mainWindow.on('maximize', () => {
@@ -176,16 +185,16 @@ const createWindow = async (): Promise<void> => {
 
   const ensureWindowVisible = () => {
     if (!mainWindow) return;
-    
+
     const displays = screen.getAllDisplays();
     const { bounds } = windowState;
-    
+
     // Check if window is visible on any display
     const isVisible = displays.some(display => {
       return bounds.x >= display.bounds.x &&
-             bounds.y >= display.bounds.y &&
-             bounds.x + bounds.width <= display.bounds.x + display.bounds.width &&
-             bounds.y + bounds.height <= display.bounds.y + display.bounds.height;
+        bounds.y >= display.bounds.y &&
+        bounds.x + bounds.width <= display.bounds.x + display.bounds.width &&
+        bounds.y + bounds.height <= display.bounds.y + display.bounds.height;
     });
 
     // If not visible, center on primary display
@@ -211,31 +220,31 @@ const createWindow = async (): Promise<void> => {
 // Function to handle the loading process with snapshot support
 const startLoadingProcess = () => {
   if (!mainWindow) return;
-  
+
   // Initialize snapshot manager if not already done
   if (!snapshotManager) {
     snapshotManager = new SnapshotManager();
   }
-  
+
   // Try to load from snapshot first
   const snapshotLoaded = snapshotManager.loadSnapshot();
   let startProgress = snapshotLoaded ? 30 : 0; // Start at 30% if snapshot was loaded
-  
+
   let progress = startProgress;
   const loadingInterval = setInterval(() => {
     // Faster progress if snapshot was loaded
     const increment = snapshotLoaded ? 15 : 10;
     progress += increment;
-    
-    mainWindow?.webContents.send('loading:update', progress, 
+
+    mainWindow?.webContents.send('loading:update', progress,
       progress < 30 ? 'Loading resources...' :
-      progress < 60 ? 'Initializing services...' :
-      progress < 90 ? 'Almost ready...' : 'Ready!'
+        progress < 60 ? 'Initializing services...' :
+          progress < 90 ? 'Almost ready...' : 'Ready!'
     );
-    
+
     if (progress >= 100) {
       clearInterval(loadingInterval);
-      
+
       // Create a new snapshot if one wasn't loaded or is outdated
       if (!snapshotLoaded) {
         // In a real implementation, you'd collect the loaded modules

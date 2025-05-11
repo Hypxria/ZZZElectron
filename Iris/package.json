@@ -3,7 +3,7 @@
   "productName": "Iris",
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
-  "main": ".webpack/main",
+  "main": "./.webpack/main",
   "config": {
     "forge": "./forge.config.mjs"
   },
@@ -25,9 +25,9 @@
   },
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "set DEBUG=electron-packager && electron-forge make",
-    "publish": "electron-forge publish",
+    "package": "set DEBUG=electron-forge:*,electron-packager:* && electron-forge package",
+    "make": "set DEBUG=electron-forge:*,electron-packager:*,electron-installer-* && electron-forge make",
+    "publish": "set DEBUG=electron-forge:*,electron-packager:*,electron-installer-* && electron-forge publish",
     "knip": "knip"
   },
   "devDependencies": {
@@ -82,6 +82,7 @@
     "axios": "^1.8.3",
     "axios-cookiejar-support": "^5.0.5",
     "buffer": "^6.0.3",
+    "bumblebee-hotword": "^0.2.1",
     "cryptojs": "^2.5.3",
     "css-loader": "^6.11.0",
     "electron-squirrel-startup": "^1.0.1",
