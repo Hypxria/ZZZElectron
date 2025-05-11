@@ -550,22 +550,25 @@ class Iris {
     this.listenForPlayPause();
   }
 
-  private async getSongYear(currentTrack:any) {
+  private async getSongYear(currentTrack: any): Promise<string> {
     const accessToken = Spicetify.Platform.Session.accessToken;
-
-    // Get album ID from the current track
     const trackId = currentTrack?.uri?.split(':')[2];
-
-    fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    }).then(response => response.json())
-      .then(albumData => {
-        console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`)
-        this.songyear = albumData.album?.release_date?.split('-')[0];
-        console.log(`Song year: ${this.songyear}`)
-      })
+    
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      const albumData = await response.json();
+      console.log(`Album Data: ${JSON.stringify(albumData, null, 2)}`);
+      const year = albumData.album?.release_date?.split('-')[0] || 'Unknown Year';
+      this.songyear = year; // Still update the class property
+      return year;
+    } catch (error) {
+      console.error('Error fetching song year:', error);
+      return 'Unknown Year';
+    }
   }
 
   private async listenForSongChange() {
@@ -590,6 +593,7 @@ class Iris {
       }
 
       const currentTrack = Spicetify.Player.data.item;
+      Spicetify.showNotification(`Now Playing: ${currentTrack.name}`)
 
       console.log(JSON.stringify(currentTrack, null, 2))
 

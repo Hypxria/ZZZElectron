@@ -72,11 +72,11 @@ const SongLyrics: React.FC<SongLyricsProps> = ({
           }));
           setLyrics(plainLyrics);
         } else {
-          setError('No lyrics content found');
+          setError('No lyrics found');
         }
       } catch (err) {
         console.error('Error fetching lyrics:', err);
-        setError('No lyrics content found');
+        setError('No lyrics found');
       } finally {
         setLoading(false);
       }

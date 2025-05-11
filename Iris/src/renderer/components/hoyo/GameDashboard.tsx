@@ -404,7 +404,6 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
     }
   }, []); // Empty dependency array since refreshStats is external
 
-
   return (
     <div ref={containerRef} className={`dashboard-container ${viewState === ViewState.RIGHT_FULL ? 'full' : 'neutral'}`}>
       <div className="dashboard-header">

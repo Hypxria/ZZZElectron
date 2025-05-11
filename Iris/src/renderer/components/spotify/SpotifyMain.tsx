@@ -63,6 +63,7 @@ const SpotifyMain: React.FC<SpotifyMainProps> = (
           setCurrentTrackData(prev => {
             if (prev.name === track.name &&
               prev.artist === track.artist &&
+              prev.year === track.year &&
               prev.duration_ms === track.duration_ms &&
               prev.is_playing === track.is_playing &&
               prev.volume === track.volume &&

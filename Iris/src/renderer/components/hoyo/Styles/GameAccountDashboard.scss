@@ -52,8 +52,10 @@
         translate: 0% 0%;
         display: flex;
         flex-direction: column;
+        transition: all 0.3s ease 0.5s;
         gap: 16px;
-        flex: 1;
+        flex: 1; // Add this to make it take available space
+
     }
 
     &.full {
@@ -153,7 +155,7 @@
     display: flex;
     flex-direction: row;
     transition: all 0.3s ease; // Add smooth transition
-    height: var(--card-height, auto); // Change fixed height to variable
+    height: var(--card-height, auto);
     min-height: 0; // Allow shrinking
     flex-shrink: 0; // Prevent unwanted shrinking
 
@@ -217,7 +219,7 @@
 }
 
 .update-time {
-    text-align: center;
+
     font-size: 12px;
     color: #a1a1aa; // Muted text color
     margin-top: 4px;
@@ -225,6 +227,8 @@
 
 /* Stats section styles */
 .stats-section {
+    
+    /* Add this to ensure full height */
     padding: 16px;
     flex: 1;
     display: flex;
@@ -237,7 +241,9 @@
     gap: 16px;
     width: 100%;
     height: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     align-items: stretch;
     grid-auto-flow: dense;
     grid-auto-rows: 1fr; // Make rows share available space equally
@@ -287,6 +293,9 @@
     margin: 0;
     line-height: 1.2;
     /* Better line height for text */
+    width: 5%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .stat-value {
