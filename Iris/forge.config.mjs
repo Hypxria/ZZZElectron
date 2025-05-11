@@ -61,20 +61,6 @@ const config = {
       name: "@electron-forge/maker-rpm",
       config: {},
     },
-    {
-      name: "@electron-forge/maker-dmg",
-      config: {
-        format: "ULFO",
-        name: "Iris",
-        executableName: "Iris",
-        icon: path.join(process.cwd(), "src", "assets", "icons", "Iris.icns"),
-        background: path.join(process.cwd(), "src", "assets", "dmg-background.png"), // Optional: Add if you have a background image
-        contents: [
-          { x: 448, y: 344, type: "link", path: "/Applications" },
-          { x: 192, y: 344, type: "file", path: "${APPNAME}.app" }
-        ]
-      }
-    }
   ],
   plugins: [
     {
