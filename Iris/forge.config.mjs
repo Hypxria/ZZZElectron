@@ -52,6 +52,7 @@ const config = {
       executableName: "Iris",
       config: {
         options: {
+          bin: 'Iris',
           icon: "src/assets/icons/Iris.png",
         },
       },
