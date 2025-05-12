@@ -23,7 +23,7 @@ const config = {
     extraResource: ["src/assets/extension"],
     appId: "hyperiya.app.iris",
     icon: path.join(process.cwd(), "src", "assets", "icons", "Iris"),
-    executableName: "Iris",
+    executableName: "iris",
     name: "Iris",
   },
   rebuildConfig: {},
@@ -35,7 +35,7 @@ const config = {
         name: "Iris",
         authors: "Hyperiya",
         description: "Music & Game Stat Displayer",
-        exe: "Iris.exe",
+        exe: "iris.exe",
         setupExe: "iris-setup.exe",
         setupIcon: "src/assets/icons/Iris.ico",
         iconUrl:
@@ -43,22 +43,22 @@ const config = {
       },
     },
     {
-      executableName: "Iris",
+      executableName: "iris",
       name: "@electron-forge/maker-zip",
       platforms: ["darwin"],
     },
     {
       name: "@electron-forge/maker-deb",
-      executableName: "Iris",
+      executableName: "iris",
       config: {
         options: {
-          bin: 'Iris',
+          bin: 'iris',
           icon: "src/assets/icons/Iris.png",
         },
       },
     },
     {
-      executableName: "Iris",
+      executableName: "iris",
       name: "@electron-forge/maker-rpm",
       config: {},
     },

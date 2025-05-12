@@ -1,6 +1,6 @@
 {
   "name": "@hyperiya/iris",
-  "productName": "Iris",
+  "productName": "iris",
   "version": "1.0.0",
   "description": "Music & Game Stat Displayer",
   "main": "./.webpack/main",
