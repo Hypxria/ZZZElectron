@@ -60,7 +60,12 @@ const config = {
     {
       executableName: "iris",
       name: "@electron-forge/maker-rpm",
-      config: {},
+      config: {
+        options: {
+          bin: 'iris',
+          icon: "src/assets/icons/Iris.png",
+        },
+      },
     },
   ],
   plugins: [
