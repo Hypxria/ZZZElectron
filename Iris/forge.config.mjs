@@ -54,6 +54,7 @@ const config = {
         options: {
           bin: 'iris',
           icon: "src/assets/icons/Iris.png",
+          productName: 'iris',
         },
       },
     },
@@ -64,6 +65,7 @@ const config = {
         options: {
           bin: 'iris',
           icon: "src/assets/icons/Iris.png",
+          productName: 'iris',
         },
       },
     },
