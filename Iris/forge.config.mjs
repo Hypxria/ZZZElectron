@@ -4,19 +4,6 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config = {
-  publishers: [
-    {
-      name: "@electron-forge/publisher-github",
-      config: {
-        repository: {
-          owner: "Hyperiya",
-          name: "Iris",
-        },
-        prerelease: false,
-        draft: true,
-      },
-    },
-  ],
   packagerConfig: {
     derefSymlinks: true,
     asar: true,
