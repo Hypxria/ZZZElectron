@@ -39,9 +39,9 @@ const config = {
       executableName: "iris",
       config: {
         options: {
-          bin: 'iris',
+          bin: "iris",
           icon: "src/assets/icons/Iris.png",
-          productName: 'iris',
+          productName: "iris",
         },
       },
     },
@@ -50,9 +50,9 @@ const config = {
       name: "@electron-forge/maker-rpm",
       config: {
         options: {
-          bin: 'iris',
+          bin: "iris",
           icon: "src/assets/icons/Iris.png",
-          productName: 'iris',
+          productName: "iris",
         },
       },
     },
@@ -62,6 +62,29 @@ const config = {
       name: "@electron-forge/plugin-webpack",
       config: {
         mainConfig: {
+          plugins: [
+            {
+              apply: (compiler) => {
+                compiler.hooks.emit.tapAsync(
+                  "GenerateIndexFile",
+                  (compilation, callback) => {
+                    // Create an ESM-compatible index.js that imports main.js
+                    const indexContent = `
+// This file is auto-generated to redirect to main.js
+// It's ESM-compatible and imports a specific file, not a directory
+export * from './main.js';
+`;
+                    compilation.assets["index.js"] = {
+                      source: () => indexContent,
+                      size: () => indexContent.length,
+                    };
+                    callback();
+                  }
+                );
+              },
+            },
+          ],
+
           devtool: process.env.NODE_ENV === "production" ? false : "source-map",
           entry: "./src/main.ts",
           experiments: {
@@ -69,6 +92,8 @@ const config = {
             topLevelAwait: true,
           },
           output: {
+            filename: "[name].js",
+            path: path.join(process.cwd(), ".webpack", "main"),
             module: true,
             libraryTarget: "module",
             chunkFormat: "module",
