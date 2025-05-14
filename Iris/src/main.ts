@@ -1,23 +1,47 @@
 // src/main.ts
-import 'v8-compile-cache';
-
-import { app, BrowserWindow, session, ipcMain, screen } from 'electron';
+import path from 'path'
+import { app, BrowserWindow, session, ipcMain, screen, nativeImage } from 'electron';
 import DiscordRPC from './services/discordServices/discordRPC.ts';
 import { SnapshotManager } from './utils/snapshotUtil.ts';
+import { fileURLToPath } from 'url';
+import fs from 'fs'
 
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const MAIN_WINDOW_PRELOAD_VITE_ENTRY: string;
+declare const MAIN_WINDOW_VITE_NAME: string;
 
 import { setupIpcHandlers } from './ipc/index.ts';
 import { cleanupSpotifyHandlers } from './ipc/handlers/spotify.ts'
 
 import { saveWindowState, restoreWindowState } from './utils/windowState.ts';
 
+import Iris from './assets/icons/Iris.png'
+
 let mainWindow: BrowserWindow | null = null;
 let discordRPC: DiscordRPC | null = null;
 let snapshotManager: SnapshotManager | null = null;
 
 ipcMain.setMaxListeners(20); // Or whatever number is appropriate
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Set up error logging to file
+const logPath = path.join(app.getPath('userData'), 'iris-error.log');
+console.log(`Logging to: ${logPath}`);
+
+// Log unhandled exceptions
+process.on('uncaughtException', (error) => {
+  const errorMsg = `Uncaught Exception: ${error.message}\n${error.stack}\n`;
+  fs.appendFileSync(logPath, `${new Date().toISOString()} - ${errorMsg}`);
+  console.error(errorMsg);
+});
+
+// Log unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  const errorMsg = `Unhandled Rejection at: ${promise}, reason: ${reason}\n`;
+  fs.appendFileSync(logPath, `${new Date().toISOString()} - ${errorMsg}`);
+  console.error(errorMsg);
+});
 
 const cspDirectives = {
   'font-src': ["'self'"],
@@ -78,7 +102,7 @@ const createWindow = async (): Promise<void> => {
     title: 'Iris', // Add this line
     frame: false, // This removes the default window frame
     titleBarStyle: 'hidden',
-    icon: './assets/icons/Iris.png',
+    // icon: nativeImage.createFromDataURL(Iris), // Convert data URL to native image
 
     useContentSize: true,
     autoHideMenuBar: true,
@@ -86,7 +110,9 @@ const createWindow = async (): Promise<void> => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: app.isPackaged
+        ? path.join(__dirname, '..', 'preload', 'preload.js')
+        : path.join(__dirname, '..', 'preload', 'preload.js'),
       sandbox: true,
       webgl: true,
       offscreen: false,
@@ -209,8 +235,12 @@ const createWindow = async (): Promise<void> => {
   ensureWindowVisible();
 
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
+  console.log(__dirname)
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  } else {
+    mainWindow.loadFile(path.join(__dirname, `../renderer/index.html`));
+  };
   // Open the DevTools.
   if (process.env.NODE_ENV === 'development') {
     // mainWindow.webContents.openDevTools();
@@ -314,7 +344,7 @@ app.whenReady().then(async () => {
     return a.bounds.y - b.bounds.y;
   });
 
-  createWindow();
+  await createWindow();
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

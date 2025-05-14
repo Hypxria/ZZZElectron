@@ -52,8 +52,8 @@ const DiscordMain: React.FC = ({
         <>
             {logins && (
                 <>
-                <DiscordCall />
-                <DiscordNotification />
+                    <DiscordCall />
+                    <DiscordNotification />
                 </>
             )}
         </>
