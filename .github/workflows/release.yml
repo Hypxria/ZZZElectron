@@ -105,3 +105,12 @@ jobs:
           name: iris-all-platforms
           path: combined-builds
           retention-days: 7
+          
+      - name: Upload artifacts to release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            combined-builds/linux/**/*
+            combined-builds/macos/**/*
+            combined-builds/windows/**/*
