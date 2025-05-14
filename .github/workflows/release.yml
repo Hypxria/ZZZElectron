@@ -111,6 +111,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            combined-builds/linux/**/*
-            combined-builds/macos/**/*
-            combined-builds/windows/**/*
+            combined-builds/linux/rpm/x64/*
+            combined-builds/linux/deb/x64/*
+            combined-builds/macos/zip/darwin/arm64/*
+            combined-builds/windows/squirrel-windows/x64/iris-setup.exe
