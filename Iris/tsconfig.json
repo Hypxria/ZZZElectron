@@ -14,16 +14,24 @@
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "outDir": "dist",
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node", "tough-cookie"],
     "useUnknownInCatchVariables": false,
-    "allowImportingTsExtensions": true,
     "noImplicitAny": false,
-    "noImplicitThis": false
+    "noImplicitThis": false,
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "emitDeclarationOnly": false,
+    "declaration": false
   },
+  "include": [
+    "src/**/*"
+  ],
   "exclude": ["node_modules"]
 }

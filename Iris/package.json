@@ -7,17 +7,25 @@
   "type": "module",
   "build": {
     "appId": "hyperiya.app.iris",
+    "productName": "Iris",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
     "win": {
-      "icon": "src/assets/icons/Iris.ico",
-      "target": [
-        "nsis"
-      ]
+      "target": ["nsis"],
+      "icon": "src/assets/icons/Iris.ico"
     },
     "mac": {
-      "icon": "assets/icons/icon.icns"
+      "target": ["dmg"],
+      "icon": "src/assets/icons/Iris.icns"
     },
     "linux": {
-      "icon": "assets/icons/icon.png"
+      "target": ["AppImage", "deb"],
+      "icon": "src/assets/icons/Iris.png"
     }
   },
   "scripts": {
@@ -50,6 +58,7 @@
     "@types/ws": "^8.18.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "autoprefixer": "^10.4.21",
+    "copyfiles": "^2.4.1",
     "electron": "34.2.0",
     "file-loader": "^6.2.0",
     "knip": "^5.55.1",
