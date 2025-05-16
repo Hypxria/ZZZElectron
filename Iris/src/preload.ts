@@ -31,6 +31,7 @@ contextBridge.exposeInMainWorld('electron', {
     onFullScreen: (callback: () => void) => ipcRenderer.on('fullscreen-change', callback),
     removeFullScreenListener: () => ipcRenderer.removeAllListeners('fullscreen-change'),
     fullscreen: () => ipcRenderer.invoke('toggle-fullscreen'),
+    toggleClickThrough: (enable) => ipcRenderer.invoke('toggle-click-through', enable),
   },
 });
 

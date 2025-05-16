@@ -24,6 +24,8 @@ interface ElectronAPI {
         minimize: () => Promise<void>;
         maximize: () => Promise<void>;
         unmaximize: () => Promise<void>;
+        toggleClickThrough: (newState) => Promise<any>;
+
         close: () => Promise<void>;
         fullscreen: () => Promise<void>;
     };

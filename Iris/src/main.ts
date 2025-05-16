@@ -327,6 +327,24 @@ ipcMain.handle('snapshot:status', () => {
   return { exists: false, info: null };
 });
 
+ipcMain.handle('toggle-click-through', (_, enable) => {
+  if (!mainWindow) return false;
+  
+  if (enable) {
+    // Enable click-through mode
+    mainWindow.setIgnoreMouseEvents(true, { forward: true });
+    mainWindow.setAlwaysOnTop(true);
+    mainWindow.setFocusable(false);
+  } else {
+    // Disable click-through mode
+    mainWindow.setIgnoreMouseEvents(false);
+    mainWindow.setAlwaysOnTop(false);
+    mainWindow.setFocusable(true);
+  }
+  
+  return true;
+});
+
 app.whenReady().then(async () => {
   app.on('gpu-info-update', () => {
     const gpuInfo = app.getGPUInfo('basic');
