@@ -33,7 +33,7 @@ const AppSelector: React.FC<TitlebarProps> = ({
     updateTime();
 
     // Set interval to update time every minute
-    const intervalId = setInterval(updateTime, 60000);
+    const intervalId = setInterval(updateTime, 1000);
 
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);

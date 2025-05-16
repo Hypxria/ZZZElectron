@@ -49,72 +49,83 @@ class DiscordRPC extends EventEmitter {
     async connect() {
         if (this.CLIENT_ID === '' || this.CLIENT_SECRET === '') return;
         
-        return new Promise((resolve, reject) => {
-            let currentPipe = 0;
-            const maxPipes = 10;
-            let connected = false;
-    
-            const tryConnect = (pipeNum: number) => {
-                if (connected) return;
+        const attemptConnection = async (): Promise<boolean> => {
+            return new Promise((resolve) => {
+                let currentPipe = 0;
+                const maxPipes = 10;
+                let connected = false;
                 
-                // Create a new socket for each attempt
-                if (this.socket) {
-                    this.socket.removeAllListeners();
-                    this.socket.destroy();
-                }
-                this.socket = new net.Socket();
-                
-                // Setup socket listeners
-                this.socket.once('connect', () => {
-                    connected = true;
-                    console.log('Connected to Discord IPC pipe:', pipeNum);
-                    this.setupSocket(); // Only setup full listeners after successful connection
-                    resolve(true);
-                });
-    
-                this.socket.once('error', (err) => {
-                    console.log(`Failed to connect to pipe ${pipeNum}:`, err.message);
+                const tryConnect = (pipeNum: number) => {
+                    if (connected) return;
                     
-                    // Clean up failed connection attempt
-                    this.socket?.removeAllListeners();
-                    this.socket?.destroy();
-                    
-                    // Try next pipe
-                    if (currentPipe < maxPipes - 1) {
-                        currentPipe++;
-                        tryConnect(currentPipe);
-                    } else {
-                        reject(new Error('Could not connect to any Discord IPC pipe. Please ensure Discord is running.'));
+                    // Create a new socket for each attempt
+                    if (this.socket) {
+                        this.socket.removeAllListeners();
+                        this.socket.destroy();
                     }
-                });
-    
-                const currentPath = process.platform === 'win32'
-                    ? `\\\\?\\pipe\\discord-ipc-${pipeNum}`
-                    : `/tmp/discord-ipc-${pipeNum}`;
-    
-                console.log(`Attempting to connect to pipe ${pipeNum}:`, currentPath);
-                
-                try {
-                    this.socket.connect(currentPath);
-                } catch (err) {
-                    // If connect throws synchronously, clean up and try next pipe
-                    console.error(`Error connecting to pipe ${pipeNum}:`, err);
-                    this.socket?.removeAllListeners();
-                    this.socket?.destroy();
+                    this.socket = new net.Socket();
                     
-                    if (currentPipe < maxPipes - 1) {
-                        currentPipe++;
-                        tryConnect(currentPipe);
-                    } else {
-                        reject(new Error('Could not connect to any Discord IPC pipe. Please ensure Discord is running.'));
+                    // Setup socket listeners
+                    this.socket.once('connect', () => {
+                        connected = true;
+                        console.log('Connected to Discord IPC pipe:', pipeNum);
+                        this.setupSocket(); // Only setup full listeners after successful connection
+                        resolve(true);
+                    });
+        
+                    this.socket.once('error', (err) => {
+                        console.log(`Failed to connect to pipe ${pipeNum}:`, err.message);
+                        
+                        // Clean up failed connection attempt
+                        this.socket?.removeAllListeners();
+                        this.socket?.destroy();
+                        
+                        // Try next pipe
+                        if (currentPipe < maxPipes - 1) {
+                            currentPipe++;
+                            tryConnect(currentPipe);
+                        } else {
+                            resolve(false); // Changed from reject to resolve(false)
+                        }
+                    });
+        
+                    const currentPath = process.platform === 'win32'
+                        ? `\\\\?\\pipe\\discord-ipc-${pipeNum}`
+                        : `/tmp/discord-ipc-${pipeNum}`;
+        
+                    console.log(`Attempting to connect to pipe ${pipeNum}:`, currentPath);
+                    
+                    try {
+                        this.socket.connect(currentPath);
+                    } catch (err) {
+                        // If connect throws synchronously, clean up and try next pipe
+                        console.error(`Error connecting to pipe ${pipeNum}:`, err);
+                        this.socket?.removeAllListeners();
+                        this.socket?.destroy();
+                        
+                        if (currentPipe < maxPipes - 1) {
+                            currentPipe++;
+                            tryConnect(currentPipe);
+                        } else {
+                            resolve(false); // Changed from reject to resolve(false)
+                        }
                     }
-                }
-            };
-    
-            // Start with pipe 0
-            console.log('Starting Discord IPC connection attempts');
-            tryConnect(currentPipe);
-        });
+                };
+        
+                // Start with pipe 0
+                console.log('Starting Discord IPC connection attempts');
+                tryConnect(currentPipe);
+            });
+        };
+        
+        // Keep trying until connected
+        while (true) {
+            const connected = await attemptConnection();
+            if (connected) return true;
+            
+            console.log('Failed to connect to Discord. Retrying in 60 seconds...');
+            await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
+        }    
     }
     
     private setupSocket() {
