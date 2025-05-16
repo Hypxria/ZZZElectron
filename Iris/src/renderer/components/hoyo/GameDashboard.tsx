@@ -321,7 +321,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
               { label: "Trailblaze Level", value: `${starrailLevel}`, icon: <Star size={18} /> },
               { label: "Stamina", value: `${starrailBattery?.data?.current_stamina || 0}/${starrailBattery?.data?.max_stamina || 400}`, icon: <Battery size={18} /> },
               { label: "Backup Stamina", value: `${starrailBattery?.data?.current_reserve_stamina || 0}/${starrailBattery?.data?.current_reserve_stamina || 2000}`, icon: <Coins size={18} /> },
-              { label: "Echoes Of War", value: `${starrailBattery?.data?.current_rogue_score || 0 }/${starrailBattery?.data?.max_rogue_score || 0}`, icon: <Clock size={18} /> },
+              { label: "Echoes Of War", value: `${starrailBattery?.data?.current_rogue_score || 0}/${starrailBattery?.data?.max_rogue_score || 0}`, icon: <Clock size={18} /> },
               { label: "Daily Reset", value: `${calculateTimeUntilReset(starrailRg)} hours`, icon: <Clock size={18} /> },
             ]
           });
@@ -448,7 +448,7 @@ const GameAccountDashboard: React.FC<GameAccountDashboardProps> = ({ viewState }
             </div>
 
             {/* Stats section */}
-            {(viewState !== ViewState.NEUTRAL || selectedGame === game.title) && (
+            { (
               <>
                 <div className="stats-section">
                   <div className="stats-grid">

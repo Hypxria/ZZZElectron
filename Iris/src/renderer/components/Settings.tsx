@@ -128,18 +128,16 @@ const Settings: React.FC<SettingsProps> = ({
 
                 {/* Sub menus */}
                 {activeMenu === 'General' && (
-                    <div className="options-menu">
-                        <div className="options-list">
-                            {generalOptions.map((option, index) => (
-                                <button
-                                    key={index}
-                                    className="settings-button"
-                                    onClick={() => handleMenuSelect(option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
+                    <div className="options-list">
+                        {generalOptions.map((option, index) => (
+                            <button
+                                key={index}
+                                className="settings-button"
+                                onClick={() => handleMenuSelect(option)}
+                            >
+                                {option}
+                            </button>
+                        ))}
                     </div>
                 )}
 
@@ -202,7 +200,7 @@ const Settings: React.FC<SettingsProps> = ({
 export default Settings;
 
 
-function Snapshot({}) {
+function Snapshot({ }) {
 
 }
 
@@ -213,28 +211,26 @@ interface AboutProps {
 
 function About({ handleMenuSelect }: AboutProps) {
     return (
-        <div className="options-menu">
-            <div className="about-content">
-                <div className='basic-details'>
-                    <img src={Iris} alt="Iris" className="iris-image" draggable="true"></img>
-                    <div className='name-text'>
-                        <span id='title'>Iris</span>
-                        <span id='name'>By Hyperiya</span>
-                    </div>
+        <div className="about-content">
+            <div className='basic-details'>
+                <img src={Iris} alt="Iris" className="iris-image" draggable="true"></img>
+                <div className='name-text'>
+                    <span id='title'>Iris</span>
+                    <span id='name'>By Hyperiya</span>
                 </div>
-                <p className="iris-text">
-                    Iris is a project created by Hyperiya (That's me!). <br />
-                    It is a project that aims to provide a user-friendly interface for the
-                    Spotify, Discord, and Hoyolab APIs. <br /> <br />
-                    Iris © 2025 is licensed under CC BY-NC-SA 4.0 (Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License). <br />
-                </p>
-                <button
-                    className="settings-button"
-                    onClick={() => handleMenuSelect('License')}
-                >
-                    License
-                </button>
             </div>
+            <p className="iris-text">
+                Iris is a project created by Hyperiya (That's me!). <br />
+                It is a project that aims to provide a user-friendly interface for the
+                Spotify, Discord, and Hoyolab APIs. <br /> <br />
+                Iris © 2025 is licensed under CC BY-NC-SA 4.0 (Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License). <br />
+            </p>
+            <button
+                className="settings-button"
+                onClick={() => handleMenuSelect('License')}
+            >
+                License
+            </button>
         </div>
 
     );
@@ -244,12 +240,10 @@ function About({ handleMenuSelect }: AboutProps) {
 
 function License() {
     return (
-        <div className="options-menu">
-            <div className="about-content">
-                <pre className='license-text'>
-                    {LICENSE_TEXT}
-                </pre>
-            </div>
+        <div className="about-content">
+            <pre className='license-text'>
+                {LICENSE_TEXT}
+            </pre>
         </div>
 
     );
@@ -281,23 +275,21 @@ function Spotify({
         }
     };
     return (
-        <div className="options-menu">
-            <div className="settings-section">
-                <h3>Spicetify Extension</h3>
-                <button
-                    className="install-button"
-                    onClick={handleInstallExtension}
-                >
-                    Install Spicetify Extension
-                </button>
-                {installStatus && (
-                    <div className={`install-status ${installStatus.includes('failed') ? 'error' : 'success'
-                        }`}>
-                        {installStatus}
-                    </div>
-                )}
-                {isInstalling && <div className="install-status installing">Installing...</div>}
-            </div>
+        <div className="settings-section">
+            <h3>Spicetify Extension</h3>
+            <button
+                className="install-button"
+                onClick={handleInstallExtension}
+            >
+                Install Spicetify Extension
+            </button>
+            {installStatus && (
+                <div className={`install-status ${installStatus.includes('failed') ? 'error' : 'success'
+                    }`}>
+                    {installStatus}
+                </div>
+            )}
+            {isInstalling && <div className="install-status installing">Installing...</div>}
         </div>
 
     );
@@ -311,6 +303,8 @@ interface HoyoProps {
 
 
 function Hoyo({ }: HoyoProps) {
+    const [loginStatus, setLoginStatus] = useState<string>()
+    const [loggingIn, setLoggingIn] = useState<boolean>(false)
 
     const handleCredentialsHoyo = async () => {
         let result
@@ -330,8 +324,19 @@ function Hoyo({ }: HoyoProps) {
         }
 
         try {
+            setLoginStatus('Logging in...')
+            setLoggingIn(true)
             result = await window.hoyoAPI.login(username, password);
-            console.log('Login successful:', result);
+            if (!result) {
+                setLoginStatus('Login failed!')
+                setLoggingIn(false)
+                return;
+            } else {
+                setLoggingIn(false)
+                console.log('Login successful:', result);
+                setLoginStatus('Login Succeeded!')
+            }
+
 
             const cookieString = [
                 `cookie_token_v2=${result.cookies.cookie_token_v2}`,
@@ -341,38 +346,44 @@ function Hoyo({ }: HoyoProps) {
                 `ltmid_v2=${result.cookies.ltmid_v2}`,
                 `ltuid_v2=${result.cookies.ltuid_v2}`,
             ].join('; ');
-    
+
             window.hoyoAPI.initialize(cookieString, result.uid);
         } catch (error) {
             console.error('Error during login:', error);
             throw error;
         }
 
-        
+
     }
 
 
     return (
-        <div className="options-menu">
-            <div className="credentials">
-                <input
-                    type="text"
-                    placeholder="Hoyolab Username/Email"
-                    className="hoyo-input"
-                    id='input-bar'
-                />
-                <input
-                    type="password"
-                    placeholder="Hoyolab Password"
-                    className="hoyo-input-secret"
-                    id='input-bar'
-                />
-                <div className="save-input">
-                    <button id='input-button' className="save-button" onClick={handleCredentialsHoyo}>Save</button>
-                </div>
+        <div className="credentials">
+            <input
+                type="text"
+                placeholder="Hoyolab Username/Email"
+                className="hoyo-input"
+                id='input-bar'
+            />
+            <input
+                type="password"
+                placeholder="Hoyolab Password"
+                className="hoyo-input-secret"
+                id='input-bar'
+            />
+            <div className="save-input">
+                <button id='input-button' className="save-button" onClick={handleCredentialsHoyo}>Save</button>
             </div>
-        </div>
+            {loginStatus && !loggingIn && (
+                <div className={`install-status ${loginStatus.toLowerCase().includes('failed') ? 'error' : 'success'
+                    }`}>
+                    {loginStatus}
+                </div>
+            )}
 
+            {loggingIn && <div className="install-status installing">Logging in...</div>}
+
+        </div>
     );
 }
 
@@ -412,28 +423,25 @@ function Discord({
     }
 
     return (
-        <div className="options-menu">
-            <div className="credentials">
-                <input
-                    type="text"
-                    placeholder="Discord Client ID"
-                    className="discord-input"
-                    id='input-bar'
-                />
-                <input
-                    type="text"
-                    placeholder="Discord Client Secret"
-                    className="discord-input-secret"
-                    id='input-bar'
-                />
+        <div className="credentials">
+            <input
+                type="text"
+                placeholder="Discord Client ID"
+                className="discord-input"
+                id='input-bar'
+            />
+            <input
+                type="text"
+                placeholder="Discord Client Secret"
+                className="discord-input-secret"
+                id='input-bar'
+            />
 
-                <div className="save-input">
-                    <button id='input-button' className="save-button" onClick={handleCredentialsDiscord}>Save</button>
-                    <button id='input-button' className="reset-button" onClick={handleDiscordReset}>Reset</button>
-                </div>
+            <div className="save-input">
+                <button id='input-button' className="save-button" onClick={handleCredentialsDiscord}>Save</button>
+                <button id='input-button' className="reset-button" onClick={handleDiscordReset}>Reset</button>
             </div>
         </div>
-
     );
 }
 
@@ -487,36 +495,34 @@ function Modules({
 
 
     return (
-        <div className="options-menu">
-            <div className="settings-section">
-                <div className="module-toggles">
-                    {modules.map((module) => (
+        <div className="settings-section">
+            <div className="module-toggles">
+                {modules.map((module) => (
 
-                        <div key={module} className="module-toggle">
-                            <label className="toggle-switch">
-                                <input
-                                    type="checkbox"
-                                    checked={tempModules[module]}
-                                    onChange={() => handleModuleToggle(module)}
-                                />
-                                <span className="toggle-slider"></span>
-                            </label>
-                            <span className="module-name">
-                                {module.charAt(0).toUpperCase() + module.slice(1)}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+                    <div key={module} className="module-toggle">
+                        <label className="toggle-switch">
+                            <input
+                                type="checkbox"
+                                checked={tempModules[module]}
+                                onChange={() => handleModuleToggle(module)}
+                            />
+                            <span className="toggle-slider"></span>
+                        </label>
+                        <span className="module-name">
+                            {module.charAt(0).toUpperCase() + module.slice(1)}
+                        </span>
+                    </div>
+                ))}
+            </div>
 
-                <div className="save-input">
-                    <button
-                        id='input-button'
-                        className="save-button"
-                        onClick={handleModuleSave}
-                    >
-                        Save
-                    </button>
-                </div>
+            <div className="save-input">
+                <button
+                    id='input-button'
+                    className="save-button"
+                    onClick={handleModuleSave}
+                >
+                    Save
+                </button>
             </div>
         </div>
 
@@ -722,7 +728,6 @@ function Audio({
     };
 
     return (
-        <div className='options-menu'>
             <div className="settings-section">
                 <div className="audio-settings">
                     <span>
@@ -795,7 +800,6 @@ function Audio({
 
                 </div>
             </div>
-        </div>
     );
 }
 

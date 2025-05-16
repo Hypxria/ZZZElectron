@@ -158,6 +158,7 @@
   margin-bottom: 5px;
   margin-top: 5px;
   background-color: #1e1e20;
+  color: white;
 }
 
 #input-button {
@@ -214,12 +215,16 @@
     }
   }
 
-  .install-status {
+  
+}
+
+.install-status {
     margin-top: 12px;
     padding: 8px 12px;
     border-radius: 4px;
     font-size: 14px;
     user-select: all;
+    margin-bottom: 10px;
 
     &.success {
       background: rgba(29, 185, 84, 0.1);
@@ -236,7 +241,6 @@
       color: rgb(247, 129, 2);
     }
   }
-}
 
 // Module Toggle Section
 .module-toggles {
