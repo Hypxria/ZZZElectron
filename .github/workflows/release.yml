@@ -18,8 +18,8 @@ jobs:
       - name: install dependencies
         working-directory: ./Iris
         run: |
-         ls
-         npm install
+          ls
+          npm install
       - name: build
         working-directory: ./Iris
         run: npm run make
@@ -40,8 +40,8 @@ jobs:
       - name: install dependencies
         working-directory: ./Iris
         run: |
-         ls
-         npm install
+          ls
+          npm install
       - name: build
         working-directory: ./Iris
         run: npm run make
@@ -61,9 +61,9 @@ jobs:
           node-version: 22
       - name: install dependencies
         working-directory: ./Iris
-        run: | 
-         ls
-         npm install
+        run: |
+          ls
+          npm install
       - name: build
         working-directory: ./Iris
         run: npm run make
@@ -80,38 +80,39 @@ jobs:
     steps:
       - name: Create combined directory
         run: mkdir -p combined-builds/{linux,macos,windows}
-        
+
       - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
           name: linux-builds
           path: combined-builds/linux
-          
+
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
           name: macos-builds
           path: combined-builds/macos
-          
+
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: windows-builds
           path: combined-builds/windows
-          
+
       - name: Upload combined artifacts
         uses: actions/upload-artifact@v4
         with:
           name: iris-all-platforms
           path: combined-builds
           retention-days: 7
-          
+
       - name: Upload artifacts to release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
         with:
           files: |
             combined-builds/linux/rpm/x64/*
             combined-builds/linux/deb/x64/*
             combined-builds/macos/zip/darwin/arm64/*
             combined-builds/windows/squirrel.windows/x64/iris-setup.exe
+          tag_name: ${{ github.event_name == 'release' && github.ref_name || format('manual-{0}', github.run_number) }}
