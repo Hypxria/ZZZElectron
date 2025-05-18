@@ -10,6 +10,15 @@ Features:
 - Customizable modular interface that allows users to enable/disable specific features
 - System-native window controls with frameless design
 
+## Examples
+![Image 1](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/image.png)
+![Image 2](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/image2.png)
+![Image 3](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/iris_69Iy4UD0lD.png)
+![Image 4](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/iris_E2PDZnuHfR.png)
+![Image 5](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/iris_JdUeIJzDIa.png)
+![Image 6](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/iris_t9hXk70aar.png)
+![Image 7](https://github.com/Hyperiya/Iris/blob/da18eed75956b7928aeb049c36602955208145f8/Examples/iris_yTjK48g3Nl.png)
+
 ## Repository Structure
 ```
 .
