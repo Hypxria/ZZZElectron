@@ -65,7 +65,7 @@ class Iris {
     this.progressWorker.onmessage = () => {
       console.log('message')
       let subtract
-      if (this.wasAutoSwitchedThisSong && !this.timingSwitch || !this.loopSwitch) {
+      if (this.wasAutoSwitchedThisSong && !this.timingSwitch && !this.loopSwitch) {
         subtract = -750
       } else if (this.loopSwitch) {
         subtract = 0
