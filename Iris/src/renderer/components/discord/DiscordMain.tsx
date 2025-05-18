@@ -11,6 +11,8 @@ const DiscordMain: React.FC = ({
 }) => {
     const [logins, setLogins] = React.useState<boolean>(false);
 
+    
+
     useEffect(() => {
         let mounted = true;
         const connectToDiscord = async () => {
@@ -26,7 +28,7 @@ const DiscordMain: React.FC = ({
                     setLogins(true)
                 }
 
-                
+
                 const result = await window.discord.connect(String(id), String(secret));
                 if (!mounted) return;
 
@@ -45,6 +47,17 @@ const DiscordMain: React.FC = ({
 
         connectToDiscord();
 
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'discord_client_id' || e.key === 'discord_client_secret') {
+                connectToDiscord();
+            }
+            console.log('storage event')
+        };
+    
+    
+        // For changes from other windows/tabs
+        window.addEventListener('storage', handleStorageChange);
+    
         return () => {
             mounted = false;
             window.discord.disconnect();

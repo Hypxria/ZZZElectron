@@ -44,7 +44,7 @@ const DiscordCall: React.FC = () => {
 
     useEffect(() => {
         beingCalledDataRef.current = beingCalledData;
-      }, [beingCalledData]);
+    }, [beingCalledData]);
 
     // Handling cases where the user doesn't accept nor decline the call
     useEffect(() => {
