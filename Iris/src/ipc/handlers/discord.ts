@@ -1,13 +1,18 @@
 import DiscordRPC from '../../services/discordServices/discordRPC.ts'
 import { BrowserWindow, ipcMain } from 'electron';
 
-let discordRPC
+let discordRPC: null | DiscordRPC = null;
+let isConnecting = false;
 
 export function setupDiscordHandlers(mainWindow: BrowserWindow) {
     ipcMain.handle('discord:connect', async (_, id, secret) => {
+        if (isConnecting) return { success: false, error: 'Connection already in progress' };
+        if (discordRPC) return { success: true }; // Already connected
+        
+        isConnecting = true;
         try {
-            const client_id = id
-            const client_secret = secret
+            const client_id = id;
+            const client_secret = secret;
 
             discordRPC = new DiscordRPC(String(client_id), String(client_secret));
             await discordRPC.connect();
@@ -16,14 +21,20 @@ export function setupDiscordHandlers(mainWindow: BrowserWindow) {
             discordRPC.on('data', (data) => {
                 mainWindow?.webContents.send('discord:data', data);
             });
-
+            
+            isConnecting = false;
             return { success: true };
         } catch (error) {
             console.error('Failed to connect to Discord:', error);
+            isConnecting = false;
+            discordRPC = null;
             return { success: false, error: error.message };
         }
     });
 
+    ipcMain.handle('discord:status', () => {
+        return { connected: !!discordRPC };
+    });
 
     ipcMain.handle('discord:disconnect', async () => {
         try {
@@ -78,7 +89,7 @@ export function setupDiscordHandlers(mainWindow: BrowserWindow) {
                     if (!args || !args.channel_id) {
                         throw new Error('Channel ID is required for selectTextChannel action');
                     }
-                    await discordRPC.selectTextChannel(args.channel_id);
+                    await discordRPC?.selectTextChannel(args.channel_id);
                     break;
                 default:
                     throw new Error(`${action} is not a valid action for this function`);

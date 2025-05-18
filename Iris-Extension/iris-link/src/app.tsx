@@ -1,4 +1,4 @@
-var interval = 100
+var interval: number = 100
 const workerCode =
   `
 self.onmessage = function(e) {
@@ -33,6 +33,7 @@ class Iris {
   private progressWorker: Worker | null = null;
 
   private wasAutoSwitchedThisSong: boolean = false;
+  private timingSwitch: boolean = false;
 
   private progress: progressManager = {
     progress: 0,
@@ -40,6 +41,7 @@ class Iris {
   }
 
   private songyear: number | null | undefined
+  private loopSwitch: boolean = false
 
   constructor() {
     this.main();
@@ -51,33 +53,26 @@ class Iris {
     // Create a Blob containing the worker code
     const blob = new Blob([workerCode], { type: 'application/javascript' });
     const workerUrl = URL.createObjectURL(blob);
-    let timingSwitch: boolean
 
     // Create and start the worker
     this.progressWorker = new Worker(workerUrl);
 
     Spicetify.Player.addEventListener('onplaypause', (event) => {
-      if (event?.data.isPaused) timingSwitch = true
+      if (event?.data.isPaused) this.timingSwitch = true
     })
-
-    Spicetify.Player.addEventListener('songchange', (event) => {
-      timingSwitch = false
-      this.wasAutoSwitchedThisSong = false
-      this.progress.progress = 0
-    })
-
-
 
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
       console.log('message')
       let subtract
-      if (this.wasAutoSwitchedThisSong && !timingSwitch) {
-        subtract = 750
+      if (this.wasAutoSwitchedThisSong && !this.timingSwitch || !this.loopSwitch) {
+        subtract = -750
+      } else if (this.loopSwitch) {
+        subtract = 0
       } else {
         subtract = 0
       }
-      const progress = Math.max((Spicetify.Player.getProgress() - subtract), 0);
+      const progress = Math.max((Spicetify.Player.getProgress() + subtract), 0);
       const duration = Spicetify.Player.getDuration();
       this.progress.prevProgress = this.progress.progress
       this.progress.progress = progress
@@ -578,16 +573,20 @@ class Iris {
     let previousDuration = Spicetify.Player.getDuration();
 
     Spicetify.Player.addEventListener('songchange', (event) => {
+      this.loopSwitch=false
       // Check if previous song ended naturally (within 1.5s of its end)
 
       console.log(`song: ${this.progress.prevProgress}`)
-      if (this.progress.prevProgress > (previousDuration - 3550) && Spicetify.Player.getRepeat() !== 2) {
+      if (this.progress.prevProgress > (previousDuration - 3550)) {
         console.log('Song ended naturally')
         this.wasAutoSwitchedThisSong = true;
         setTimeout(() => {
           // Reset after 2 seconds
         }, 2000);
-      } else {
+      } else if(Spicetify.Player.getRepeat() == 2) {
+        this.loopSwitch = true
+      }
+        else {
         this.wasAutoSwitchedThisSong = false;
         console.log('Song ended abruptly')
       }

@@ -26,12 +26,16 @@ const DiscordMain: React.FC = ({
                     setLogins(true)
                 }
 
+                
                 const result = await window.discord.connect(String(id), String(secret));
                 if (!mounted) return;
 
                 if (!result.success) {
                     console.error('Failed to connect to Discord:', result.error);
                     return;
+                } else {
+                    console.log('Connected to Discord');
+                    console.log(result)
                 }
             } catch (error) {
                 if (!mounted) return;

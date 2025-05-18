@@ -176,9 +176,9 @@ function AppContent() {
     }
   }, [isIrisEnabled])
 
-  useEffect(() => {
-    window.electron.window.toggleClickThrough(true);
-  }, [])
+  // useEffect(() => {
+  //   window.electron.window.toggleClickThrough(true);
+  // }, [])
 
   const handleOutsideClick = (e: React.MouseEvent) => {
     // Only close if clicking the container itself, not its children

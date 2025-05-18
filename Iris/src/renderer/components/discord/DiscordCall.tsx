@@ -35,11 +35,16 @@ const DiscordCall: React.FC = () => {
     const [channelId, setChannelId] = useState<number>(0)
     const [beingCalledData, setBeingCalledData] = useState<DiscordNotificationType>()
 
+    const beingCalledDataRef = useRef<DiscordNotificationType | undefined>(undefined);
     const isBeingCalledRef = useRef(false);
 
     useEffect(() => {
         isBeingCalledRef.current = isBeingCalled;
     }, [isBeingCalled]);
+
+    useEffect(() => {
+        beingCalledDataRef.current = beingCalledData;
+      }, [beingCalledData]);
 
     // Handling cases where the user doesn't accept nor decline the call
     useEffect(() => {
@@ -109,7 +114,6 @@ const DiscordCall: React.FC = () => {
         if (!isInCall) {
             window.discord.voice.join(channelId.toString());
         };
-        setIsBeingCalled(false);
         setIsInCall(true);
     }
 
@@ -152,14 +156,20 @@ const DiscordCall: React.FC = () => {
                 if (!data.data.channel_id) {
                     setCallState(null);
                     setIsInCall(false)
-                    console.log('no channel ID')
+                    console.log('no channel ID', 'left it prolly')
                     break;
                 }
-                console.log('channel ID')
+                console.log('channel ID', data.data.channel_id)
+                console.log(isBeingCalledRef.current)
 
-                if (isBeingCalledRef.current && beingCalledData?.data.channel_id === data.data.channel_id) setIsBeingCalled(false); else throw new Error(`conditions not met, ${isBeingCalledRef.current}, ${beingCalledData?.data.channel_id}, ${data.data.channel_id}`)
-                if (isBeingCalledRef.current && beingCalledData?.data.channel_id === data.data.channel_id) console.log('isbeingcalled false'); else console.log('isbeingcalled true')
-
+                if (isBeingCalledRef.current && beingCalledDataRef.current?.data.channel_id === data.data.channel_id) {
+                    setIsBeingCalled(false);
+                    console.log('isbeingcalled false');
+                } else {
+                    console.log('isbeingcalled true');
+                    // Don't throw an error, just log it
+                    console.log(`Conditions not met: isBeingCalled=${isBeingCalledRef.current}, channelId=${beingCalledDataRef.current?.data.channel_id}, dataChannelId=${data.data.channel_id}`);
+                }
 
                 setIsInCall(true);
                 console.log('getting channel')
@@ -259,13 +269,19 @@ const DiscordCall: React.FC = () => {
                 setIsDeafened(voiceSettingsUpdateData.data.deaf)
                 break;
             case 'NOTIFICATION_CREATE':
+                console.log('discord-create-data:', data)
                 const notificationCreateData: DiscordNotificationType = data;
+                console.log('noti-create-data:', notificationCreateData)
                 if (notificationCreateData.data.message.type === 3) {
                     const args = {
                         channel_id: notificationCreateData.data.channel_id,
                     }
                     await setIsBeingCalled(true)
+                    isBeingCalledRef.current = true
                     await setBeingCalledData(notificationCreateData)
+                    beingCalledDataRef.current = notificationCreateData; // Update ref immediately
+
+                    console.log(`beingcalledData: ${beingCalledData}`)
                     await window.discord.subscribe('VOICE_STATE_DELETE', args)
                     await setChannelId(args.channel_id)
 
