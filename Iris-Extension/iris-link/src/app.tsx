@@ -40,6 +40,11 @@ class Iris {
     prevProgress: 0
   }
 
+  private duration = {
+    duration: 0,
+    prevDuration: 0
+  }
+
   private songyear: number | null | undefined
   private loopSwitch: boolean = false
 
@@ -61,14 +66,20 @@ class Iris {
       if (event?.data.isPaused) this.timingSwitch = true
     })
 
+
+
     // Listen for worker messages
     this.progressWorker.onmessage = () => {
-      console.log('message')
+      if (
+        this.duration.prevDuration - this.progress.prevProgress >= 1000 
+        && this.progress.progress <= 500 
+        && Spicetify.Player.getRepeat() === 2) this.loopSwitch = true;
+
       let subtract
       if (this.wasAutoSwitchedThisSong && !this.timingSwitch && !this.loopSwitch) {
         subtract = -750
-      } else if (this.loopSwitch) {
-        subtract = 0
+      } else if (this.loopSwitch && !this.timingSwitch) {
+        subtract = -750
       } else {
         subtract = 0
       }
@@ -442,6 +453,7 @@ class Iris {
 
                 // Handle getting current track info
                 const currentTrack = Spicetify.Player.data.item;
+                this.duration.duration = currentTrack.duration.milliseconds;
 
                 console.log(`current track: ${currentTrack}`)
                 console.log(this.songyear)
@@ -567,32 +579,29 @@ class Iris {
   }
 
   private async listenForSongChange() {
-    interface durationManager {
+    this.duration.prevDuration = Spicetify.Player.getDuration();
+    console.log('starting songchange eventlistener')
 
-    }
-    let previousDuration = Spicetify.Player.getDuration();
-
-    Spicetify.Player.addEventListener('songchange', (event) => {
-      this.loopSwitch=false
+    Spicetify.Player.addEventListener("songchange", (event) => {
+      this.loopSwitch=false;
+      console.log('songchange event triggered');
       // Check if previous song ended naturally (within 1.5s of its end)
 
       console.log(`song: ${this.progress.prevProgress}`)
-      if (this.progress.prevProgress > (previousDuration - 3550)) {
+      if (this.progress.prevProgress > (this.duration.prevDuration - 3550)) {
         console.log('Song ended naturally')
         this.wasAutoSwitchedThisSong = true;
         setTimeout(() => {
           // Reset after 2 seconds
         }, 2000);
-      } else if(Spicetify.Player.getRepeat() == 2) {
-        this.loopSwitch = true
-      }
-        else {
+      } else {
         this.wasAutoSwitchedThisSong = false;
         console.log('Song ended abruptly')
-      }
+      };
+
+      
 
       const currentTrack = Spicetify.Player.data.item;
-      Spicetify.showNotification(`Now Playing: ${currentTrack.name}`)
 
       console.log(JSON.stringify(currentTrack, null, 2))
 
@@ -601,11 +610,11 @@ class Iris {
       this.getSongYear(currentTrack)
 
 
-      console.log(`Song ended: Previous Duration: ${previousDuration}`)
+      console.log(`Song ended: Previous Duration: ${this.duration.prevDuration}`)
       console.log(`Song ended: Previous Progress: ${this.progress}`)
 
       // Store current values for next change
-      previousDuration = Spicetify.Player.getDuration();
+      this.duration.prevDuration = Spicetify.Player.getDuration();
     });
   }
 
